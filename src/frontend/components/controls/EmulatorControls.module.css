@@ -1,0 +1,14 @@
+.buttonsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.buttonsRow {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.buttonsRow > * {
+  margin-right: 5px;
+}

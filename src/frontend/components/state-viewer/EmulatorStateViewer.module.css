@@ -1,0 +1,10 @@
+.panelsContainer {
+  display: flex;
+  justify-content: space-around;
+}
+
+.emulatorStateContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
