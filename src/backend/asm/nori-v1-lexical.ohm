@@ -1,0 +1,25 @@
+ISA {    
+    program = instructionLine*
+
+    instructionLine = instruction newline
+
+    instruction = (label space+)? mnemonic (space+ operands)?
+
+    label = "." letterOrDigit+
+
+    mnemonic = caseInsensitive<"LIM"> | caseInsensitive<"HLT">
+
+	operands = expression (sep expression)*
+
+    expression = register | immediate
+
+    register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
+
+    immediate = digit+
+
+    sep = space* "," space*
+
+    newline = "\n"
+
+    letterOrDigit = letter | digit
+}

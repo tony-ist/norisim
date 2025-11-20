@@ -1,0 +1,27 @@
+ISA {
+    Program = InstructionLine*
+
+    InstructionLine = Instruction newline
+
+    Instruction = Label? Mnemonic Operands?
+
+    Label = "." letterOrDigit+
+
+    Mnemonic = caseInsensitive<"LIM"> | caseInsensitive<"HLT">
+
+	Operands = Expression (Sep Expression)*
+
+    Expression = Register | Immediate
+
+    Register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
+
+    Immediate = digit+
+
+    Sep = ","
+
+    // SplitLine = space (newline space)? | newline space
+
+    newline = "\n"
+
+    letterOrDigit = letter | digit
+}
