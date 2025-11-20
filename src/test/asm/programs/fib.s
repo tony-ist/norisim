@@ -9,7 +9,7 @@ lim r3, 1
     mov r3, r4
 
     addi r1, -1
-    jnz .loop
+    jnz @loop
 
 pst 1, r2
 hlt

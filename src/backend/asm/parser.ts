@@ -7,8 +7,8 @@ export function parse(code: string) {
     const contents = fs.readFileSync('src/backend/asm/nori-v1-lexical.ohm', 'utf-8');
     const grammar = ohm.grammar(contents);
     
-    // const traceResult = grammar.trace(code);
-    // console.log(traceResult.toString());
+    const traceResult = grammar.trace(code);
+    console.log(traceResult.toString());
     
     const matchResult = grammar.match(code);
     console.log(matchResult.message);

@@ -1,25 +1,38 @@
 ISA {    
     program = instructionLine*
 
-    instructionLine = instruction newline
+    instructionLine = instruction (space+ comment)? splitLine
 
-    instruction = (label space+)? mnemonic (space+ operands)?
+    comment = "//" (~newline any)*
+
+    instruction = (label splitLine)? mnemonic (space+ operands)?
 
     label = "." letterOrDigit+
 
-    mnemonic = caseInsensitive<"LIM"> | caseInsensitive<"HLT">
+    mnemonic 
+        = caseInsensitive<"LIM"> 
+        | caseInsensitive<"HLT">
+        | caseInsensitive<"ADDI">
+        | caseInsensitive<"ADD"> 
+        | caseInsensitive<"MOV">
+        | caseInsensitive<"JNZ">
+        | caseInsensitive<"PST">
 
 	operands = expression (sep expression)*
 
-    expression = register | immediate
+    expression = register | immediate | labelAddress
 
     register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
 
-    immediate = digit+
+    immediate = "-"?digit+
+
+    labelAddress = "@" letterOrDigit+
 
     sep = space* "," space*
 
     newline = "\n"
 
     letterOrDigit = letter | digit
+
+    splitLine = (space | "\n")*
 }
