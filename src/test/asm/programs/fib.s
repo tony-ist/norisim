@@ -1,3 +1,5 @@
+// Calculates fibonacci, does r1 iterations
+
 lim r1, 5 // iterations
 lim r2, 1
 lim r3, 1

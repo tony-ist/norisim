@@ -21,13 +21,26 @@ export function parse(code: string) {
             program: {
                 body: 0
             },
+            programLine: {
+                body: 0,
+            },
+            commentLine: {
+                body: 1,
+            },
+            emptyLine: {
+                body: null
+            },
             instructionLine: {
-                instruction: 0
+                instruction: 1,
+                inlineComment: 3,
+            },
+            inlineComment: {
+                body: 0,
             },
             instruction: {
                 label: 0,
                 mnemonic: 2,
-                operands: 4
+                operands: 5
             },
             operands: (first: any, _sep: any, rest: any): any[] => {
                 return [first.toAST(mapping), ...rest.toAST(mapping)];
@@ -36,5 +49,6 @@ export function parse(code: string) {
 
         const ast = extra.toAST(matchResult, mapping);
         console.log(JSON.stringify(ast, null, 2));
+        console.log(ast.body[2].body.inlineComment)
     }
 }
