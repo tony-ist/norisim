@@ -3,8 +3,7 @@ import * as ohm from 'ohm-js';
 import * as extra from 'ohm-js/extras';
 
 export function parse(code: string) {
-    // const contents = fs.readFileSync('src/backend/asm/nori-v1.ohm', 'utf-8');
-    const contents = fs.readFileSync('src/backend/asm/nori-v1-lexical.ohm', 'utf-8');
+    const contents = fs.readFileSync('src/backend/asm/nori-v1.ohm', 'utf-8');
     const grammar = ohm.grammar(contents);
     
     const traceResult = grammar.trace(code);
@@ -49,6 +48,5 @@ export function parse(code: string) {
 
         const ast = extra.toAST(matchResult, mapping);
         console.log(JSON.stringify(ast, null, 2));
-        console.log(ast.body[2].body.inlineComment)
     }
 }

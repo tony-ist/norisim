@@ -1,27 +1,68 @@
 ISA {
-    Program = InstructionLine*
+    program = programLine*
 
-    InstructionLine = Instruction newline
+    programLine = emptyLine | commentLine | instructionLine
 
-    Instruction = Label? Mnemonic Operands?
+    instructionLine = inlineSpace* instruction (inlineSpace+ inlineComment)? newline
 
-    Label = "." letterOrDigit+
+    commentLine = inlineSpace* comment newline
 
-    Mnemonic = caseInsensitive<"LIM"> | caseInsensitive<"HLT">
+    emptyLine = inlineSpace* newline
 
-	Operands = Expression (Sep Expression)*
+    inlineComment = comment
 
-    Expression = Register | Immediate
+    comment = "//" (~newline any)*
 
-    Register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
+    instruction = (label space+)? mnemonic caseInsensitive<".f">? (inlineSpace+ operands)?
 
-    Immediate = digit+
+    label = "." letterOrDigit+
 
-    Sep = ","
+    mnemonic 
+        = caseInsensitive<"NOP">
+        | caseInsensitive<"LIM">
+        | caseInsensitive<"ADDI">
+        | caseInsensitive<"ADD">
+        | caseInsensitive<"SUB">
+        | caseInsensitive<"AND">
+        | caseInsensitive<"OR">
+        | caseInsensitive<"XOR">
+        | caseInsensitive<"NOT">
+        | caseInsensitive<"SHR">
+        | caseInsensitive<"JMP">
+        | caseInsensitive<"JZ">
+        | caseInsensitive<"JNZ">
+        | caseInsensitive<"JC">
+        | caseInsensitive<"JNC">
+        | caseInsensitive<"JL">
+        | caseInsensitive<"JG">
+        | caseInsensitive<"JLE">
+        | caseInsensitive<"JGE">
+        | caseInsensitive<"CAL">
+        | caseInsensitive<"RET">
+        | caseInsensitive<"PSH">
+        | caseInsensitive<"POP">
+        | caseInsensitive<"MLD">
+        | caseInsensitive<"MST">
+        | caseInsensitive<"MOV">
+        | caseInsensitive<"PST">
+        | caseInsensitive<"PLD">
+        | caseInsensitive<"HLT">
 
-    // SplitLine = space (newline space)? | newline space
+	operands = expression (sep expression)*
+
+    expression = register | immediate | labelAddress
+
+    register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
+
+    immediate = "-"?digit+
+
+    labelAddress = "." letterOrDigit+
+
+    sep = space* "," space*
 
     newline = "\n"
 
     letterOrDigit = letter | digit
+
+    inlineSpace = (~newline space)+
 }
