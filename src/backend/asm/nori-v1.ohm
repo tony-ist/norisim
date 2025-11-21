@@ -17,36 +17,7 @@ ISA {
 
     label = "." letterOrDigit+
 
-    mnemonic 
-        = caseInsensitive<"NOP">
-        | caseInsensitive<"LIM">
-        | caseInsensitive<"ADDI">
-        | caseInsensitive<"ADD">
-        | caseInsensitive<"SUB">
-        | caseInsensitive<"AND">
-        | caseInsensitive<"OR">
-        | caseInsensitive<"XOR">
-        | caseInsensitive<"NOT">
-        | caseInsensitive<"SHR">
-        | caseInsensitive<"JMP">
-        | caseInsensitive<"JZ">
-        | caseInsensitive<"JNZ">
-        | caseInsensitive<"JC">
-        | caseInsensitive<"JNC">
-        | caseInsensitive<"JL">
-        | caseInsensitive<"JG">
-        | caseInsensitive<"JLE">
-        | caseInsensitive<"JGE">
-        | caseInsensitive<"CAL">
-        | caseInsensitive<"RET">
-        | caseInsensitive<"PSH">
-        | caseInsensitive<"POP">
-        | caseInsensitive<"MLD">
-        | caseInsensitive<"MST">
-        | caseInsensitive<"MOV">
-        | caseInsensitive<"PST">
-        | caseInsensitive<"PLD">
-        | caseInsensitive<"HLT">
+    mnemonic = letter+
 
 	operands = expression (sep expression)*
 
