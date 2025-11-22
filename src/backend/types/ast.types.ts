@@ -1,4 +1,4 @@
-export type Format = 'A' | 'B' | 'C' | 'D' | 'I' | 'J' | 'Z';
+export type Format = 'A' | 'B' | 'C' | 'D' | 'E' | 'I' | 'J' | 'Z';
 
 export interface InstructionInfo {
   format: Format;
@@ -30,8 +30,8 @@ export const INSTRUCTIONS = {
     RET: { opcode: 0x14, format: 'Z' },
     PSH: { opcode: 0x15, format: 'D' },
     POP: { opcode: 0x16, format: 'D' },
-    MLD: { opcode: 0x17, format: 'C' },
-    MST: { opcode: 0x18, format: 'C' },
+    MLD: { opcode: 0x17, format: 'E' },
+    MST: { opcode: 0x18, format: 'E' },
     MOV: { opcode: 0x19, format: 'B' },
     PST: { opcode: 0x1A, format: 'C' },
     PLD: { opcode: 0x1B, format: 'C' },
@@ -67,6 +67,17 @@ export interface CFormat extends BaseInstruction {
   register: number;
 }
 
+export interface DFormat extends BaseInstruction {
+  format: 'D';
+  register: number;
+}
+
+export interface EFormat extends BaseInstruction {
+  format: 'E';
+  address: number;
+  register: number;
+}
+
 export interface IFormat extends BaseInstruction {
   format: 'I';
   register: number;
@@ -86,6 +97,8 @@ export type Instruction =
   | AFormat
   | BFormat
   | CFormat
+  | DFormat
+  | EFormat
   | IFormat
   | JFormat
   | ZFormat;

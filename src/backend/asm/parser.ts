@@ -124,7 +124,12 @@ export function parseToAST(code: string): AST {
         instructionLine: (_inlineSpace, instruction, _inlineSpace2, inlineComment, _newline) => {
             const instr = instruction.toAST();
             const comment = inlineComment.toAST();
-            return { ...instr, inlineComment: comment[0] };
+
+            if (comment[0]) {
+                return { ...instr, inlineComment: comment[0] };
+            } 
+                
+            return instr;
         },
     
         inlineComment: (comment) => comment.toAST(),
@@ -133,7 +138,12 @@ export function parseToAST(code: string): AST {
         
         instruction: (label, _space, instrX) => {
             const base = instrX.toAST();
-            return { ...base, label: label.sourceString ? label.sourceString.trim() : undefined };
+
+            if (label.sourceString) {
+                return { ...base, label: label.sourceString.trim() };
+            }
+
+            return base;
         },
     
         instructionX: (instrustion) => instrustion.toAST(),
