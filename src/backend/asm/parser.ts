@@ -9,7 +9,7 @@ export function parse(code: string) {
 
     const semantics = grammar.createSemantics().addOperation('compile', {
         program: (body: any) => {
-            return body.children.map((line: any) => line.compile()).filter(Boolean)
+            return body.children.map((line: any) => line.compile()).filter(((value: number | null) => value !== null));
         },
         instructionLine: (_inlineSpace: any, instruction: any, _inlineSpace2: any, _inlineComment: any, _newline: any) => {
             return instruction.compile();
@@ -24,37 +24,57 @@ export function parse(code: string) {
             return null;
         },
         instruction: (label: any, _space: any, mnemonic: any, flag: any, _space2: any, operands: any) => {
-            console.log(operands.children.map((child: any) => child.sourceString));
+            const operandsOpcode = operands.children.map((child: any) => child.compile());
+            console.log(`instruction ${mnemonic.sourceString} operands:`, operandsOpcode); // [ 'r1, 3' ]
+            console.log(`mnemonic.compile():`, mnemonic.compile());
             const flagBool = flag ? 1 : 0;
             
-            // operands.compile() fails with error `Assembly error: Missing semantic action for '_iter' in operation 'compile'.`
             switch (mnemonic.sourceString.toUpperCase()) {
                 case 'LIM':
-                    return mnemonic.compile() + operands.compile() << 5;
+                    return mnemonic.compile() + operandsOpcode << 5;
                 case 'AND':
-                    return mnemonic.compile() + operands.compile() << 5 + flagBool << 14;
+                    return mnemonic.compile() + operandsOpcode << 5 + flagBool << 14;
                 case 'NAND':
-                    return INSTRUCTIONS.AND.opcode + operands.compile() << 5 + flagBool << 14;
+                    return INSTRUCTIONS.AND.opcode + operandsOpcode << 5 + flagBool << 14;
+                case 'ADD':
+                    return 1;
+                case 'ADDI':
+                    return 2;
+                case 'MOV':
+                    return 3;
+                case 'JNZ':
+                    return 4;
+                case 'PST':
+                    return 5;
                 case 'HLT':
-                    return mnemonic.compile();
+                    return 6;
                 default:
                     throw new Error(`Invalid mnemonic: ${mnemonic.sourceString}`);
             }
         },
         operands: (expression: any, _sep: any, rest: any) => {
-            return null;
+            return expression.compile() + rest.children.map((child: any) => child.compile());
         },
         expression: (expression: any) => {
-            return null;
+            return expression.compile();
+        },
+        register: (register: any) => {
+            return register.sourceString.toUpperCase();
+        },
+        immediate: (minus: any, immediate: any) => {
+            return immediate.sourceString;
+        },
+        labelAddress: (dot: any, labelAddress: any) => {
+            return labelAddress.sourceString;
         },
         mnemonic: (mnemonic: any) => {
-            const opcode = INSTRUCTIONS[mnemonic.sourceString.toUpperCase() as keyof typeof INSTRUCTIONS];
+            const instruction = INSTRUCTIONS[mnemonic.sourceString.toUpperCase() as keyof typeof INSTRUCTIONS];
 
-            if (!opcode) {
+            if (!instruction) {
                 throw new Error(`Invalid mnemonic: ${mnemonic.sourceString}`);
             }
 
-            return opcode;
+            return instruction.opcode;
         },
     });
 
@@ -102,6 +122,6 @@ export function parse(code: string) {
         console.log(JSON.stringify(ast, null, 2));
 
         const bytes = semantics(matchResult).compile();
-        console.log(bytes);
+        console.log('Compiled bytes:', bytes);
     }
 }
