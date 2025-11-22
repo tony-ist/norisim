@@ -11,6 +11,11 @@ export const INSTRUCTIONS = {
         opcode: 0x02,
         mnemonic: 'ADD',
     },
+    NAND: {
+        opcode: 0x02,
+        mnemonic: 'NAND',
+        negated: true,
+    },
     ADDI: {
         opcode: 0x03,
         mnemonic: 'ADDI',

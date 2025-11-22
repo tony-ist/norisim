@@ -6,8 +6,8 @@ export function padHexByte(byte: string) {
   return byte.length === 1 ? '0' + byte : byte;
 }
 
-export function toHex(bytes: number[]) {
-  return bytes.map((byte) => padHexByte(byte.toString(16).toUpperCase()));
+export function toHex(bytes: number[], prefix: boolean = false) {
+  return bytes.map((byte) => (prefix ? '0x' : '') + padHexByte(byte.toString(16).toUpperCase())).join(' ');
 }
 
 export function fromHex(hex: string[]) {

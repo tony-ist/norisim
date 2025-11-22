@@ -42,17 +42,11 @@ ISA {
 
     mnemonic = letter+
 
-	operands = expression (sep expression)*
-
-    expression = register | immediate | labelAddress
-
     address = digit+
 
     register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
 
     immediate = "-"? digit+
-
-    labelAddress = "." letterOrDigit+
 
     sep = space* "," space*
 
