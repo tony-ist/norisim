@@ -105,10 +105,8 @@ export function parse(code: string) {
         
         instruction: (label, _space, instrX) => {
             const base = instrX.toAST();
-            if (label.sourceString) {
-                return { ...base, label: label.sourceString.trim() };
-            }
-            return base;
+            const labelOrNull = label.sourceString ? label.sourceString.trim() : null;
+            return { ...base, label: labelOrNull };
         },
     
         instructionX: (instrustion) => instrustion.toAST(),

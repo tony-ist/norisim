@@ -3,7 +3,7 @@ export function isLabel(line: string) {
 }
 
 export function padHexByte(byte: string) {
-  return byte.length === 1 ? '0' + byte : byte;
+  return ('0000' + byte).slice(-4);
 }
 
 export function toHex(bytes: number[], prefix: boolean = false) {
