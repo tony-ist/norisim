@@ -24,6 +24,8 @@ ISA {
         | instructionJ
         | instructionZ
 
+    instructionI = mnemonic space+ register sep immediate
+    
     instructionA = mnemonic caseInsensitive<".f">? space+ register sep register sep register
 
     instructionB = mnemonic caseInsensitive<".f">? space+ register sep register
@@ -31,8 +33,6 @@ ISA {
     instructionC = mnemonic space+ address sep register
 
     instructionD = mnemonic space+ register
-    
-    instructionI = mnemonic space+ register sep immediate
 
     instructionJ = mnemonic space+ label
 

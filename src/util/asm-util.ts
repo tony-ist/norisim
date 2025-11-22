@@ -7,7 +7,7 @@ export function padHexByte(byte: string) {
 }
 
 export function toHex(bytes: number[], prefix: boolean = false) {
-  return bytes.map((byte) => (prefix ? '0x' : '') + padHexByte(byte.toString(16).toUpperCase())).join(' ');
+  return bytes.map((byte) => (prefix ? '0x' : '') + padHexByte(byte.toString(16).toUpperCase()));
 }
 
 export function fromHex(hex: string[]) {

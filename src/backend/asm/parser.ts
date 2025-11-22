@@ -1,8 +1,19 @@
 import fs from 'fs';
 import * as ohm from 'ohm-js';
-import * as extra from 'ohm-js/extras';
 import { INSTRUCTIONS } from '../../const/nori-v1-constants';
 import { toHex } from '../../util/asm-util';
+
+function parseRegister(register: string) {
+    return parseInt(register[1]);
+}
+
+function parseAddress(address: string) {
+    return address;
+}
+
+function parseImmediate(immediate: string) {
+    return parseInt(immediate);
+}
 
 export function parse(code: string) {
     const contents = fs.readFileSync('src/backend/asm/nori-v1.ohm', 'utf-8');
@@ -78,6 +89,7 @@ export function parse(code: string) {
         programLine: (content) => content.toAST(),
     
         emptyLine: (_space, _newline) => null,
+
         commentLine: (_space, _comment, _newline) => null,
     
         instructionLine: (_inlineSpace, instruction, _inlineSpace2, inlineComment, _newline) => {
@@ -105,55 +117,48 @@ export function parse(code: string) {
             type: "instructionA",
             mnemonic: mnemonic.sourceString.toUpperCase(),
             updateFlags: flagNode.sourceString ? 1 : 0, 
-            dest: dest.sourceString,
-            srcA: srcA.sourceString,
-            srcB: srcB.sourceString,
-            inlineComment: null 
+            dest: parseRegister(dest.sourceString),
+            srcA: parseRegister(srcA.sourceString),
+            srcB: parseRegister(srcB.sourceString),
         }),
     
         instructionB: (mnemonic, flagNode, _ws1, dest, _ws2, src) => ({
             type: "instructionB",
             mnemonic: mnemonic.sourceString,
             updateFlags: flagNode.sourceString ? 0 : 1,  
-            dest: dest.sourceString,
-            src: src.sourceString,
-            inlineComment: null
+            dest: parseRegister(dest.sourceString),
+            src: parseRegister(src.sourceString),
         }),
     
         instructionC: (mnemonic, _ws1, address, _ws2, register) => ({
             type: "instructionC",
             mnemonic: mnemonic.sourceString,
-            address: address.sourceString,
-            register: register.sourceString,
-            inlineComment: null
+            address: parseAddress(address.sourceString),
+            register: parseRegister(register.sourceString),
         }),
     
         instructionD: (mnemonic, _ws1, register) => ({
             type: "instructionD",
             mnemonic: mnemonic.sourceString,
-            register: register.sourceString,
-            inlineComment: null
+            register: parseRegister(register.sourceString),
         }),
     
         instructionI: (mnemonic, _ws1, register, _ws2, immediate) => ({
             type: "instructionI",
             mnemonic: mnemonic.sourceString,
-            register: register.sourceString,
-            immediate: immediate.sourceString,
-            inlineComment: null
+            register: parseRegister(register.sourceString),
+            immediate: parseImmediate(immediate.sourceString),
         }),
     
         instructionJ: (mnemonic, _ws1, label) => ({
             type: "instructionJ",
             mnemonic: mnemonic.sourceString,
             label: label.sourceString,
-            inlineComment: null
         }),
     
         instructionZ: (mnemonic) => ({
             type: "instructionZ",
             mnemonic: mnemonic.sourceString,
-            inlineComment: null
         }),
     
         _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null)
@@ -168,74 +173,7 @@ export function parse(code: string) {
     console.error(`Succeeded: ${matchResult.succeeded()}`);
     console.log();
 
-    // TODO: Remove excess nesting in AST, parse flags, registers, etc into numbers
     if (matchResult.succeeded()) {
-        const mapping = {
-            program: {
-                body: 0
-            },
-            programLine: {
-                body: 0,
-            },
-            commentLine: {
-                body: 1,
-            },
-            emptyLine: {
-                body: null
-            },
-            instructionLine: {
-                instruction: 1,
-                inlineComment: 3,
-            },
-            inlineComment: {
-                body: 0,
-            },
-            instruction: {
-                label: 0,
-                instructionX: 2,
-            },
-            instructionX: {
-                body: 0,
-            },
-            instructionA: {
-                mnemonic: 0,
-                flag: (value: any) => value[1].sourceString ? 1 : 0,
-                dest: 3,
-                srcA: 5,
-                srcB: 7,
-            },
-            instructionB: {
-                mnemonic: 0,
-                flag: (value: any) => value[1].sourceString ? 0 : 1,
-                dest: 3,
-                src: 5,
-            },
-            instructionC: {
-                mnemonic: 0,
-                address: 2,
-                register: 4,
-            },
-            instructionD: {
-                mnemonic: 0,
-                register: 2,
-            },
-            instructionI: {
-                mnemonic: 0,
-                register: 2,
-                immediate: 4,
-            },
-            instructionJ: {
-                mnemonic: 0,
-                label: 2,
-            },
-            instructionZ: {
-                mnemonic: 0,
-            },
-        };
-
-        // const ast = extra.toAST(matchResult, mapping);
-        // console.log(JSON.stringify(ast, null, 2));
-
         const astSemantic = semantics(matchResult).toAST();
         console.log(JSON.stringify(astSemantic, null, 2));
 
