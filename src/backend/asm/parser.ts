@@ -15,6 +15,10 @@ function parseImmediate(immediate: string) {
     return parseInt(immediate);
 }
 
+function parseMnemonic(mnemonic: string) {
+    return mnemonic.toUpperCase();
+}
+
 export function parse(code: string) {
     const contents = fs.readFileSync('src/backend/asm/nori-v1.ohm', 'utf-8');
     const grammar = ohm.grammar(contents);
@@ -112,8 +116,8 @@ export function parse(code: string) {
         instructionX: (instrustion) => instrustion.toAST(),
     
         instructionA: (mnemonic, flagNode, _ws1, dest, _ws2, srcA, _ws3, srcB) => ({
-            type: "instructionA",
-            mnemonic: mnemonic.sourceString.toUpperCase(),
+            format: "A",
+            mnemonic: parseMnemonic(mnemonic.sourceString),
             updateFlags: flagNode.sourceString ? 1 : 0, 
             dest: parseRegister(dest.sourceString),
             srcA: parseRegister(srcA.sourceString),
@@ -121,42 +125,42 @@ export function parse(code: string) {
         }),
     
         instructionB: (mnemonic, flagNode, _ws1, dest, _ws2, src) => ({
-            type: "instructionB",
-            mnemonic: mnemonic.sourceString,
+            format: "B",
+            mnemonic: parseMnemonic(mnemonic.sourceString),
             updateFlags: flagNode.sourceString ? 0 : 1,  
             dest: parseRegister(dest.sourceString),
             src: parseRegister(src.sourceString),
         }),
     
         instructionC: (mnemonic, _ws1, address, _ws2, register) => ({
-            type: "instructionC",
-            mnemonic: mnemonic.sourceString,
+            format: "C",
+            mnemonic: parseMnemonic(mnemonic.sourceString),
             address: parseAddress(address.sourceString),
             register: parseRegister(register.sourceString),
         }),
     
         instructionD: (mnemonic, _ws1, register) => ({
-            type: "instructionD",
-            mnemonic: mnemonic.sourceString,
+            format: "D",
+            mnemonic: parseMnemonic(mnemonic.sourceString),
             register: parseRegister(register.sourceString),
         }),
     
         instructionI: (mnemonic, _ws1, register, _ws2, immediate) => ({
-            type: "instructionI",
-            mnemonic: mnemonic.sourceString,
+            format: "I",
+            mnemonic: parseMnemonic(mnemonic.sourceString),
             register: parseRegister(register.sourceString),
             immediate: parseImmediate(immediate.sourceString),
         }),
     
         instructionJ: (mnemonic, _ws1, label) => ({
-            type: "instructionJ",
-            mnemonic: mnemonic.sourceString,
+            format: "J",
+            mnemonic: parseMnemonic(mnemonic.sourceString),
             label: label.sourceString,
         }),
     
         instructionZ: (mnemonic) => ({
-            type: "instructionZ",
-            mnemonic: mnemonic.sourceString,
+            format: "Z",
+            mnemonic: parseMnemonic(mnemonic.sourceString),
         }),
     
         _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null)
