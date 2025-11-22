@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 import { toHex } from '../src/util/asm-util.ts';
-import { parse } from '../src/backend/asm/parser.ts';
+import { assemble } from '../src/backend/asm/parser.ts';
 
 function main(): void {
   const args = process.argv.slice(2);
@@ -17,7 +17,7 @@ function main(): void {
   try {
     const asmCode: string = fs.readFileSync(inputFile, 'utf-8');
     
-    const parsedCode = parse(asmCode);
+    const parsedCode = assemble(asmCode);
 
     const machineCode: number[] = []; // TODO
 

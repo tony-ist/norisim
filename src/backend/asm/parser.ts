@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as ohm from 'ohm-js';
-import { INSTRUCTIONS } from '../../const/nori-v1-constants';
-import { toHex } from '../../util/asm-util';
+import { preprocess } from './preprocessor';
+import { AST, INSTRUCTIONS } from '../types/ast.types';
 
 function parseRegister(register: string) {
     return parseInt(register[1]);
@@ -19,11 +19,14 @@ function parseMnemonic(mnemonic: string) {
     return mnemonic.toUpperCase();
 }
 
-export function parse(code: string) {
+export function assemble(code: string, parserTrace: boolean = false): number[] {
+    const preprocessedCode = preprocess(code);
     const contents = fs.readFileSync('src/backend/asm/nori-v1.ohm', 'utf-8');
     const grammar = ohm.grammar(contents);
 
-    const semantics = grammar.createSemantics().addOperation('compile', {
+    const semantics = grammar.createSemantics();
+    
+    semantics.addOperation('compile', {
         program: (body: any) => {
             return body.children.map((line: any) => line.compile()).filter(((value: number | null) => value !== null));
         },
@@ -52,7 +55,7 @@ export function parse(code: string) {
         instructionB: (mnemonic: any, flag: any, _space: any, dest: any, _sep: any, src: any) => {
             const flagBool = flag.sourceString === null ? 0 : 1;
             return mnemonic.compile() + src.compile() << 5 + dest.compile() << 8 + flagBool << 14;
-        },
+        }, 
         instructionC: (mnemonic: any, _space: any, address: any, _sep: any, register: any) => {
             return mnemonic.compile() + register.compile() << 5 + parseInt(address.sourceString) << 8;
         },
@@ -87,6 +90,28 @@ export function parse(code: string) {
         },
     });
 
+    if (parserTrace) {
+        const traceResult = grammar.trace(preprocessedCode);
+        console.log(traceResult.toString());
+    }
+    
+    const matchResult = grammar.match(preprocessedCode);
+
+    if (matchResult.succeeded()) {
+        const bytes = semantics(matchResult).compile();
+        return bytes;
+    }
+
+    throw new Error(`Failed to assemble: ${matchResult.message}`);
+}
+
+export function parseToAST(code: string): AST {
+    const preprocessedCode = preprocess(code);
+    const contents = fs.readFileSync('src/backend/asm/nori-v1.ohm', 'utf-8');
+    const grammar = ohm.grammar(contents);
+
+    const semantics = grammar.createSemantics();
+    
     semantics.addOperation('toAST', {
         program: (lines) => lines.toAST(),
     
@@ -99,8 +124,7 @@ export function parse(code: string) {
         instructionLine: (_inlineSpace, instruction, _inlineSpace2, inlineComment, _newline) => {
             const instr = instruction.toAST();
             const comment = inlineComment.toAST();
-            console.log('comment', comment);
-            return { ...instr, inlineComment: comment[0] ?? null };
+            return { ...instr, inlineComment: comment[0] };
         },
     
         inlineComment: (comment) => comment.toAST(),
@@ -109,8 +133,7 @@ export function parse(code: string) {
         
         instruction: (label, _space, instrX) => {
             const base = instrX.toAST();
-            const labelOrNull = label.sourceString ? label.sourceString.trim() : null;
-            return { ...base, label: labelOrNull };
+            return { ...base, label: label.sourceString ? label.sourceString.trim() : undefined };
         },
     
         instructionX: (instrustion) => instrustion.toAST(),
@@ -152,10 +175,10 @@ export function parse(code: string) {
             immediate: parseImmediate(immediate.sourceString),
         }),
     
-        instructionJ: (mnemonic, _ws1, label) => ({
+        instructionJ: (mnemonic, _ws1, targetLabel) => ({
             format: "J",
             mnemonic: parseMnemonic(mnemonic.sourceString),
-            label: label.sourceString,
+            targetLabel: targetLabel.sourceString,
         }),
     
         instructionZ: (mnemonic) => ({
@@ -164,23 +187,13 @@ export function parse(code: string) {
         }),
     
         _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null)
-    });
+    })
 
-    // const traceResult = grammar.trace(code);
-    // console.log(traceResult.toString());
+    const matchResult = grammar.match(preprocessedCode);
     
-    const matchResult = grammar.match(code);
-    console.log(matchResult.message);
-
-    console.error(`Succeeded: ${matchResult.succeeded()}`);
-    console.log();
-
     if (matchResult.succeeded()) {
-        const astSemantic = semantics(matchResult).toAST();
-        console.log(JSON.stringify(astSemantic, null, 2));
-
-        const bytes = semantics(matchResult).compile();
-        console.log('Compiled bytes (dec):', bytes);
-        console.log('Compiled bytes (hex):', toHex(bytes, true));
+        return semantics(matchResult).toAST();
     }
+
+    throw new Error(`Failed to parse: ${matchResult.message}`);
 }
