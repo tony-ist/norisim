@@ -13,7 +13,30 @@ ISA {
 
     comment = "//" (~newline any)*
 
-    instruction = (label space+)? mnemonic caseInsensitive<".f">? (inlineSpace+ operands)?
+    instruction = (label space+)? instructionX
+
+    instructionX
+        = instructionI
+        | instructionA
+        | instructionB
+        | instructionC
+        | instructionD
+        | instructionJ
+        | instructionZ
+
+    instructionA = mnemonic caseInsensitive<".f">? space+ register sep register sep register
+
+    instructionB = mnemonic caseInsensitive<".f">? space+ register sep register
+
+    instructionC = mnemonic space+ address sep register
+
+    instructionD = mnemonic space+ register
+    
+    instructionI = mnemonic space+ register sep immediate
+
+    instructionJ = mnemonic space+ label
+
+    instructionZ = mnemonic
 
     label = "." letterOrDigit+
 
@@ -22,6 +45,8 @@ ISA {
 	operands = expression (sep expression)*
 
     expression = register | immediate | labelAddress
+
+    address = digit+
 
     register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
 

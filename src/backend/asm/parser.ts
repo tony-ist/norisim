@@ -23,34 +23,23 @@ export function parse(code: string) {
         comment: (_newline: any, _comment: any) => {
             return null;
         },
-        instruction: (label: any, _space: any, mnemonic: any, flag: any, _space2: any, operands: any) => {
-            const operandsOpcode = operands.children.map((child: any) => child.compile());
-            console.log(`instruction ${mnemonic.sourceString} operands:`, operandsOpcode); // [ 'r1, 3' ]
-            console.log(`mnemonic.compile():`, mnemonic.compile());
-            const flagBool = flag ? 1 : 0;
-            
-            switch (mnemonic.sourceString.toUpperCase()) {
-                case 'LIM':
-                    return mnemonic.compile() + operandsOpcode << 5;
-                case 'AND':
-                    return mnemonic.compile() + operandsOpcode << 5 + flagBool << 14;
-                case 'NAND':
-                    return INSTRUCTIONS.AND.opcode + operandsOpcode << 5 + flagBool << 14;
-                case 'ADD':
-                    return 1;
-                case 'ADDI':
-                    return 2;
-                case 'MOV':
-                    return 3;
-                case 'JNZ':
-                    return 4;
-                case 'PST':
-                    return 5;
-                case 'HLT':
-                    return 6;
-                default:
-                    throw new Error(`Invalid mnemonic: ${mnemonic.sourceString}`);
-            }
+        instruction: (label: any, _space: any, instructionX: any) => {
+        },
+        instructionX: (body: any) => {
+        },
+        instructionA: (mnemonic: any, flag: any, _space: any, dest: any, _sep: any, srcA: any, _sep2: any, srcB: any) => {
+        },
+        instructionB: (mnemonic: any, flag: any, _space: any, dest: any, _sep: any, src: any) => {
+        },
+        instructionC: (mnemonic: any, _space: any, register: any, _sep: any, address: any) => {
+        },
+        instructionD: (mnemonic: any, _space: any, register: any) => {
+        },
+        instructionI: (mnemonic: any, _space: any, register: any, _sep: any, immediate: any) => {
+        },
+        instructionJ: (mnemonic: any, _space: any, label: any) => {
+        },
+        instructionZ: (mnemonic: any) => {
         },
         operands: (expression: any, _sep: any, rest: any) => {
             return expression.compile() + rest.children.map((child: any) => child.compile());
@@ -110,11 +99,44 @@ export function parse(code: string) {
             },
             instruction: {
                 label: 0,
-                mnemonic: 2,
-                operands: 5
+                instructionX: 2,
             },
-            operands: (first: any, _sep: any, rest: any): any[] => {
-                return [first.toAST(mapping), ...rest.toAST(mapping)];
+            instructionX: {
+                body: 0,
+            },
+            instructionA: {
+                mnemonic: 0,
+                flag: 1,
+                dest: 3,
+                srcA: 5,
+                srcB: 7,
+            },
+            instructionB: {
+                mnemonic: 0,
+                flag: 1,
+                dest: 3,
+                src: 5,
+            },
+            instructionC: {
+                mnemonic: 0,
+                address: 2,
+                register: 4,
+            },
+            instructionD: {
+                mnemonic: 0,
+                register: 2,
+            },
+            instructionI: {
+                mnemonic: 0,
+                register: 2,
+                immediate: 4,
+            },
+            instructionJ: {
+                mnemonic: 0,
+                label: 2,
+            },
+            instructionZ: {
+                mnemonic: 0,
             },
         };
 

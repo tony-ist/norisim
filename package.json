@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "tscheck": "tsc --noEmit",
-    "assemble": "tsx scripts/assemble.ts"
+    "assemble": "tsx scripts/assemble.ts",
+    "rnd": "tsx scripts/rnd.ts"
   },
   "engines": {
     "node": "25.2.1",
