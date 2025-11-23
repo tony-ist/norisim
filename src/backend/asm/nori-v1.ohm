@@ -3,7 +3,7 @@ ISA {
 
     programLine = emptyLine | commentLine | instructionLine
 
-    instructionLine = inlineSpace* instruction (inlineSpace+ inlineComment)? newline
+    instructionLine = inlineSpace* instruction inlineSpace* (inlineComment)? newline
 
     commentLine = inlineSpace* comment newline
 
@@ -16,7 +16,8 @@ ISA {
     instruction = (label space+)? instructionX
 
     instructionX
-        = instructionI
+        = data
+        | instructionI
         | instructionA
         | instructionB
         | instructionC
@@ -25,21 +26,23 @@ ISA {
         | instructionJ
         | instructionZ
 
-    instructionI = mnemonic space+ register sep immediate
+    instructionI = mnemonic inlineSpace+ register sep immediate
     
-    instructionA = mnemonic caseInsensitive<".f">? space+ register sep register sep register
+    instructionA = mnemonic caseInsensitive<".f">? inlineSpace+ register sep register sep register
 
-    instructionB = mnemonic caseInsensitive<".f">? space+ register sep register
+    instructionB = mnemonic caseInsensitive<".f">? inlineSpace+ register sep register
 
-    instructionC = mnemonic space+ address sep register
+    instructionC = mnemonic inlineSpace+ address sep register
 
-    instructionD = mnemonic space+ register
+    instructionD = mnemonic inlineSpace+ register
     
-    instructionE = mnemonic space+ register sep register
+    instructionE = mnemonic inlineSpace+ register sep register
 
-    instructionJ = mnemonic space+ label
+    instructionJ = mnemonic inlineSpace+ label
 
     instructionZ = mnemonic
+
+    data = "db" inlineSpace+ immediate (sep immediate)*
 
     label = "." letterOrDigit+
 
@@ -51,11 +54,11 @@ ISA {
 
     immediate = "-"? digit+
 
-    sep = space* "," space*
+    sep = inlineSpace* "," inlineSpace*
 
     newline = "\n"
 
-    letterOrDigit = letter | digit
+    letterOrDigit = letter | digit | "_"
 
-    inlineSpace = (~newline space)+
+    inlineSpace = ~newline space
 }

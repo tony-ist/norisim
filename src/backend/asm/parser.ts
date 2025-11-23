@@ -91,6 +91,7 @@ export function assemble(code: string, parserTrace: boolean = false): number[] {
     });
 
     if (parserTrace) {
+        console.log('parserTrace')
         const traceResult = grammar.trace(preprocessedCode);
         console.log(traceResult.toString());
     }
@@ -149,8 +150,8 @@ export function parseToAST(code: string): AST {
         instructionX: (instrustion) => instrustion.toAST(),
     
         instructionA: (mnemonic, flagNode, _ws1, dest, _ws2, srcA, _ws3, srcB) => ({
-            format: "A",
             mnemonic: parseMnemonic(mnemonic.sourceString),
+            format: "A",
             updateFlags: flagNode.sourceString ? 1 : 0, 
             dest: parseRegister(dest.sourceString),
             srcA: parseRegister(srcA.sourceString),
@@ -158,44 +159,46 @@ export function parseToAST(code: string): AST {
         }),
     
         instructionB: (mnemonic, flagNode, _ws1, dest, _ws2, src) => ({
-            format: "B",
             mnemonic: parseMnemonic(mnemonic.sourceString),
+            format: "B",
             updateFlags: flagNode.sourceString ? 0 : 1,  
             dest: parseRegister(dest.sourceString),
             src: parseRegister(src.sourceString),
         }),
     
         instructionC: (mnemonic, _ws1, address, _ws2, register) => ({
-            format: "C",
             mnemonic: parseMnemonic(mnemonic.sourceString),
+            format: "C",
             address: parseAddress(address.sourceString),
             register: parseRegister(register.sourceString),
         }),
     
         instructionD: (mnemonic, _ws1, register) => ({
-            format: "D",
             mnemonic: parseMnemonic(mnemonic.sourceString),
+            format: "D",
             register: parseRegister(register.sourceString),
         }),
     
         instructionI: (mnemonic, _ws1, register, _ws2, immediate) => ({
-            format: "I",
             mnemonic: parseMnemonic(mnemonic.sourceString),
+            format: "I",
             register: parseRegister(register.sourceString),
             immediate: parseImmediate(immediate.sourceString),
         }),
     
         instructionJ: (mnemonic, _ws1, targetLabel) => ({
-            format: "J",
             mnemonic: parseMnemonic(mnemonic.sourceString),
+            format: "J",
             targetLabel: targetLabel.sourceString,
         }),
     
         instructionZ: (mnemonic) => ({
-            format: "Z",
             mnemonic: parseMnemonic(mnemonic.sourceString),
+            format: "Z",
         }),
     
+        data: (_db, _inlineSpace, _immediate, _sep, _immediate2) => null,
+
         _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null)
     })
 

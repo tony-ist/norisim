@@ -33,12 +33,13 @@ export const INSTRUCTIONS = {
     RET: { opcode: 0x14, format: 'Z' },
     PSH: { opcode: 0x15, format: 'D' },
     POP: { opcode: 0x16, format: 'D' },
-    MLD: { opcode: 0x17, format: 'E' },
-    MST: { opcode: 0x18, format: 'E' },
-    MOV: { opcode: 0x19, format: 'B' },
-    PST: { opcode: 0x1A, format: 'C' },
-    PLD: { opcode: 0x1B, format: 'C' },
-    HLT: { opcode: 0x1C, format: 'Z' },
+    LPM: { opcode: 0x17, format: 'E' },
+    MLD: { opcode: 0x18, format: 'E' },
+    MST: { opcode: 0x19, format: 'E' },
+    MOV: { opcode: 0x1A, format: 'B' },
+    PST: { opcode: 0x1B, format: 'C' },
+    PLD: { opcode: 0x1C, format: 'C' },
+    HLT: { opcode: 0x1D, format: 'Z' },
 } satisfies Record<string, InstructionInfo>;
 
 export type Mnemonic = keyof typeof INSTRUCTIONS;

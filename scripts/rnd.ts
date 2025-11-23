@@ -13,17 +13,20 @@ function main(): void {
 
   const [inputFile, ...rest] = args;
   const parserTrace = rest.includes('--trace');
+  const asmCode: string = fs.readFileSync(inputFile, 'utf-8');
 
   try {
-    const asmCode: string = fs.readFileSync(inputFile, 'utf-8');
-    
     const ast = parseToAST(asmCode);
-    console.log(ast);
+    console.log(JSON.stringify(ast, null, 2));
+  } catch (error) {
+    console.error('Parse to AST error:', (error as Error).message);
+  }
+
+  try {
     const bytes = assemble(asmCode, parserTrace);
     console.log(bytes);
   } catch (error) {
     console.error('Assembly error:', (error as Error).message);
-    process.exit(1);
   }
 }
 

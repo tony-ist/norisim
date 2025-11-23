@@ -1,5 +1,5 @@
 .start
-nop
+nop       
 lim r1, 1
 add r1, r2, r3
 add.f r1, r2, r3
@@ -35,6 +35,7 @@ cal .start
 ret
 psh r1
 pop r1
+lpm r1, r2
 mld r1, r2
 mst r1, r2
 mov r1, r2
