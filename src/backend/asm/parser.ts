@@ -88,6 +88,9 @@ export function assemble(code: string, parserTrace: boolean = false): number[] {
 
             return instruction.opcode;
         },
+        data: (_db: any, _inlineSpace: any, immediate: any, _sep: any, _immediate2: any) => {
+            return immediate.compile();
+        },
     });
 
     if (parserTrace) {
@@ -199,7 +202,7 @@ export function parseToAST(code: string): AST {
     
         data: (_db, _inlineSpace, _immediate, _sep, _immediate2) => null,
 
-        _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null)
+        _iter: (...children) => children.map(c => c.toAST()).filter(x => x?.mnemonic)
     })
 
     const matchResult = grammar.match(preprocessedCode);

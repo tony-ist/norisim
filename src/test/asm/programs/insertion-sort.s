@@ -1,7 +1,9 @@
-// Written by Grok 4.1
+    // Written by Grok 4.1, modified by Tony
 
     // ==================== ROM DATA ====================
+    .array_len
     db 12                          // array length N
+    .data
     db 170, 45, 75, 90, 2, 66, 80, 33, 11, 24, 99, 58
     // change N and the list above only
 
@@ -23,7 +25,7 @@
     mst r2, r4
     addi r1, 1                     // src++
     addi r2, 1                     // dst++
-    subi r3, 1                     // counter--  (subi = addi with 255, but here we use literal 1)
+    addi r3, 255                     // counter--  (subi = addi with 255, but here we use literal 1)
     jnz .copy_loop
 
     // Start insertion sort
@@ -40,7 +42,7 @@
     mld r3, r4                     // r3 = key
 
     mov r2, r1
-    subi r2, 1                     // j = i - 1
+    addi r2, 255                     // j = i - 1
 
     // check j < 0 (j == -1 → adding 1 gives carry)
 .inner_loop
@@ -57,7 +59,7 @@
     addi r4, 1
     mst r4, r5                     // array[j+1] = array[j]
 
-    subi r2, 1                     // j--
+    addi r2, 255                     // j--
     jmp .inner_loop
 
 .place_key
