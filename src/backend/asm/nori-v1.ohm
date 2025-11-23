@@ -22,7 +22,6 @@ ISA {
         | instructionB
         | instructionC
         | instructionD
-        | instructionE
         | instructionJ
         | instructionZ
 
@@ -35,8 +34,6 @@ ISA {
     instructionC = mnemonic inlineSpace+ address sep register
 
     instructionD = mnemonic inlineSpace+ register
-    
-    instructionE = mnemonic inlineSpace+ register sep register
 
     instructionJ = mnemonic inlineSpace+ label
 
