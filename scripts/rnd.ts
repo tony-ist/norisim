@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { assemble, parseToAST } from '../src/backend/asm/parser.ts';
+import { parseToAST } from '../src/backend/asm/parser.ts';
 
 function main(): void {
   const args = process.argv.slice(2);
@@ -16,18 +16,11 @@ function main(): void {
   const asmCode: string = fs.readFileSync(inputFile, 'utf-8');
 
   try {
-    const ast = parseToAST(asmCode);
+    const ast = parseToAST(asmCode, parserTrace);
     console.log(JSON.stringify(ast, null, 2));
   } catch (error) {
     console.error('Parse to AST error:', (error as Error).message);
   }
-
-  try {
-    const bytes = assemble(asmCode, parserTrace);
-    console.log(bytes);
-  } catch (error) {
-    console.error('Assembly error:', (error as Error).message);
-  }
 }
 
-main(); 
+main();

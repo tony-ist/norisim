@@ -1,7 +1,6 @@
 import fs from 'fs';
 
 import { toHex } from '../src/util/asm-util.ts';
-import { assemble } from '../src/backend/asm/parser.ts';
 
 function main(): void {
   const args = process.argv.slice(2);

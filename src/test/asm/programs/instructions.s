@@ -42,3 +42,4 @@ mov r1, r2
 pst r1, 1
 pld r2, 2
 hlt
+db 12, 23, 34

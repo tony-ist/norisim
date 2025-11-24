@@ -13,43 +13,19 @@ ISA {
 
     comment = "//" (~newline any)*
 
-    instruction = (label space+)? instructionX
+    instruction = (label space+)? mnemonic caseInsensitive<".f">? (inlineSpace+ operandList)?
 
-    instructionX
-        = data
-        | instructionI
-        | instructionA
-        | instructionB
-        | instructionC
-        | instructionD
-        | instructionJ
-        | instructionZ
+    operandList = operand (sep operand)*
 
-    instructionI = mnemonic inlineSpace+ register sep immediate
-    
-    instructionA = mnemonic caseInsensitive<".f">? inlineSpace+ register sep register sep register
+    operand = register | label | immediate
 
-    instructionB = mnemonic caseInsensitive<".f">? inlineSpace+ register sep register
+    register = caseInsensitive<"r"> digit
 
-    instructionC = mnemonic inlineSpace+ address sep register
-
-    instructionD = mnemonic inlineSpace+ register
-
-    instructionJ = mnemonic inlineSpace+ label
-
-    instructionZ = mnemonic
-
-    data = "db" inlineSpace+ immediate (sep immediate)*
+    immediate = "-"? digit+
 
     label = "." letterOrDigit+
 
     mnemonic = letter+
-
-    address = digit+
-
-    register = "r0" | "r1" | "r2" | "r3" | "r4" | "r5" | "r6" | "r7"
-
-    immediate = "-"? digit+
 
     sep = inlineSpace* "," inlineSpace*
 
