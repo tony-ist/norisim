@@ -1,4 +1,4 @@
-import { WORD_SIZE } from '../const/emulator-constants.ts';
+import { WORD_SIZE } from '../const/simulator-constants.ts';
 
 export function isBitSet(value: number, bitIndex: number) {
   return (value >> bitIndex) % 2 === 1;

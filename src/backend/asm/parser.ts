@@ -161,12 +161,12 @@ export function parseToAST(code: string): AST {
             srcB: parseRegister(srcB.sourceString),
         }),
     
-        instructionB: (mnemonic, flagNode, _ws1, dest, _ws2, src) => ({
+        instructionB: (mnemonic, flagNode, _ws1, register1, _ws2, register2) => ({
             mnemonic: parseMnemonic(mnemonic.sourceString),
             format: "B",
             updateFlags: flagNode.sourceString ? 0 : 1,  
-            dest: parseRegister(dest.sourceString),
-            src: parseRegister(src.sourceString),
+            register1: parseRegister(register1.sourceString),
+            register2: parseRegister(register2.sourceString),
         }),
     
         instructionC: (mnemonic, _ws1, address, _ws2, register) => ({

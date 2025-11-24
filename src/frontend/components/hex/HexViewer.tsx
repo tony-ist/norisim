@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { WORD_SIZE } from '../../../const/emulator-constants.ts';
+import { WORD_SIZE } from '../../../const/simulator-constants.ts';
 
 interface HexViewerPropTypes {
   title: string;

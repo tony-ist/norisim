@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { groupElements, transpose } from '../../../util/common-util.ts';
-import { SCREEN_SIZE } from '../../../const/emulator-constants.ts';
+import { SCREEN_SIZE } from '../../../const/simulator-constants.ts';
 import styles from './ScreenViewer.module.css';
 
 interface ScreenViewerPropsType {
