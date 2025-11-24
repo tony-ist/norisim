@@ -1,5 +1,5 @@
 .start
-nop       
+nop  // inline comment
 lim r1, 1
 add r1, r2, r3
 add.f r1, r2, r3
@@ -42,4 +42,4 @@ mov r1, r2
 pst r1, 1
 pld r2, 2
 hlt
-db 12, 23, 34
+db 12, 23, 34 // inline comment 2 

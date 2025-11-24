@@ -11,7 +11,7 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
     const semantics = grammar.createSemantics();
     
     semantics.addOperation('toAST', {
-        program: (lines) => lines.toAST(),
+        program: (programLines) => programLines.toAST(),
     
         programLine: (content) => content.toAST(),
     
@@ -32,7 +32,7 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
     
         inlineComment: (comment) => comment.toAST(),
     
-        comment: (_newline, content) => content.sourceString.trim(),
+        comment: (_slashes, content) => content.sourceString.trim(),
         
         instruction: (label, _space, mnemonic, flag, _inlineSpace, operandList) => {
             const labelMixin = label.sourceString === "" ? {} : { label: label.sourceString.trim() };
@@ -64,7 +64,7 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
             value: "." + label.sourceString.trim(),
         }),
 
-        _iter: (...children) => children.map(c => c.toAST()).filter(x => x?.mnemonic)
+        _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null)
     })
 
     const matchResult = grammar.match(preprocessedCode);

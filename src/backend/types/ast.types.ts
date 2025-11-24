@@ -100,4 +100,14 @@ export type Instruction =
   | JFormat
   | ZFormat;
 
+export interface ASTNode {
+  mnemonic: Mnemonic;
+  forceUpdateFlags: boolean;
+  label?: string;
+  inlineComment?: string;
+  operands: Operand[];
+}
+
 export type AST = Instruction[];
+
+export type IR = Instruction[];
