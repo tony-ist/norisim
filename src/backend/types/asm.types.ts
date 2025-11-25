@@ -3,7 +3,6 @@ export type Format = 'A' | 'B' | 'C' | 'D' | 'I' | 'J' | 'Z';
 export interface InstructionInfo {
   format: Format;
   opcode: number;
-  negated?: boolean;
 }
 
 export const INSTRUCTIONS = {
@@ -42,32 +41,35 @@ export const INSTRUCTIONS = {
     HLT: { opcode: 0x1D, format: 'Z' },
 } satisfies Record<string, InstructionInfo>;
 
-export type Mnemonic = 'NOP' | 'LIM' | 'ADD' | 'ADDI' | 'SUB' | 'AND' | 'NAND' | 'OR' | 'NOR' | 'XOR' | 'XNOR' | 'NOT' | 'SHR' | 'JMP' | 'JZ' | 'JNZ' | 'JC' | 'JNC' | 'JL' | 'JG' | 'JLE' | 'JGE' | 'CAL' | 'RET' | 'PSH' | 'POP' | 'LPM' | 'MLD' | 'MST' | 'MOV' | 'PST' | 'PLD' | 'HLT';
+export type InstructionMnemonic = 'NOP' | 'LIM' | 'ADD' | 'ADDI' | 'SUB' | 'AND' | 'NAND' | 'OR' | 'NOR' | 'XOR' | 'XNOR' | 'NOT' | 'SHR' | 'JMP' | 'JZ' | 'JNZ' | 'JC' | 'JNC' | 'JL' | 'JG' | 'JLE' | 'JGE' | 'CAL' | 'RET' | 'PSH' | 'POP' | 'LPM' | 'MLD' | 'MST' | 'MOV' | 'PST' | 'PLD' | 'HLT';
+export type DataMnemonic = 'DB';
 
 export interface BaseInstruction {
-  mnemonic: Mnemonic;
+  mnemonic: InstructionMnemonic;
+  format: Format;
+  address: number;
   label?: string;
   inlineComment?: string;
 }
 
 export interface AFormat extends BaseInstruction {
   format: 'A';
-  updateFlags: 0 | 1;
-  dest: number;
-  srcA: number;
-  srcB: number;
+  updateFlags: boolean;
+  destRegister: number;
+  srcRegisterA: number;
+  srcRegisterB: number;
 }
 
 export interface BFormat extends BaseInstruction {
   format: 'B';
-  updateFlags: 0 | 1;
+  updateFlags: boolean;
   register1: number;
   register2: number;
 }
 
 export interface CFormat extends BaseInstruction {
   format: 'C';
-  address: number;
+  portAddress: number;
   register: number;
 }
 
@@ -85,10 +87,19 @@ export interface IFormat extends BaseInstruction {
 export interface JFormat extends BaseInstruction {
   format: 'J';
   targetLabel: string;
+  targetAddress: number;
 }
 
 export interface ZFormat extends BaseInstruction {
   format: 'Z';
+}
+
+export interface Data {
+  mnemonic: DataMnemonic;
+  address: number;
+  label?: string;
+  inlineComment?: string;
+  value: number;
 }
 
 export type Instruction =
@@ -98,16 +109,44 @@ export type Instruction =
   | DFormat
   | IFormat
   | JFormat
-  | ZFormat;
+  | ZFormat
+  ;
+  
+export type IR = (Instruction | Data)[];
+
+export type Operand = Register | Immediate | Label;
+
+export interface Register {
+  type: 'register';
+  value: number;
+}
+
+export interface Immediate {
+  type: 'immediate';
+  value: number;
+}
+
+export interface Label {
+  type: 'label';
+  value: string;
+}
+
+export const OPERAND_TYPES = {
+  'A': ['register', 'register', 'register'],
+  'B': ['register', 'register'],
+  'C': ['register', 'register'],
+  'D': ['register'],
+  'I': ['register', 'immediate'],
+  'J': ['label'],
+  'Z': [],
+} satisfies Record<Format, Operand['type'][]>;
 
 export interface ASTNode {
-  mnemonic: Mnemonic;
+  mnemonic: InstructionMnemonic | DataMnemonic;
   forceUpdateFlags: boolean;
   label?: string;
   inlineComment?: string;
   operands: Operand[];
 }
 
-export type AST = Instruction[];
-
-export type IR = Instruction[];
+export type AST = ASTNode[];

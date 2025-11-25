@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as ohm from 'ohm-js';
 import { preprocess } from './preprocessor';
-import { AST } from '../types/ast.types';
+import { AST } from '../types/asm.types';
 
 export function parseToAST(code: string, parserTrace: boolean = false): AST {
     const preprocessedCode = preprocess(code);
@@ -38,10 +38,10 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
             const labelMixin = label.sourceString === "" ? {} : { label: label.sourceString.trim() };
 
             return {
-                mnemonic: mnemonic.sourceString,
+                mnemonic: mnemonic.sourceString.toUpperCase(),
                 forceUpdateFlags: flag.sourceString === ".f",
                 ...labelMixin,
-                operands: operandList.children.map((operand: any) => operand.toAST()),
+                operands: operandList.children.map((operand: any) => operand.toAST())[0] ?? [],
             }
         },
 

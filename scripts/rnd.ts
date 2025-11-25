@@ -1,6 +1,7 @@
 import fs from 'fs';
 
 import { parseToAST } from '../src/backend/asm/parser.ts';
+import { generateIR } from '../src/backend/asm/irgen.ts';
 
 function main(): void {
   const args = process.argv.slice(2);
@@ -17,9 +18,11 @@ function main(): void {
 
   try {
     const ast = parseToAST(asmCode, parserTrace);
-    console.log(JSON.stringify(ast, null, 2));
+    console.log('AST:', JSON.stringify(ast, null, 2));
+    const ir = generateIR(ast);
+    console.log('IR:', JSON.stringify(ir, null, 2));
   } catch (error) {
-    console.error('Parse to AST error:', (error as Error).message);
+    console.error('RND script error:', (error as Error).stack);
   }
 }
 

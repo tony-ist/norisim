@@ -1,7 +1,7 @@
 import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, STACK_SIZE_BYTES } from "../../const/simulator-constants";
 import { createLabelMap } from "../asm/label-map";
 import { parseToAST } from "../asm/parser";
-import { AST, Format, Instruction, Mnemonic } from "../types/ast.types";
+import { AST, Format, Instruction, InstructionMnemonic } from "../types/asm.types";
 
 export interface NoriV1SimulatorState {
     ast: AST;
@@ -49,7 +49,7 @@ export function defaultNoriV1SimulatorState(code: string): NoriV1SimulatorState 
 export class NoriV1Simulator {
     private readonly state: NoriV1SimulatorState;
     // Temporary/partial handlers object, filled with stubs for all mnemonics to satisfy type checker
-    private readonly handlers: Record<Mnemonic, (...args: any) => void> = {
+    private readonly handlers: Record<InstructionMnemonic, (...args: any) => void> = {
         NOP: this.noOperation.bind(this),
         LIM: this.loadImmediate.bind(this),
         ADD: this.add.bind(this),
