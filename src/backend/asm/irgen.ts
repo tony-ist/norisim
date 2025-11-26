@@ -21,13 +21,16 @@ function convertASTNodeToIRNodes(astNode: ASTNode, address: number): IRNode[] {
         const result: IRNode[] = [];
         let dbAddress = address;
         
-        for (const operand of astNode.operands) {
+        for (let i = 0; i < astNode.operands.length; i++) {
+            const operand = astNode.operands[i];
+            
             if (operand.type === 'immediate') {
+                const labelMixin = i === 0 ? { label: astNode.label } : {};
                 result.push({
                     mnemonic: 'DB',
                     address: dbAddress,
                     value: operand.value,
-                    label: astNode.label,
+                    ...labelMixin,
                 });
                 dbAddress += 1;
             } else {
@@ -103,25 +106,13 @@ function convertASTInstructionToIRNode(astNode: ASTNode, address: number): IRNod
                 label: astNode.label,
             };
         case 'C':
-            const portAddress = astNode.operands[0].value as number;
-            const registerC = astNode.operands[1].value as number;
+            const registerC = astNode.operands[0].value as number;
 
             return {
                 mnemonic: mnemonic,
                 address,
                 format: info.format,
-                portAddress,
                 register: registerC,
-                label: astNode.label,
-            };
-        case 'D':
-            const registerD = astNode.operands[0].value as number;
-
-            return {
-                mnemonic: mnemonic,
-                address,
-                format: info.format,
-                register: registerD,
                 label: astNode.label,
             };
         case 'I':
@@ -172,7 +163,7 @@ function fillIRTargetAddresses(ir: IR): IR {
             const targetLabel = irNode.targetLabel;
             const targetAddress = labelMap.get(targetLabel);
 
-            if (!targetAddress) {
+            if (targetAddress === undefined) {
                 throw new Error(`Target label for J instruction ${irNode.mnemonic} not found: ${targetLabel}`);
             }
 

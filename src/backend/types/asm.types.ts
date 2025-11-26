@@ -1,4 +1,4 @@
-export type Format = 'A' | 'B' | 'C' | 'D' | 'I' | 'J' | 'Z';
+export type Format = 'A' | 'B' | 'C' | 'I' | 'J' | 'Z';
 
 export interface InstructionInfo {
   format: Format;
@@ -69,12 +69,6 @@ export interface BFormat extends BaseInstruction {
 
 export interface CFormat extends BaseInstruction {
   format: 'C';
-  portAddress: number;
-  register: number;
-}
-
-export interface DFormat extends BaseInstruction {
-  format: 'D';
   register: number;
 }
 
@@ -106,7 +100,6 @@ export type Instruction =
   | AFormat
   | BFormat
   | CFormat
-  | DFormat
   | IFormat
   | JFormat
   | ZFormat
