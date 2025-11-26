@@ -19,5 +19,5 @@ lim r2, 1
     jmp .loop
 
 .hlt
-pst 1, r1 // Notify that we are finished
+pst r1, 1 // Notify that we are finished
 hlt

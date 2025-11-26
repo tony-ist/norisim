@@ -17,9 +17,9 @@ export const INSTRUCTIONS = {
     NOR: { opcode: 0x06, format: 'A' },
     XOR: { opcode: 0x07, format: 'A' },
     XNOR: { opcode: 0x07, format: 'A' },
-    NOT: { opcode: 0x08, format: 'A' },
-    SHR: { opcode: 0x09, format: 'A' },
-    MOV: { opcode: 0xA, format: 'A' },
+    NOT: { opcode: 0x08, format: 'B' },
+    SHR: { opcode: 0x09, format: 'B' },
+    MOV: { opcode: 0xA, format: 'B' },
     JMP: { opcode: 0x0B, format: 'J' },
     JZ: { opcode: 0x0C, format: 'J' },
     JNZ: { opcode: 0x0D, format: 'J' },
@@ -31,13 +31,13 @@ export const INSTRUCTIONS = {
     JGE: { opcode: 0x13, format: 'J' },
     CAL: { opcode: 0x14, format: 'J' },
     RET: { opcode: 0x15, format: 'Z' },
-    PSH: { opcode: 0x16, format: 'D' },
-    POP: { opcode: 0x17, format: 'D' },
+    PSH: { opcode: 0x16, format: 'C' },
+    POP: { opcode: 0x17, format: 'C' },
     LPM: { opcode: 0x18, format: 'B' },
     MLD: { opcode: 0x19, format: 'B' },
     MST: { opcode: 0x1A, format: 'B' },
-    PST: { opcode: 0x1B, format: 'C' },
-    PLD: { opcode: 0x1C, format: 'C' },
+    PST: { opcode: 0x1B, format: 'I' },
+    PLD: { opcode: 0x1C, format: 'I' },
     HLT: { opcode: 0x1D, format: 'Z' },
 } satisfies Record<string, InstructionInfo>;
 
@@ -87,7 +87,7 @@ export interface IFormat extends BaseInstruction {
 export interface JFormat extends BaseInstruction {
   format: 'J';
   targetLabel: string;
-  targetAddress: number;
+  targetAddress?: number;
 }
 
 export interface ZFormat extends BaseInstruction {
@@ -112,7 +112,9 @@ export type Instruction =
   | ZFormat
   ;
   
-export type IR = (Instruction | Data)[];
+export type IRNode = Instruction | Data;
+
+export type IR = IRNode[];
 
 export type Operand = Register | Immediate | Label;
 
@@ -134,8 +136,7 @@ export interface Label {
 export const OPERAND_TYPES = {
   'A': ['register', 'register', 'register'],
   'B': ['register', 'register'],
-  'C': ['register', 'register'],
-  'D': ['register'],
+  'C': ['register'],
   'I': ['register', 'immediate'],
   'J': ['label'],
   'Z': [],
