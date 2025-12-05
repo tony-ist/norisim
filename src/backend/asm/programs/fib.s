@@ -13,5 +13,5 @@ lim r3, 1
     addi r1, -1
     jnz .loop
 
-pst 1, r2
+pst  r2, 1
 hlt

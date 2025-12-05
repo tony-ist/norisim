@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateLabels, VALUES_IN_A_ROW } from '../../util/hex-viewer-util.ts';
+import { generateLabels, VALUES_IN_A_ROW } from './hex-viewer-util.ts';
 
 describe('generateLabels', () => {
   it('should generate 1 label', () => {

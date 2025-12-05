@@ -1,8 +1,11 @@
 // Copy .data to RAM, and insertion sort it 
 
+jmp .start
+
 .data
     db 170, 45, 75, 90, 2, 66, 80, 33, 11, 24, 99, 58
 
+.start
 lim r1, 0 // Address of data in ROM and RAM
 lim r2, 12 // Array size
 

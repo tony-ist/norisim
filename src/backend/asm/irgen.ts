@@ -1,5 +1,11 @@
 import { AST, ASTNode, INSTRUCTIONS, IR, IRNode, OPERAND_TYPES } from "../types/asm.types"
 import { createLabelMap } from "./label-map";
+import { parseToAST } from "./parser";
+
+export function compileToIR(code: string): IR {
+    const ast = parseToAST(code);
+    return generateIR(ast);
+}
 
 export function generateIR(ast: AST): IR {
     const result: IR = [];
@@ -48,7 +54,7 @@ function convertASTNodeToIRNodes(astNode: ASTNode, address: number): IRNode[] {
 
 function convertASTInstructionToIRNode(astNode: ASTNode, address: number): IRNode {
     if (astNode.mnemonic === 'DB') {
-        throw new Error(`DB instruction is not allowed in IR generation. Use convertASTDataToIRNode instead.`);
+        throw new Error(`DB instruction is not allowed in IR generation. Use convertASTNodeToIRNodes instead.`);
     }
     
     const mnemonic = astNode.mnemonic;

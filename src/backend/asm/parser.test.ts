@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseToAST } from "../../backend/asm/parser";
-import { JFormat } from "../../backend/types/asm.types";
+import { parseToAST } from "./parser";
+import { JFormat } from "../types/asm.types";
 
 describe('toAST', () => {
   it('should parse a simple program', () => {
@@ -32,7 +32,8 @@ describe('toAST', () => {
     `;
     const ast = parseToAST(code);
     expect(ast.length).toBe(2);
-    expect((ast[1] as JFormat).targetLabel).toBe('.label');
+    expect(ast[1].operands[0].type).toBe('label');
+    expect(ast[1].operands[0].value).toBe('.label');
     expect(ast[1].mnemonic).toBe('JMP');
   });
 });

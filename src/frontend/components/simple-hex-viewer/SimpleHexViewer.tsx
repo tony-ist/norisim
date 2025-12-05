@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { toHex } from '../../asm/asm-util.ts';
+import { toHex } from '../../../util/asm-util.ts';
 
 export interface SimpleHexViewColumn {
   label: string;

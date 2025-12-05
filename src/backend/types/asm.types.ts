@@ -33,7 +33,6 @@ export const INSTRUCTIONS = {
     RET: { opcode: 0x15, format: 'Z' },
     PSH: { opcode: 0x16, format: 'C' },
     POP: { opcode: 0x17, format: 'C' },
-    LPM: { opcode: 0x18, format: 'B' },
     MLD: { opcode: 0x19, format: 'B' },
     MST: { opcode: 0x1A, format: 'B' },
     PST: { opcode: 0x1B, format: 'I' },
@@ -41,7 +40,7 @@ export const INSTRUCTIONS = {
     HLT: { opcode: 0x1D, format: 'Z' },
 } satisfies Record<string, InstructionInfo>;
 
-export type InstructionMnemonic = 'NOP' | 'LIM' | 'ADD' | 'ADDI' | 'SUB' | 'AND' | 'NAND' | 'OR' | 'NOR' | 'XOR' | 'XNOR' | 'NOT' | 'SHR' | 'JMP' | 'JZ' | 'JNZ' | 'JC' | 'JNC' | 'JL' | 'JG' | 'JLE' | 'JGE' | 'CAL' | 'RET' | 'PSH' | 'POP' | 'LPM' | 'MLD' | 'MST' | 'MOV' | 'PST' | 'PLD' | 'HLT';
+export type InstructionMnemonic = 'NOP' | 'LIM' | 'ADD' | 'ADDI' | 'SUB' | 'AND' | 'NAND' | 'OR' | 'NOR' | 'XOR' | 'XNOR' | 'NOT' | 'SHR' | 'JMP' | 'JZ' | 'JNZ' | 'JC' | 'JNC' | 'JL' | 'JG' | 'JLE' | 'JGE' | 'CAL' | 'RET' | 'PSH' | 'POP' | 'MLD' | 'MST' | 'MOV' | 'PST' | 'PLD' | 'HLT';
 export type DataMnemonic = 'DB';
 
 export interface BaseInstruction {
