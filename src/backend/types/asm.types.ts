@@ -104,7 +104,14 @@ export type Instruction =
   | ZFormat
   ;
   
-export type IRNode = Instruction | Data;
+export interface IRNode {
+  mnemonic: InstructionMnemonic;
+  operands: Operand[];
+  format: Format;
+  address: number;
+  label?: string;
+  inlineComment?: string;
+}
 
 export type IR = IRNode[];
 
@@ -123,6 +130,7 @@ export interface Immediate {
 export interface Label {
   type: 'label';
   value: string;
+  targetAddress?: number;
 }
 
 export const OPERAND_TYPES = {
@@ -135,7 +143,7 @@ export const OPERAND_TYPES = {
 } satisfies Record<Format, Operand['type'][]>;
 
 export interface ASTNode {
-  mnemonic: InstructionMnemonic | DataMnemonic;
+  mnemonic: InstructionMnemonic;
   forceUpdateFlags: boolean;
   label?: string;
   inlineComment?: string;

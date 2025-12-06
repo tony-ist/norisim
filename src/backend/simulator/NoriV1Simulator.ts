@@ -1,6 +1,6 @@
 import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, STACK_SIZE_BYTES } from "../../const/simulator-constants";
 import { compileToIR } from "../asm/irgen";
-import { Format, Instruction, InstructionMnemonic, IR } from "../types/asm.types";
+import { Format, Instruction, InstructionMnemonic, IR, Operand } from "../types/asm.types";
 
 export interface NoriV1SimulatorState {
     PC: number;
@@ -88,23 +88,28 @@ export class NoriV1Simulator {
     public step() {
         const instruction = this.ir[this.currentInstructionAddress()];
         const mnemonic = instruction.mnemonic;
-        
-        
+        const operands = instruction.operands;
+
+        this.handlers[mnemonic](operands);
     }
 
     private noOperation() {
         this.state.PC++;
     }
 
-    private loadImmediate(register: number, immediate: number) {
+    private loadImmediate(operands: Operand[]) {
+        const register = operands[0].value as number;
+        const immediate = operands[1].value as number;
         this.state.registers[register] = immediate;
     }
 
-    private addImmediate(register: number, immediate: number) {
+    private addImmediate(operands: Operand[]) {
+        const register = operands[0].value as number;
+        const immediate = operands[1].value as number;
         this.state.registers[register] += immediate;
     }
 
-    private add(dest: number, srcA: number, srcB: number, updateFlags: boolean) {
+    private add(operands: Operand[]) {
         throw new Error('Not implemented');
     }
 
@@ -155,7 +160,6 @@ export class NoriV1Simulator {
     private jumpZero(target: number) {
         throw new Error('Not implemented');
     }
-
 
     private jumpNotZero(target: number) {
         throw new Error('Not implemented');

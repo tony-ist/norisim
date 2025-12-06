@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { parseToAST } from "./parser";
-import { JFormat } from "../types/asm.types";
 
 describe('toAST', () => {
   it('should parse a simple program', () => {

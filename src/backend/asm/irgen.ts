@@ -12,51 +12,17 @@ export function generateIR(ast: AST): IR {
     let address = 0;
 
     for (const astNode of ast) {
-        const lines = convertASTNodeToIRNodes(astNode, address);
-        result.push(...lines);
-        address += lines.length;
+        const irNode = convertASTNodeToIRNode(astNode, address);
+        result.push(irNode);
+        address += 1;
     }
 
     return fillIRTargetAddresses(result);
 }
 
-function convertASTNodeToIRNodes(astNode: ASTNode, address: number): IRNode[] {
-    const mnemonic = astNode.mnemonic;
-    
-    if (mnemonic === 'DB') {
-        const result: IRNode[] = [];
-        let dbAddress = address;
-        
-        for (let i = 0; i < astNode.operands.length; i++) {
-            const operand = astNode.operands[i];
-            
-            if (operand.type === 'immediate') {
-                const labelMixin = i === 0 ? { label: astNode.label } : {};
-                result.push({
-                    mnemonic: 'DB',
-                    address: dbAddress,
-                    value: operand.value,
-                    ...labelMixin,
-                });
-                dbAddress += 1;
-            } else {
-                throw new Error(`Invalid operand type for DB instruction: ${operand.type}`);
-            }
-        }
-
-        return result;
-    }
-
+function convertASTNodeToIRNode(astNode: ASTNode, address: number): IRNode {
     validateOperandTypes(astNode);
 
-    return [convertASTInstructionToIRNode(astNode, address)];
-}
-
-function convertASTInstructionToIRNode(astNode: ASTNode, address: number): IRNode {
-    if (astNode.mnemonic === 'DB') {
-        throw new Error(`DB instruction is not allowed in IR generation. Use convertASTNodeToIRNodes instead.`);
-    }
-    
     const mnemonic = astNode.mnemonic;
 
     const info = INSTRUCTIONS[mnemonic as keyof typeof INSTRUCTIONS];
@@ -65,76 +31,13 @@ function convertASTInstructionToIRNode(astNode: ASTNode, address: number): IRNod
         throw new Error(`Invalid instruction: ${mnemonic}`);
     }
 
-    switch (info.format) {
-        case 'Z':
-            return {
-                mnemonic,
-                address,
-                format: info.format,
-                label: astNode.label,
-            };
-        case 'J':
-            const targetLabel = astNode.operands[0].value as string;
-
-            return {
-                mnemonic: mnemonic,
-                address,
-                format: info.format,
-                targetLabel,
-                label: astNode.label,
-            };
-        case 'A':
-            const destRegister = astNode.operands[0].value as number;
-            const srcRegisterA = astNode.operands[1].value as number;
-            const srcRegisterB = astNode.operands[2].value as number;
-
-            return {
-                mnemonic: mnemonic,
-                address,
-                format: info.format,
-                srcRegisterA,
-                srcRegisterB,
-                destRegister,
-                updateFlags: astNode.forceUpdateFlags,
-                label: astNode.label,
-            };
-        case 'B':
-            const register1 = astNode.operands[0].value as number;
-            const register2 = astNode.operands[1].value as number;
-
-            return {
-                mnemonic: mnemonic,
-                address,
-                format: info.format,
-                register1,
-                register2,
-                updateFlags: astNode.forceUpdateFlags,
-                label: astNode.label,
-            };
-        case 'C':
-            const registerC = astNode.operands[0].value as number;
-
-            return {
-                mnemonic: mnemonic,
-                address,
-                format: info.format,
-                register: registerC,
-                label: astNode.label,
-            };
-        case 'I':
-            const registerI = astNode.operands[0].value as number;
-            const immediate = astNode.operands[1].value as number;
-
-            return {
-                mnemonic: mnemonic,
-                address,
-                format: info.format,
-                register: registerI,
-                immediate,
-                label: astNode.label,
-            };
-        default:
-            throw new Error(`Invalid format for AST node: ${astNode}`);
+    return {
+        mnemonic,
+        operands: [...astNode.operands],
+        format: info.format,
+        address,
+        label: astNode.label,
+        inlineComment: astNode.inlineComment,
     }
 }
 
@@ -159,14 +62,8 @@ function fillIRTargetAddresses(ir: IR): IR {
     const labelMap = createLabelMap(ir);
 
     for (const irNode of ir) {
-        if (irNode.mnemonic === 'DB') {
-            result.push(irNode);
-
-            continue;
-        }
-
         if (irNode.format === 'J') {
-            const targetLabel = irNode.targetLabel;
+            const targetLabel = irNode.operands[0].value as string;
             const targetAddress = labelMap.get(targetLabel);
 
             if (targetAddress === undefined) {
@@ -175,7 +72,13 @@ function fillIRTargetAddresses(ir: IR): IR {
 
             result.push({
                 ...irNode,
-                targetAddress,
+                operands: [
+                    {
+                        type: 'label',
+                        value: targetLabel,
+                        targetAddress,
+                    }
+                ],
             });
 
             continue;
