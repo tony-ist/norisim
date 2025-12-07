@@ -3,10 +3,10 @@ export function isLabel(line: string) {
 }
 
 export function padHexByte(byte: string) {
-  return ('0000' + byte).slice(-4);
+  return ('00' + byte).slice(-2);
 }
 
-export function toHex(bytes: number[], prefix: boolean = false) {
+export function toHexBytes(bytes: number[], prefix: boolean = false) {
   return bytes.map((byte) => (prefix ? '0x' : '') + padHexByte(byte.toString(16).toUpperCase()));
 }
 

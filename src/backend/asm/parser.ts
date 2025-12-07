@@ -1,12 +1,11 @@
-import fs from 'fs';
 import * as ohm from 'ohm-js';
 import { preprocess } from './preprocessor';
 import { AST } from '../types/asm.types';
+import grammarContents from './nori-v1.ohm?raw';
 
 export function parseToAST(code: string, parserTrace: boolean = false): AST {
     const preprocessedCode = preprocess(code);
-    const contents = fs.readFileSync('src/backend/asm/nori-v1.ohm', 'utf-8');
-    const grammar = ohm.grammar(contents);
+    const grammar = ohm.grammar(grammarContents);
 
     const semantics = grammar.createSemantics();
     

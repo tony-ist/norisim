@@ -2,7 +2,7 @@ import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PMEM_SIZE_BYTES, RAM_
 import { compileToIR } from "../asm/irgen";
 import { Format, Instruction, InstructionMnemonic, IR, Operand } from "../types/asm.types";
 
-export interface NoriV1SimulatorState {
+export interface NoriSimulatorState {
     PC: number;
     SR: number;
     registers: number[];
@@ -19,7 +19,7 @@ export interface NoriV1SimulatorState {
     cycle: number;
 }
 
-export function defaultNoriV1SimulatorState(): NoriV1SimulatorState {
+export function defaultNoriSimulatorState(): NoriSimulatorState {
     return {
         PC: 0,
         SR: 0,
@@ -38,8 +38,8 @@ export function defaultNoriV1SimulatorState(): NoriV1SimulatorState {
     };
 }
 
-export class NoriV1Simulator {
-    private readonly state: NoriV1SimulatorState;
+export class NoriSimulator {
+    private readonly state: NoriSimulatorState;
     private readonly ir: IR;
     private readonly handlers: Record<InstructionMnemonic, (...args: any) => void> = {
         NOP: this.noOperation.bind(this),
@@ -78,7 +78,7 @@ export class NoriV1Simulator {
 
     constructor(private readonly code: string) {
         this.ir = compileToIR(code);
-        this.state = defaultNoriV1SimulatorState();
+        this.state = defaultNoriSimulatorState();
     }
 
     public run() {

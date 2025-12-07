@@ -1,4 +1,4 @@
-import { toHex } from './asm-util.ts';
+import { toHexBytes } from './asm-util.ts';
 
 export const VALUES_IN_A_ROW = 16;
 
@@ -9,5 +9,5 @@ export function generateLabels(dataSize: number) {
     result.push(VALUES_IN_A_ROW * i);
   }
 
-  return toHex(result);
+  return toHexBytes(result);
 }

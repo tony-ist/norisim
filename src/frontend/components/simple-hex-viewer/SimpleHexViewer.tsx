@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { toHex } from '../../../util/asm-util.ts';
+import { toHexBytes } from '../../../util/asm-util.ts';
 
 export interface SimpleHexViewColumn {
   label: string;
@@ -13,7 +13,7 @@ interface HexViewerPropTypes {
 
 export function SimpleHexViewer(props: HexViewerPropTypes) {
   const { title, columns } = props;
-  const hexData = toHex(columns.map((column) => column.value));
+  const hexData = toHexBytes(columns.map((column) => column.value));
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
