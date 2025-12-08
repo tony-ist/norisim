@@ -1,9 +1,9 @@
-import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, STACK_SIZE_BYTES } from "../../const/simulator-constants";
+import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SR_BITS, STACK_SIZE_BYTES } from "../../const/simulator-constants";
+import { countBits } from "../../util/asm-util";
 import { InstructionMnemonic, IR, Operand } from "../types/asm.types";
 
 export interface NoriSimulatorState {
-    PC: number;
-    SR: number;
+    currentAddress: number;
     registers: number[];
     ZF: boolean;
     CF: boolean;
@@ -20,8 +20,7 @@ export interface NoriSimulatorState {
 
 export function defaultNoriSimulatorState(): NoriSimulatorState {
     return {
-        PC: 0,
-        SR: 0,
+        currentAddress: 0,
         ZF: false,
         CF: false,
         VF: false,
@@ -76,7 +75,7 @@ const instructionHandlers: Record<InstructionMnemonic, InstructionHandler> = {
 
 export function norisimStep(ir: IR, state: NoriSimulatorState) {
     const clonedState = cloneDeep(state);
-    const instruction = ir[state.PC];
+    const instruction = ir[state.currentAddress];
 
     const handler = instructionHandlers[instruction.mnemonic];
     handler(clonedState, instruction.operands);
@@ -89,21 +88,21 @@ function cloneDeep(state: NoriSimulatorState) {
 }
 
 function noOperation(state: NoriSimulatorState, operands: Operand[]) {
-    state.PC++;
+    state.currentAddress++;
 }
 
 function loadImmediate(state: NoriSimulatorState, operands: Operand[]) {
     const register = operands[0].value as number;
     const immediate = operands[1].value as number;
     state.registers[register] = immediate;
-    state.PC++;
+    state.currentAddress++;
 }
 
 function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
     const register = operands[0].value as number;
     const immediate = operands[1].value as number;
     state.registers[register] += immediate;
-    state.PC++;
+    state.currentAddress++;
 }
 
 function add(state: NoriSimulatorState, operands: Operand[]) {
@@ -151,7 +150,16 @@ function move(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jump(state: NoriSimulatorState, operands: Operand[]) {
-    throw new Error('Not implemented');
+    if (operands[0].type !== 'label') {
+        throw new Error('Jump target must be a label');
+    }
+
+    if (operands[0].targetAddress === undefined) {
+        throw new Error('Jump target address is not set');
+    }
+
+    const targetAddress = operands[0].targetAddress as number;
+    state.currentAddress = targetAddress;
 }
 
 function jumpZero(state: NoriSimulatorState, operands: Operand[]) {
@@ -220,4 +228,23 @@ function portLoad(state: NoriSimulatorState, operands: Operand[]) {
 
 function halt(state: NoriSimulatorState, operands: Operand[]) {
     throw new Error('Not implemented');
+}
+
+function addressToPC(address: number) {
+    if (countBits(address) > PC_BITS + SR_BITS) {
+        throw new Error(`Address '${address}' does not fit in ${PC_BITS + SR_BITS} bits.`);
+    }
+    return address & PC_MASK;
+}
+
+function addressToSR(address: number) {
+    return address >> PC_BITS;
+}
+
+function getPC(state: NoriSimulatorState) {
+    return state.currentAddress & PC_MASK;
+}
+
+function getSR(state: NoriSimulatorState) {
+    return state.currentAddress >> PC_BITS;
 }

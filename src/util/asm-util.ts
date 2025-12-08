@@ -33,3 +33,15 @@ export function isRegister(token:string) {
 export function isDefinition(line: string) {
   return line.toUpperCase().startsWith('@DEFINE');
 }
+
+export function countBits(number: number) {
+  if (number < 0) {
+    throw new Error(`Cannot count bits of a negative number ${number}`);
+  }
+  
+  if (number === 0) {
+    return 0;
+  }
+
+  return number.toString(2).length;
+}

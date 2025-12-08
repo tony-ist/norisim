@@ -14,3 +14,7 @@ export const OUTPUT_PORTS_COUNT = 8;
 
 // Amount of General Purpose Registers
 export const GPR_COUNT = 8;
+
+export const PC_BITS = 6;
+export const PC_MASK = Math.pow(2, PC_BITS) - 1;
+export const SR_BITS = 5;

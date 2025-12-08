@@ -16,8 +16,8 @@ export function SimulatorStateViewer() {
     return (
     <Box>
         <Box>Cycle (decimal): {simulatorState.cycle}</Box>
-        <Box>PC (hex): {toHexBytes([simulatorState.PC])}</Box>
-        <Box>PC (binary): {simulatorState.PC.toString(2).padStart(8, '0')}</Box>
+        <Box>Current address (hex): {toHexBytes([simulatorState.currentAddress])}</Box>
+        <Box>Current address (binary): {simulatorState.currentAddress.toString(2).padStart(8, '0')}</Box>
         
         <RegViewer
             registers={simulatorState.registers}
