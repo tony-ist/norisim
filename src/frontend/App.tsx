@@ -12,11 +12,13 @@ export function App() {
         <h1 className={styles.title}>Nori Simulator</h1>
       </Box>
       <Box className={styles.content}>
-        <Box>
+        <Box className={styles.codeEditorContainer}>
           <CodeEditor />
           <SimulatorControls />
         </Box>
-        <SimulatorStateViewer />
+        <Box className={styles.stateViewerContainer}>
+          <SimulatorStateViewer />
+        </Box>
       </Box>
     </Box>
   );
