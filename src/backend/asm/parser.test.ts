@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { parseToAST } from "./parser";
+import { describe, expect, it } from 'vitest';
+import { parseToAST } from './parser';
 
 describe('toAST', () => {
   it('should parse a simple program', () => {

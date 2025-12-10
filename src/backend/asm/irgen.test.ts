@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { generateIR } from "./irgen";
-import { AST } from "../types/asm.types";
+import { describe, expect, it } from 'vitest';
+import { generateIR } from './irgen';
+import { AST } from '../types/asm.types';
 
 describe('generateIR', () => {
   it('should generate IR', () => {
@@ -21,7 +21,7 @@ describe('generateIR', () => {
     const ir = generateIR(ast);
 
     expect(ir.length).toBe(2);
-    
+
     expect(ir[0].mnemonic).toBe('NOP');
     expect(ir[0].operands).toStrictEqual([]);
     expect(ir[0].format).toBe('Z');
@@ -53,7 +53,7 @@ describe('generateIR', () => {
     const ir = generateIR(ast);
 
     expect(ir.length).toBe(2);
-    
+
     expect(ir[0].mnemonic).toBe('JMP');
     expect(ir[0].operands).toStrictEqual([{ type: 'label', value: 'label1', targetAddress: 1 }]);
     expect(ir[0].format).toBe('J');

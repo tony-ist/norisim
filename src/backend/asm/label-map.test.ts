@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { createLabelMap } from "./label-map";
-import { compileToIR } from "./irgen";
+import { describe, expect, it } from 'vitest';
+import { createLabelMap } from './label-map';
+import { compileToIR } from './irgen';
 
 describe('createLabelMap', () => {
   it('should create a label map', () => {

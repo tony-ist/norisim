@@ -1,25 +1,26 @@
-import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
-import react from "eslint-plugin-react";
-import { defineConfig, globalIgnores } from "eslint/config";
-import stylistic from "@stylistic/eslint-plugin";
+import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import react from 'eslint-plugin-react';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import stylistic from '@stylistic/eslint-plugin';
 
 export default defineConfig([
-  { 
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], 
-    plugins: { js, react, stylistic }, 
-    extends: ["js/recommended"],
-    languageOptions: { globals: globals.browser }
+  {
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    plugins: { js, react, stylistic },
+    extends: ['js/recommended'],
+    languageOptions: { globals: globals.browser },
   },
   tseslint.configs.recommended,
   react.configs.flat.recommended,
   stylistic.configs.recommended,
   {
     rules: {
-      'react/react-in-jsx-scope': "off",
-      'stylistic/semi': ['error', 'always'],
-    }
+      'react/react-in-jsx-scope': 'off',
+      '@stylistic/semi': ['error', 'always'],
+      '@typescript-eslint/no-unused-vars': ['warn'],
+    },
   },
-  globalIgnores(["**/dist/**", "**/node_modules/**", '.eslintrc.cjs']),
+  globalIgnores(['**/dist/**', '**/node_modules/**']),
 ]);

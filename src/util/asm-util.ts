@@ -7,11 +7,11 @@ export function padHexByte(byte: string) {
 }
 
 export function toHexBytes(bytes: number[], prefix: boolean = false) {
-  return bytes.map((byte) => (prefix ? '0x' : '') + padHexByte(byte.toString(16).toUpperCase()));
+  return bytes.map(byte => (prefix ? '0x' : '') + padHexByte(byte.toString(16).toUpperCase()));
 }
 
 export function fromHex(hex: string[]) {
-  return hex.map((x) => parseInt(x, 16));
+  return hex.map(x => parseInt(x, 16));
 }
 
 export function isDecimalNumber(token: string) {
@@ -26,7 +26,7 @@ export function isBinaryNumber(token: string) {
   return token.startsWith('0b');
 }
 
-export function isRegister(token:string) {
+export function isRegister(token: string) {
   return token.toUpperCase().startsWith('R');
 }
 
@@ -38,7 +38,7 @@ export function countBits(number: number) {
   if (number < 0) {
     throw new Error(`Cannot count bits of a negative number ${number}`);
   }
-  
+
   if (number === 0) {
     return 0;
   }

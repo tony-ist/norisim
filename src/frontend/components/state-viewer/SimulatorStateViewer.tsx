@@ -7,30 +7,39 @@ import { useAppSelector } from '../../store/hooks.ts';
 import { RootState } from '../../store/index.ts';
 
 export function SimulatorStateViewer() {
-    const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
+  const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
 
-    if (!simulatorState) {
-        return <Box>No simulator initialized</Box>;
-    }
+  if (!simulatorState) {
+    return <Box>No simulator initialized</Box>;
+  }
 
-    return (
+  return (
     <Box>
-        <Box>Cycle (decimal): {simulatorState.cycle}</Box>
-        <Box>Current address (hex): {toHexBytes([simulatorState.currentAddress])}</Box>
-        <Box>Current address (binary): {simulatorState.currentAddress.toString(2).padStart(8, '0')}</Box>
-        
-        <RegViewer
-            registers={simulatorState.registers}
-        />
-        <StackViewer
-            binaryData={simulatorState.stack}
-        />
-        <FlagsViewer
-            ZF={simulatorState.ZF}
-            CF={simulatorState.CF}
-            NF={simulatorState.NF}
-            VF={simulatorState.VF}
-        />
+      <Box>
+        Cycle (decimal):
+        {simulatorState.cycle}
+      </Box>
+      <Box>
+        Current address (hex):
+        {toHexBytes([simulatorState.currentAddress])}
+      </Box>
+      <Box>
+        Current address (binary):
+        {simulatorState.currentAddress.toString(2).padStart(8, '0')}
+      </Box>
+
+      <RegViewer
+        registers={simulatorState.registers}
+      />
+      <StackViewer
+        binaryData={simulatorState.stack}
+      />
+      <FlagsViewer
+        ZF={simulatorState.ZF}
+        CF={simulatorState.CF}
+        NF={simulatorState.NF}
+        VF={simulatorState.VF}
+      />
     </Box>
-    );
+  );
 }

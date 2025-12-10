@@ -4,8 +4,8 @@ import { IR } from '../../../backend/types/asm.types';
 import { compileToIR } from '../../../backend/asm/irgen';
 
 interface SimulatorState {
-  ir: IR | null;
-  noriSimulatorState: NoriSimulatorState | null;
+  ir: IR | null
+  noriSimulatorState: NoriSimulatorState | null
 }
 
 const initialState: SimulatorState = {
@@ -40,4 +40,3 @@ export const {
 } = simulatorSlice.actions;
 
 export default simulatorSlice.reducer;
-

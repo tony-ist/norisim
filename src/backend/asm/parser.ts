@@ -4,78 +4,80 @@ import { AST } from '../types/asm.types';
 import grammarContents from './nori-v1.ohm?raw';
 
 export function parseToAST(code: string, parserTrace: boolean = false): AST {
-    const preprocessedCode = preprocess(code);
-    const grammar = ohm.grammar(grammarContents);
+  const preprocessedCode = preprocess(code);
+  const grammar = ohm.grammar(grammarContents);
 
-    const semantics = grammar.createSemantics();
-    
-    semantics.addOperation('toAST', {
-        program: (programLines) => programLines.toAST(),
-    
-        programLine: (content) => content.toAST(),
-    
-        emptyLine: (_space, _newline) => null,
+  const semantics = grammar.createSemantics();
 
-        commentLine: (_space, _comment, _newline) => null,
-    
-        instructionLine: (_inlineSpace, instruction, _inlineSpace2, inlineComment, _newline) => {
-            const instr = instruction.toAST();
-            const comment = inlineComment.toAST();
+  semantics.addOperation('toAST', {
+    program: programLines => programLines.toAST(),
 
-            if (comment[0]) {
-                return { ...instr, inlineComment: comment[0] };
-            } 
-                
-            return instr;
-        },
-    
-        inlineComment: (comment) => comment.toAST(),
-    
-        comment: (_slashes, content) => content.sourceString.trim(),
-        
-        instruction: (label, _space, mnemonic, flag, _inlineSpace, operandList) => {
-            const labelMixin = label.sourceString === "" ? {} : { label: label.sourceString.trim() };
+    programLine: content => content.toAST(),
 
-            return {
-                mnemonic: mnemonic.sourceString.toUpperCase(),
-                forceUpdateFlags: flag.sourceString === ".f",
-                ...labelMixin,
-                operands: operandList.children.map((operand: any) => operand.toAST())[0] ?? [],
-            }
-        },
+    emptyLine: (_space, _newline) => null,
 
-        operandList: (operand, _sep, operandList) => [operand.toAST(), ...operandList.children.map((operand: any) => operand.toAST())],
+    commentLine: (_space, _comment, _newline) => null,
 
-        operand: (body) => body.toAST(),
+    instructionLine: (_inlineSpace, instruction, _inlineSpace2, inlineComment, _newline) => {
+      const instr = instruction.toAST();
+      const comment = inlineComment.toAST();
 
-        register: (_r, digit) => ({
-            type: 'register',
-            value: parseInt(digit.sourceString),
-        }),
+      if (comment[0]) {
+        return { ...instr, inlineComment: comment[0] };
+      }
 
-        immediate: (minus, immediate) => ({
-            type: 'immediate',
-            value: minus.sourceString === "-" ? -parseInt(immediate.sourceString) : parseInt(immediate.sourceString),
-        }),
+      return instr;
+    },
 
-        label: (_dot, label) => ({
-            type: 'label',
-            value: "." + label.sourceString.trim(),
-        }),
+    inlineComment: comment => comment.toAST(),
 
-        _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null)
-    })
+    comment: (_slashes, content) => content.sourceString.trim(),
 
-    const matchResult = grammar.match(preprocessedCode);
-    
-    if (matchResult.succeeded()) {
-        if (parserTrace) {
-            const traceResult = grammar.trace(preprocessedCode);
-            console.log(traceResult.toString());
-        }
+    instruction: (label, _space, mnemonic, flag, _inlineSpace, operandList) => {
+      const labelMixin = label.sourceString === '' ? {} : { label: label.sourceString.trim() };
 
-        return semantics(matchResult).toAST();
+      return {
+        mnemonic: mnemonic.sourceString.toUpperCase(),
+        forceUpdateFlags: flag.sourceString === '.f',
+        ...labelMixin,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        operands: operandList.children.map((operand: any) => operand.toAST())[0] ?? [],
+      };
+    },
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    operandList: (operand, _sep, operandList) => [operand.toAST(), ...operandList.children.map((operand: any) => operand.toAST())],
+
+    operand: body => body.toAST(),
+
+    register: (_r, digit) => ({
+      type: 'register',
+      value: parseInt(digit.sourceString),
+    }),
+
+    immediate: (minus, immediate) => ({
+      type: 'immediate',
+      value: minus.sourceString === '-' ? -parseInt(immediate.sourceString) : parseInt(immediate.sourceString),
+    }),
+
+    label: (_dot, label) => ({
+      type: 'label',
+      value: '.' + label.sourceString.trim(),
+    }),
+
+    _iter: (...children) => children.map(c => c.toAST()).filter(x => x !== null),
+  });
+
+  const matchResult = grammar.match(preprocessedCode);
+
+  if (matchResult.succeeded()) {
+    if (parserTrace) {
+      const traceResult = grammar.trace(preprocessedCode);
+      console.log(traceResult.toString());
     }
 
-    throw new Error(`Failed to parse: ${matchResult.message}`);
+    return semantics(matchResult).toAST();
+  }
+
+  throw new Error(`Failed to parse: ${matchResult.message}`);
 }

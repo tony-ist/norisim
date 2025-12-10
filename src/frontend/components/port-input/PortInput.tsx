@@ -4,9 +4,9 @@ import Box from '@mui/material/Box';
 import React from 'react';
 
 interface PortInputPropsType {
-  triggerPortInput: () => void;
-  portInputValue: string;
-  setPortInputValue: (input: string) => void;
+  triggerPortInput: () => void
+  portInputValue: string
+  setPortInputValue: (input: string) => void
 }
 
 export function PortInput(props: PortInputPropsType) {
@@ -25,11 +25,11 @@ export function PortInput(props: PortInputPropsType) {
         label="Port Input (dec, hex or bin)"
         value={portInputValue}
         onKeyDown={onPortInputKeyDown}
-        onChange={(event) => setPortInputValue(event.target.value)}
+        onChange={event => setPortInputValue(event.target.value)}
       />
       <Button
         sx={{ marginLeft: '20px' }}
-        variant='contained'
+        variant="contained"
         onClick={triggerPortInput}
       >
         Ok

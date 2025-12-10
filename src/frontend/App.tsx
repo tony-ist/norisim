@@ -3,7 +3,6 @@ import { SimulatorControls } from './components/controls/SimulatorControls';
 import { SimulatorStateViewer } from './components/state-viewer/SimulatorStateViewer';
 
 export function App() {
-
   const initialCode = `
     // Calculates fibonacci, does r1 iterations
 

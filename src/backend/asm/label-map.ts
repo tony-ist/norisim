@@ -1,4 +1,4 @@
-import { IR } from "../types/asm.types";
+import { IR } from '../types/asm.types';
 
 export function createLabelMap(ir: IR): Map<string, number> {
   const labelMap: Map<string, number> = new Map();
@@ -12,4 +12,3 @@ export function createLabelMap(ir: IR): Map<string, number> {
 
   return labelMap;
 }
-

@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 interface CodeState {
-  sourceCode: string;
-  error: string | null;
+  sourceCode: string
+  error: string | null
 }
 
 const initialState: CodeState = {
@@ -25,4 +25,3 @@ export const {
 } = codeSlice.actions;
 
 export default codeSlice.reducer;
-

@@ -5,7 +5,7 @@ import { generateIR } from '../src/backend/asm/irgen.ts';
 
 function main(): void {
   const args = process.argv.slice(2);
-  
+
   if (![1, 2].includes(args.length)) {
     console.error('Usage: npm run rnd <assembly_file.s> [--trace]');
     console.error('Example: npm run rnd input.s');
@@ -21,7 +21,8 @@ function main(): void {
     console.log('AST:', JSON.stringify(ast, null, 2));
     const ir = generateIR(ast);
     console.log('IR:', JSON.stringify(ir, null, 2));
-  } catch (error) {
+  }
+  catch (error) {
     console.error('RND script error:', (error as Error).stack);
   }
 }

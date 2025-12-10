@@ -18,5 +18,3 @@ describe('countBits', () => {
     expect(() => countBits(-1)).toThrow('Cannot count bits of a negative number -1');
   });
 });
-
-

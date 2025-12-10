@@ -21,35 +21,35 @@ export function SimulatorControls() {
   function reset() {
     dispatch(simulatorSlice.actions.reset());
   }
-  
+
   return (
     <Box className={styles.buttonsContainer}>
       <Box className={styles.buttonsRow}>
         <Box>
-        <Button
-          variant="contained"
-          onClick={compile}
-        >
-          Compile
-        </Button>
-        </Box>
-        <Box> 
-        <Button
-          variant="outlined"
-          onClick={step}
-          disabled={!isInitialized}
-        >
-          Step
-        </Button>
+          <Button
+            variant="contained"
+            onClick={compile}
+          >
+            Compile
+          </Button>
         </Box>
         <Box>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={reset}
-        >
-          Reset
-        </Button>
+          <Button
+            variant="outlined"
+            onClick={step}
+            disabled={!isInitialized}
+          >
+            Step
+          </Button>
+        </Box>
+        <Box>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={reset}
+          >
+            Reset
+          </Button>
         </Box>
       </Box>
     </Box>

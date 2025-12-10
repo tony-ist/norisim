@@ -18,7 +18,8 @@ export function groupElements<T>(array: T[], groupSize: number) {
       result.push(buffer);
       buffer = [];
       i = 1;
-    } else {
+    }
+    else {
       i += 1;
     }
   }

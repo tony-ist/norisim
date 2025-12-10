@@ -11,10 +11,9 @@ export function StackViewer(props: StackViewerPropTypes) {
   return (
     <Box sx={{ minHeight: 43 }}>
       <HexViewer
-        title={'Stack'}
+        title="Stack"
         binaryData={binaryData}
       />
     </Box>
   );
 }
-

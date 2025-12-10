@@ -16,10 +16,9 @@ export function RegViewer(props: RegViewerPropTypes) {
   return (
     <Box>
       <SimpleHexViewer
-        title={'Registers'}
+        title="Registers"
         columns={columns}
       />
     </Box>
   );
 }
-

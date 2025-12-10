@@ -2,13 +2,13 @@ import { SimpleHexViewer } from '../simple-hex-viewer/SimpleHexViewer.tsx';
 
 interface FlagsViewerPropTypes {
   // Zero Flag
-  ZF: boolean;
+  ZF: boolean
   // Carry Flag
-  CF: boolean;
+  CF: boolean
   // Negative Flag
-  NF: boolean;
+  NF: boolean
   // Overflow Flag
-  VF: boolean;
+  VF: boolean
 }
 
 export function FlagsViewer(props: FlagsViewerPropTypes) {
@@ -22,9 +22,8 @@ export function FlagsViewer(props: FlagsViewerPropTypes) {
 
   return (
     <SimpleHexViewer
-      title={'Flags'}
+      title="Flags"
       columns={columns}
     />
   );
 }
-
