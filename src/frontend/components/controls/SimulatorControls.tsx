@@ -5,21 +5,10 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { simulatorSlice } from '../../store/slices/simulatorSlice';
 import { RootState } from '../../store';
 
-interface SimulatorControlsPropsType {
-  compile: () => void;
-  step: () => void;
-  run: () => void;
-  stop: () => void;
-  runToCycle: (cycle: number) => void;
-  runToPC: (pc: number) => void;
-  isEditing: boolean;
-  setIsEditing: (isEditing: boolean) => void;
-  isRunning: boolean;
-}
-
 export function SimulatorControls() {
   const dispatch = useAppDispatch();
   const sourceCode = useAppSelector((state: RootState) => state.code.sourceCode);
+  const isInitialized = useAppSelector((state: RootState) => state.simulator.ir !== null);
 
   function compile() {
     dispatch(simulatorSlice.actions.init(sourceCode));
@@ -28,24 +17,40 @@ export function SimulatorControls() {
   function step() {
     dispatch(simulatorSlice.actions.step());
   }
+
+  function reset() {
+    dispatch(simulatorSlice.actions.reset());
+  }
   
   return (
     <Box className={styles.buttonsContainer}>
       <Box className={styles.buttonsRow}>
-          <Button
-            variant="contained"
-            onClick={compile}
-          >
-            Compile
-          </Button>
-      </Box>
-      <Box>
+        <Box>
         <Button
-          variant="text"
+          variant="contained"
+          onClick={compile}
+        >
+          Compile
+        </Button>
+        </Box>
+        <Box> 
+        <Button
+          variant="outlined"
           onClick={step}
+          disabled={!isInitialized}
         >
           Step
         </Button>
+        </Box>
+        <Box>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={reset}
+        >
+          Reset
+        </Button>
+        </Box>
       </Box>
     </Box>
   );

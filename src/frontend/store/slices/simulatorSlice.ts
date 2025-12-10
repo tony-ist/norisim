@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { NoriSimulator } from '../../../backend/simulator/NoriSimulator';
 import { defaultNoriSimulatorState, norisimStep, NoriSimulatorState } from '../../../backend/simulator/norisim-reducers';
 import { IR } from '../../../backend/types/asm.types';
 import { compileToIR } from '../../../backend/asm/irgen';
@@ -19,7 +18,6 @@ export const simulatorSlice = createSlice({
   initialState,
   reducers: {
     init: (state, action) => {
-      
       state.ir = compileToIR(action.payload);
       state.noriSimulatorState = defaultNoriSimulatorState();
     },
@@ -29,6 +27,10 @@ export const simulatorSlice = createSlice({
       }
 
       state.noriSimulatorState = norisimStep(state.ir, state.noriSimulatorState);
+    },
+    reset: (state) => {
+      state.ir = null;
+      state.noriSimulatorState = null;
     },
   },
 });

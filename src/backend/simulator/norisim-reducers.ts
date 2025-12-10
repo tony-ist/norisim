@@ -1,6 +1,6 @@
 import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SR_BITS, STACK_SIZE_BYTES } from "../../const/simulator-constants";
 import { countBits } from "../../util/asm-util";
-import { InstructionMnemonic, IR, Operand } from "../types/asm.types";
+import { InstructionMnemonic, IR, Label, Operand } from "../types/asm.types";
 
 export interface NoriSimulatorState {
     currentAddress: number;
@@ -79,6 +79,7 @@ export function norisimStep(ir: IR, state: NoriSimulatorState) {
 
     const handler = instructionHandlers[instruction.mnemonic];
     handler(clonedState, instruction.operands);
+    clonedState.cycle++;
     
     return clonedState;
 }
@@ -101,12 +102,25 @@ function loadImmediate(state: NoriSimulatorState, operands: Operand[]) {
 function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
     const register = operands[0].value as number;
     const immediate = operands[1].value as number;
-    state.registers[register] += immediate;
+    const result = state.registers[register] + immediate;
+    state.registers[register] = result;
+
+    updateFlags(state, result);
+
     state.currentAddress++;
 }
 
+function updateFlags(state: NoriSimulatorState, result: number) {
+    state.ZF = result === 0;
+    // TODO: Update CF, NF, VF    
+}
+
 function add(state: NoriSimulatorState, operands: Operand[]) {
-    throw new Error('Not implemented');
+    const destinationRegister = operands[0].value as number;
+    const srcARegister = operands[1].value as number;
+    const srcBRegister = operands[2].value as number;
+    state.registers[destinationRegister] = state.registers[srcARegister] + state.registers[srcBRegister];
+    state.currentAddress++;
 }
 
 function subtract(state: NoriSimulatorState, operands: Operand[]) {
@@ -146,19 +160,17 @@ function shiftRight(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function move(state: NoriSimulatorState, operands: Operand[]) {
-    throw new Error('Not implemented');
+    const destinationRegister = operands[0].value as number;
+    const srcRegister = operands[1].value as number;
+    state.registers[destinationRegister] = state.registers[srcRegister];
+    state.currentAddress++;
 }
 
 function jump(state: NoriSimulatorState, operands: Operand[]) {
-    if (operands[0].type !== 'label') {
-        throw new Error('Jump target must be a label');
-    }
+    validateJumpTarget(operands[0]);
 
-    if (operands[0].targetAddress === undefined) {
-        throw new Error('Jump target address is not set');
-    }
-
-    const targetAddress = operands[0].targetAddress as number;
+    const label = operands[0] as Label;
+    const targetAddress = label.targetAddress as number;
     state.currentAddress = targetAddress;
 }
 
@@ -167,7 +179,26 @@ function jumpZero(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpNotZero(state: NoriSimulatorState, operands: Operand[]) {
-    throw new Error('Not implemented');
+    if (state.ZF) {
+        state.currentAddress++;
+        return;
+    }
+
+    validateJumpTarget(operands[0]);
+
+    const label = operands[0] as Label;
+    const targetAddress = label.targetAddress as number;
+    state.currentAddress = targetAddress;
+}
+
+function validateJumpTarget(operand: Operand) {
+    if (operand.type !== 'label') {
+        throw new Error('Jump target must be a label');
+    }
+
+    if (operand.targetAddress === undefined) {
+        throw new Error('Jump target address is not set');
+    }
 }
 
 function jumpCarry(state: NoriSimulatorState, operands: Operand[]) {
@@ -230,14 +261,14 @@ function halt(state: NoriSimulatorState, operands: Operand[]) {
     throw new Error('Not implemented');
 }
 
-function addressToPC(address: number) {
+function pcFromAddress(address: number) {
     if (countBits(address) > PC_BITS + SR_BITS) {
         throw new Error(`Address '${address}' does not fit in ${PC_BITS + SR_BITS} bits.`);
     }
     return address & PC_MASK;
 }
 
-function addressToSR(address: number) {
+function srFromAddress(address: number) {
     return address >> PC_BITS;
 }
 

@@ -45,3 +45,11 @@ export function countBits(number: number) {
 
   return number.toString(2).length;
 }
+
+export function padHexWord(word: string) {
+  return ('0000' + word).slice(-4);
+}
+
+export function toHexWord(number: number) {
+  return '0x' + padHexWord(number.toString(16).toUpperCase());
+}

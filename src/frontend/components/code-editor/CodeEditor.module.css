@@ -1,0 +1,9 @@
+.compiledCodeContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.codeLineContainer {
+  display: flex;
+  flex-direction: row;
+}
