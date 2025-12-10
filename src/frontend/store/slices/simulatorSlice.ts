@@ -6,11 +6,13 @@ import { compileToIR } from '../../../backend/asm/irgen';
 interface SimulatorState {
   ir: IR | null
   noriSimulatorState: NoriSimulatorState | null
+  error: string | null
 }
 
 const initialState: SimulatorState = {
   ir: null,
   noriSimulatorState: null,
+  error: null,
 };
 
 export const simulatorSlice = createSlice({
@@ -18,8 +20,18 @@ export const simulatorSlice = createSlice({
   initialState,
   reducers: {
     init: (state, action) => {
-      state.ir = compileToIR(action.payload);
-      state.noriSimulatorState = defaultNoriSimulatorState();
+      try {
+        state.ir = compileToIR(action.payload);
+        state.noriSimulatorState = defaultNoriSimulatorState();
+      }
+      catch (error) {
+        if (error instanceof Error) {
+          state.error = error.message ?? null;
+        }
+        else {
+          state.error = 'Unknown error';
+        }
+      }
     },
     step: (state) => {
       if (!state.ir || !state.noriSimulatorState) {
@@ -31,6 +43,7 @@ export const simulatorSlice = createSlice({
     reset: (state) => {
       state.ir = null;
       state.noriSimulatorState = null;
+      state.error = null;
     },
   },
 });

@@ -5,9 +5,21 @@ import { StackViewer } from '../stack-viewer/StackViewer.tsx';
 import { FlagsViewer } from '../flags-viewer/FlagsViewer.tsx';
 import { useAppSelector } from '../../store/hooks.ts';
 import { RootState } from '../../store/index.ts';
+import styles from './SimulatorStateViewer.module.css';
 
 export function SimulatorStateViewer() {
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
+  const error = useAppSelector((state: RootState) => state.simulator.error);
+
+  if (error) {
+    return (
+      <Box className={styles.error}>
+        Error:
+        {' '}
+        {error}
+      </Box>
+    );
+  }
 
   if (!simulatorState) {
     return <Box>No simulator initialized</Box>;
