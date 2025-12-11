@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultNoriSimulatorState, norisimStep, NoriSimulatorState, updateFlags } from './norisim-step';
+import { defaultNoriSimulatorState, norisimStep, NoriSimulatorState, updateZNF } from './norisim-step';
 import { compileToIR } from '../asm/irgen';
 
 describe('norisimStep', () => {
@@ -131,22 +131,40 @@ describe('norisimStep', () => {
 });
 
 describe('updateFlags', () => {
-  it('should update zero flag', () => {
+  it.each([
+    [0, true],
+    [1, false],
+    [-1, false],
+  ])('%s should update zero flag to %s', (result, expectedZF) => {
     const state = defaultNoriSimulatorState();
-    updateFlags(state, 0);
-    expect(state.ZF).toBe(true);
+    updateZNF(state, result);
+    expect(state.ZF).toBe(expectedZF);
+  });
+
+  it.each([
+    [0, false],
+    [1, false],
+    [-1, true],
+  ])('%s should update negative flag to %s', (result, expectedNF) => {
+    const state = defaultNoriSimulatorState();
+    updateZNF(state, result);
+    expect(state.NF).toBe(expectedNF);
+  });
+
+  it.each([
+    [0, false],
+    [1, true],
+    [-1, true],
+  ])('%s should update carry flag to %s', (result, expectedCF) => {
+    const state = defaultNoriSimulatorState();
+    updateZNF(state, result);
+    expect(state.CF).toBe(expectedCF);
   });
 
   it('should update carry flag', () => {
     const state = defaultNoriSimulatorState();
-    updateFlags(state, 256);
+    updateZNF(state, 256);
     expect(state.CF).toBe(true);
-  });
-
-  it('should update negative flag', () => {
-    const state = defaultNoriSimulatorState();
-    updateFlags(state, -42);
-    expect(state.NF).toBe(true);
   });
 
   it.each([
@@ -155,7 +173,7 @@ describe('updateFlags', () => {
     [128, true],
   ])('%s should update overflow flag to %s', (result, expectedVF) => {
     const state = defaultNoriSimulatorState();
-    updateFlags(state, result);
+    updateZNF(state, result);
     expect(state.VF).toBe(expectedVF);
   });
 });

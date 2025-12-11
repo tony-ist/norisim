@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import { toHexWord } from '../../../util/asm-util.ts';
 import { RegViewer } from '../reg-viewer/RegViewer.tsx';
 import { FlagsViewer } from '../flags-viewer/FlagsViewer.tsx';
+import { PortsViewer } from '../ports-viewer/PortsViewer.tsx';
 import { useAppSelector } from '../../store/hooks.ts';
 import { RootState } from '../../store/index.ts';
 import styles from './SimulatorStateViewer.module.css';
@@ -54,6 +55,11 @@ export function SimulatorStateViewer() {
           CF={simulatorState.CF}
           NF={simulatorState.NF}
           VF={simulatorState.VF}
+        />
+
+        <PortsViewer
+          inputPorts={simulatorState.inputPorts}
+          outputPorts={simulatorState.outputPorts}
         />
       </Box>
     </>

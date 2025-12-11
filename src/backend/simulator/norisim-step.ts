@@ -1,4 +1,4 @@
-import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
+import { BITNESS, GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
 import { countBits } from '../../util/asm-util';
 import { InstructionMnemonic, IR, Label, Operand } from '../types/asm.types';
 
@@ -106,21 +106,27 @@ function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
   const result = state.registers[register] + immediate;
   state.registers[register] = result;
 
-  updateFlags(state, result);
+  updateZNF(state, result);
 
   state.currentAddress++;
 }
 
-export function updateFlags(state: NoriSimulatorState, result: number) {
+export function updateZNF(state: NoriSimulatorState, result: number) {
   state.ZF = result === 0;
-  // TODO: Update CF, NF, VF
+  state.NF = result < 0;
 }
 
 function add(state: NoriSimulatorState, operands: Operand[]) {
   const destinationRegister = operands[0].value as number;
   const srcARegister = operands[1].value as number;
   const srcBRegister = operands[2].value as number;
-  state.registers[destinationRegister] = state.registers[srcARegister] + state.registers[srcBRegister];
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = operandA + operandB;
+  state.registers[destinationRegister] = result;
+  updateZNF(state, result);
+  state.CF = ((result >> 8) & 1) === 1;
+  state.VF = (((operandA ^ result) & (operandB ^ result)) & SIGN_MASK) !== 0;
   state.currentAddress++;
 }
 
@@ -128,12 +134,28 @@ function subtract(state: NoriSimulatorState, operands: Operand[]) {
   const destinationRegister = operands[0].value as number;
   const srcARegister = operands[1].value as number;
   const srcBRegister = operands[2].value as number;
-  state.registers[destinationRegister] = state.registers[srcARegister] - state.registers[srcBRegister];
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = operandA - operandB;
+  state.registers[destinationRegister] = result;
+  updateZNF(state, result);
+  state.CF = operandA < operandB;
+  state.VF = (((operandA ^ operandB) & (operandA ^ result)) & SIGN_MASK) !== 0;
   state.currentAddress++;
 }
 
 function and(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const srcBRegister = operands[2].value as number;
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = operandA & operandB;
+  state.registers[destinationRegister] = result;
+  updateZNF(state, result);
+  state.CF = false;
+  state.VF = false;
+  state.currentAddress++;
 }
 
 function nand(state: NoriSimulatorState, operands: Operand[]) {
@@ -161,7 +183,15 @@ function not(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function shiftRight(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcRegister = operands[1].value as number;
+  const operand = state.registers[srcRegister];
+  const result = operand >> 1;
+  state.registers[destinationRegister] = result;
+  updateZNF(state, result);
+  state.CF = false;
+  state.VF = false;
+  state.currentAddress++;
 }
 
 function move(state: NoriSimulatorState, operands: Operand[]) {
@@ -256,7 +286,10 @@ function storeToRAM(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function portStore(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const register = operands[0].value as number;
+  const port = operands[1].value as number;
+  state.outputPorts[port] = state.registers[register];
+  state.currentAddress++;
 }
 
 function portLoad(state: NoriSimulatorState, operands: Operand[]) {

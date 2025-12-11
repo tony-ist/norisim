@@ -1,3 +1,6 @@
+export const BITNESS = 8;
+export const SIGN_MASK = 1 << (BITNESS - 1);
+
 export const PMEM_WORD_SIZE_BITS = 16;
 export const RAM_WORD_SIZE_BITS = 8;
 
