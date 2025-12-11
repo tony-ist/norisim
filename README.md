@@ -28,14 +28,15 @@ npm run test
 ```
 
 ## TODO
-- Linting
+- PMEM Viewer
+- Display 
+- Console
 
 ### UI Components
 - **Program memory hex view**
 - **RAM hex view**
 - **Stack hex view**
-- **Registers (R1-R4, PC)**
+- **Registers (R1-R7, PC)**
 - **Flags**
 - **Ports**
-- **Display**
-- Console (Not implemented)
+

@@ -1,4 +1,5 @@
-.error {
-  color: red;
-  white-space: pre-wrap;
+.stateViewerContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

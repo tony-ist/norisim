@@ -38,6 +38,7 @@ function convertASTNodeToIRNode(astNode: ASTNode, address: number): IRNode {
     address,
     label: astNode.label,
     inlineComment: astNode.inlineComment,
+    forceUpdateFlags: astNode.forceUpdateFlags,
   };
 }
 

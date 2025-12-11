@@ -111,6 +111,7 @@ export interface IRNode {
   address: number
   label?: string
   inlineComment?: string
+  forceUpdateFlags?: boolean
 }
 
 export type IR = IRNode[];

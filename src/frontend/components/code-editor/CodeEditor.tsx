@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import codeSlice, { setSourceCode } from '../../store/slices/codeSlice';
 import { RootState } from '../../store';
 import { IR, IRNode, Operand } from '../../../backend/types/asm.types';
-import fibonacciCode from '../../../backend/asm/programs/fib.s?raw';
+import sampleCode from '../../../backend/asm/programs/collatz.s?raw';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import styles from './CodeEditor.module.css';
 import { toHexWord } from '../../../util/asm-util';
@@ -16,7 +16,7 @@ export function CodeEditor() {
   const noriSimulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
 
   useEffect(() => {
-    dispatch(setSourceCode(fibonacciCode));
+    dispatch(setSourceCode(sampleCode));
   }, []);
 
   function setCode(code: string) {
@@ -30,7 +30,7 @@ export function CodeEditor() {
           ir.map((node: IRNode) => (
             <Box key={node.address.toString()} className={styles.codeLineContainer}>
               {
-                noriSimulatorState.currentAddress === node.address ? <ArrowForwardIcon /> : null
+                noriSimulatorState.currentAddress === node.address ? <ArrowForwardIcon /> : <Box width={24} />
               }
               {
                 prettyPrintIRNode(node)
@@ -57,7 +57,8 @@ export function CodeEditor() {
 function prettyPrintIRNode(node: IRNode) {
   const label = node.label ? `${node.label}: ` : '';
   const hexAddress = toHexWord(node.address);
-  return `${hexAddress} ${label}${node.mnemonic} ${node.operands.map((operand: Operand) => prettyPrintOperand(operand)).join(', ')}`;
+  const flag = node.forceUpdateFlags ? '.F' : '';
+  return `${hexAddress} ${label}${node.mnemonic}${flag} ${node.operands.map((operand: Operand) => prettyPrintOperand(operand)).join(', ')}`;
 }
 
 function prettyPrintOperand(operand: Operand) {

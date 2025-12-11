@@ -17,7 +17,7 @@ export function SimpleHexViewer(props: HexViewerPropTypes) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box>{title}</Box>
+      <Box sx={{ fontWeight: 'bold' }}>{title}</Box>
       <Box sx={{ display: 'flex', gap: '8px' }}>
         {
           hexData.map((value, index) => (

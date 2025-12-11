@@ -74,11 +74,12 @@ const instructionHandlers: Record<InstructionMnemonic, InstructionHandler> = {
 } as const;
 
 export function norisimStep(ir: IR, state: NoriSimulatorState) {
-  const clonedState = cloneDeep(state);
+  const clonedState = cloneDeep(state) as NoriSimulatorState;
   const instruction = ir[state.currentAddress];
 
   const handler = instructionHandlers[instruction.mnemonic];
   handler(clonedState, instruction.operands);
+  clonedState.registers[0] = 0;
   clonedState.cycle++;
 
   return clonedState;
@@ -110,7 +111,7 @@ function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
   state.currentAddress++;
 }
 
-function updateFlags(state: NoriSimulatorState, result: number) {
+export function updateFlags(state: NoriSimulatorState, result: number) {
   state.ZF = result === 0;
   // TODO: Update CF, NF, VF
 }
@@ -124,7 +125,11 @@ function add(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function subtract(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const srcBRegister = operands[2].value as number;
+  state.registers[destinationRegister] = state.registers[srcARegister] - state.registers[srcBRegister];
+  state.currentAddress++;
 }
 
 function and(state: NoriSimulatorState, operands: Operand[]) {
@@ -175,7 +180,12 @@ function jump(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpZero(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  if (!state.ZF) {
+    state.currentAddress++;
+    return;
+  }
+
+  jump(state, operands);
 }
 
 function jumpNotZero(state: NoriSimulatorState, operands: Operand[]) {
@@ -184,11 +194,7 @@ function jumpNotZero(state: NoriSimulatorState, operands: Operand[]) {
     return;
   }
 
-  validateJumpTarget(operands[0]);
-
-  const label = operands[0] as Label;
-  const targetAddress = label.targetAddress as number;
-  state.currentAddress = targetAddress;
+  jump(state, operands);
 }
 
 function validateJumpTarget(operand: Operand) {

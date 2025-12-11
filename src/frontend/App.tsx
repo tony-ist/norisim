@@ -9,7 +9,7 @@ export function App() {
     <Box className={styles.layout}>
       <Box className={styles.header}>
         <img src="/redstone.webp" alt="Redstone" className={styles.logo} />
-        <h1 className={styles.title}>Nori Simulator</h1>
+        <h1 className={styles.title}>Nori CPU Simulator</h1>
       </Box>
       <Box className={styles.content}>
         <Box className={styles.codeEditorContainer}>

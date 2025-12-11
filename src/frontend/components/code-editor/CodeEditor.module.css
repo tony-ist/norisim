@@ -4,6 +4,7 @@
 }
 
 .codeLineContainer {
+  height: 20px;
   display: flex;
   flex-direction: row;
 }
