@@ -43,6 +43,12 @@ function convertASTNodeToIRNode(astNode: ASTNode, address: number): IRNode {
 }
 
 function validateOperandTypes(astNode: ASTNode) {
+  const instruction = INSTRUCTIONS[astNode.mnemonic];
+
+  if (!instruction) {
+    throw new Error(`Invalid instruction mnemonic: ${astNode.mnemonic}`);
+  }
+
   const format = INSTRUCTIONS[astNode.mnemonic as keyof typeof INSTRUCTIONS].format;
 
   if (astNode.operands.length !== OPERAND_TYPES[format].length) {

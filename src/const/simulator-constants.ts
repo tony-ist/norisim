@@ -15,6 +15,8 @@ export const STACK_SIZE_BYTES = 64;
 export const INPUT_PORTS_COUNT = 8;
 export const OUTPUT_PORTS_COUNT = 8;
 
+export const WORD_SIZE = 256;
+
 // Amount of General Purpose Registers
 export const GPR_COUNT = 8;
 

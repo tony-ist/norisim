@@ -9,8 +9,8 @@ import { useState } from 'react';
 export function SimulatorControls() {
   const dispatch = useAppDispatch();
   const sourceCode = useAppSelector((state: RootState) => state.code.sourceCode);
-  const isInitialized = useAppSelector((state: RootState) => state.simulator.ir !== null);
-  const ir = useAppSelector((state: RootState) => state.simulator.ir);
+  const isInitialized = useAppSelector((state: RootState) => state.simulator.noriSimulatorState !== null);
+  const ir = useAppSelector((state: RootState) => state.simulator.noriSimulatorState?.ir);
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -28,7 +28,7 @@ export function SimulatorControls() {
   }
 
   async function run() {
-    if (!ir || !simulatorState || isRunning) {
+    if (!simulatorState || isRunning) {
       return;
     }
 
@@ -36,7 +36,7 @@ export function SimulatorControls() {
 
     while (true) {
       const currentState = store.getState();
-      const currentIR = currentState.simulator.ir;
+      const currentIR = currentState.simulator.noriSimulatorState?.ir;
       const currentSimulatorState = currentState.simulator.noriSimulatorState;
       const currentError = currentState.simulator.error;
 

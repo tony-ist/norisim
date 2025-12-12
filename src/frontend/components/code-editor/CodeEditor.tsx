@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import codeSlice, { setSourceCode } from '../../store/slices/codeSlice';
 import { RootState } from '../../store';
 import { IR, IRNode, Operand } from '../../../backend/types/asm.types';
-import sampleCode from '../../../backend/asm/programs/collatz.s?raw';
+import sampleCode from '../../../backend/asm/programs/bubble-sort.s?raw';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import styles from './CodeEditor.module.css';
 import { toHexWord } from '../../../util/asm-util';
@@ -12,7 +12,6 @@ import { toHexWord } from '../../../util/asm-util';
 export function CodeEditor() {
   const dispatch = useAppDispatch();
   const sourceCode = useAppSelector((state: RootState) => state.code.sourceCode);
-  const ir: IR | null = useAppSelector((state: RootState) => state.simulator.ir);
   const noriSimulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
 
   useEffect(() => {
@@ -23,11 +22,11 @@ export function CodeEditor() {
     dispatch(setSourceCode(code));
   }
 
-  if (ir && noriSimulatorState) {
+  if (noriSimulatorState) {
     return (
       <Box className={styles.compiledCodeContainer}>
         {
-          ir.map((node: IRNode) => (
+          noriSimulatorState.ir.map((node: IRNode) => (
             <Box key={node.address.toString()} className={styles.codeLineContainer}>
               {
                 noriSimulatorState.currentAddress === node.address ? <ArrowForwardIcon /> : <Box width={24} />

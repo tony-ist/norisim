@@ -1,17 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { defaultNoriSimulatorState, norisimStep, NoriSimulatorState } from '../../../backend/simulator/norisim-step';
-import { IR } from '../../../backend/types/asm.types';
-import { compileToIR } from '../../../backend/asm/irgen';
+import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimStep, NoriSimulatorState } from '../../../backend/simulator/norisim-step';
 
 interface SimulatorState {
-  ir: IR | null
   noriSimulatorState: NoriSimulatorState | null
   error: string | null
   errorStack: string | null
 }
 
 const initialState: SimulatorState = {
-  ir: null,
   noriSimulatorState: null,
   error: null,
   errorStack: null,
@@ -23,8 +19,8 @@ export const simulatorSlice = createSlice({
   reducers: {
     init: (state, action) => {
       try {
-        state.ir = compileToIR(action.payload);
-        state.noriSimulatorState = defaultNoriSimulatorState();
+        const code = action.payload as string;
+        state.noriSimulatorState = defaultNoriSimulatorState(code);
         state.error = null;
         state.errorStack = null;
       }
@@ -39,12 +35,12 @@ export const simulatorSlice = createSlice({
       }
     },
     step: (state) => {
-      if (!state.ir || !state.noriSimulatorState) {
+      if (!state.noriSimulatorState) {
         return state;
       }
 
       try {
-        state.noriSimulatorState = norisimStep(state.ir, state.noriSimulatorState);
+        state.noriSimulatorState = norisimStep(state.noriSimulatorState);
       }
       catch (error) {
         if (error instanceof Error) {
@@ -57,7 +53,6 @@ export const simulatorSlice = createSlice({
       }
     },
     reset: (state) => {
-      state.ir = null;
       state.noriSimulatorState = null;
       state.error = null;
       state.errorStack = null;

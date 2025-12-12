@@ -7,6 +7,9 @@ import { useAppSelector } from '../../store/hooks.ts';
 import { RootState } from '../../store/index.ts';
 import styles from './SimulatorStateViewer.module.css';
 import { SimulatorError } from './SimulatorError.tsx';
+import { HexViewer } from '../hex/HexViewer.tsx';
+import { RamViewer } from '../ram-viewer/RamViewer.tsx';
+import { PMemViewer } from '../pmem-viewer/PMEMViewer.tsx';
 
 export function SimulatorStateViewer() {
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
@@ -60,6 +63,15 @@ export function SimulatorStateViewer() {
         <PortsViewer
           inputPorts={simulatorState.inputPorts}
           outputPorts={simulatorState.outputPorts}
+        />
+
+        <PMemViewer
+          machineCode={simulatorState.PMEM}
+          highlightByte={simulatorState.currentAddress}
+        />
+
+        <RamViewer
+          RAM={simulatorState.RAM}
         />
       </Box>
     </>

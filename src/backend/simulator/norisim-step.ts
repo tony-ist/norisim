@@ -1,8 +1,10 @@
 import { BITNESS, GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
 import { countBits } from '../../util/asm-util';
+import { compileToIR } from '../asm/irgen';
 import { InstructionMnemonic, IR, Label, Operand } from '../types/asm.types';
 
 export interface NoriSimulatorState {
+  ir: IR
   currentAddress: number
   registers: number[]
   ZF: boolean
@@ -18,8 +20,28 @@ export interface NoriSimulatorState {
   cycle: number
 }
 
-export function defaultNoriSimulatorState(): NoriSimulatorState {
+export function defaultNoriSimulatorState(code: string): NoriSimulatorState {
   return {
+    ir: compileToIR(code),
+    currentAddress: 0,
+    ZF: false,
+    CF: false,
+    VF: false,
+    NF: false,
+    registers: Array(GPR_COUNT).fill(0),
+    PMEM: Array(PMEM_SIZE_BYTES).fill(0),
+    RAM: Array(RAM_SIZE_BYTES).fill(0),
+    stack: Array(STACK_SIZE_BYTES).fill(0),
+    inputPorts: Array(INPUT_PORTS_COUNT).fill(0),
+    outputPorts: Array(OUTPUT_PORTS_COUNT).fill(0),
+    isWaitingPortInput: false,
+    cycle: 0,
+  };
+}
+
+export function defaultNoriSimulatorStateNoProgram(): NoriSimulatorState {
+  return {
+    ir: [],
     currentAddress: 0,
     ZF: false,
     CF: false,
@@ -73,9 +95,9 @@ const instructionHandlers: Record<InstructionMnemonic, InstructionHandler> = {
   HLT: halt,
 } as const;
 
-export function norisimStep(ir: IR, state: NoriSimulatorState) {
+export function norisimStep(state: NoriSimulatorState) {
   const clonedState = cloneDeep(state) as NoriSimulatorState;
-  const instruction = ir[state.currentAddress];
+  const instruction = clonedState.ir[clonedState.currentAddress];
 
   const handler = instructionHandlers[instruction.mnemonic];
   handler(clonedState, instruction.operands);
@@ -282,7 +304,13 @@ function loadFromRAM(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function storeToRAM(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationAddressRegister = operands[0].value as number;
+  const destinationAddress = state.registers[destinationAddressRegister];
+  const sourceRegister = operands[1].value as number;
+  const sourceValue = state.registers[sourceRegister];
+  state.RAM[destinationAddress] = sourceValue;
+  console.log(`Stored ${sourceValue} to RAM[${destinationAddress}]`);
+  state.currentAddress++;
 }
 
 function portStore(state: NoriSimulatorState, operands: Operand[]) {

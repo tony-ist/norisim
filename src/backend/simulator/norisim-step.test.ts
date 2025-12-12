@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultNoriSimulatorState, norisimStep, NoriSimulatorState, updateZNF } from './norisim-step';
+import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimStep, NoriSimulatorState, updateZNF } from './norisim-step';
 import { compileToIR } from '../asm/irgen';
 
 describe('norisimStep', () => {
@@ -136,7 +136,7 @@ describe('updateFlags', () => {
     [1, false],
     [-1, false],
   ])('%s should update zero flag to %s', (result, expectedZF) => {
-    const state = defaultNoriSimulatorState();
+    const state = defaultNoriSimulatorStateNoProgram();
     updateZNF(state, result);
     expect(state.ZF).toBe(expectedZF);
   });
@@ -146,7 +146,7 @@ describe('updateFlags', () => {
     [1, false],
     [-1, true],
   ])('%s should update negative flag to %s', (result, expectedNF) => {
-    const state = defaultNoriSimulatorState();
+    const state = defaultNoriSimulatorStateNoProgram();
     updateZNF(state, result);
     expect(state.NF).toBe(expectedNF);
   });
@@ -156,13 +156,13 @@ describe('updateFlags', () => {
     [1, true],
     [-1, true],
   ])('%s should update carry flag to %s', (result, expectedCF) => {
-    const state = defaultNoriSimulatorState();
+    const state = defaultNoriSimulatorStateNoProgram();
     updateZNF(state, result);
     expect(state.CF).toBe(expectedCF);
   });
 
   it('should update carry flag', () => {
-    const state = defaultNoriSimulatorState();
+    const state = defaultNoriSimulatorStateNoProgram();
     updateZNF(state, 256);
     expect(state.CF).toBe(true);
   });
@@ -172,15 +172,14 @@ describe('updateFlags', () => {
     [-42, true],
     [128, true],
   ])('%s should update overflow flag to %s', (result, expectedVF) => {
-    const state = defaultNoriSimulatorState();
+    const state = defaultNoriSimulatorStateNoProgram();
     updateZNF(state, result);
     expect(state.VF).toBe(expectedVF);
   });
 });
 
 function assertCodeStep(code: string, initialStateMixin: Partial<NoriSimulatorState>, expectedStateMixin: Partial<NoriSimulatorState>) {
-  const ir = compileToIR(code);
-  const state = { ...defaultNoriSimulatorState(), ...initialStateMixin };
-  const newState = norisimStep(ir, state);
+  const state = { ...defaultNoriSimulatorState(code), ...initialStateMixin };
+  const newState = norisimStep(state);
   expect(newState).toEqual({ ...state, ...expectedStateMixin });
 }
