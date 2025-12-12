@@ -125,10 +125,14 @@ function loadImmediate(state: NoriSimulatorState, operands: Operand[]) {
 function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
   const register = operands[0].value as number;
   const immediate = operands[1].value as number;
-  const result = state.registers[register] + immediate;
-  state.registers[register] = result;
+  const operand = state.registers[register];
+  const fullResult = operand + immediate;
+  const result8bit = (operand + immediate) & 0xFF;
+  state.registers[register] = result8bit;
 
-  updateZNF(state, result);
+  updateZNF(state, result8bit);
+  state.CF = (fullResult & 0x100) !== 0;
+  state.VF = (((operand ^ result8bit) & (immediate ^ result8bit)) & SIGN_MASK) !== 0;
 
   state.currentAddress++;
 }
@@ -146,9 +150,15 @@ function add(state: NoriSimulatorState, operands: Operand[]) {
   const operandB = state.registers[srcBRegister];
   const result = operandA + operandB;
   state.registers[destinationRegister] = result;
-  updateZNF(state, result);
-  state.CF = ((result >> 8) & 1) === 1;
-  state.VF = (((operandA ^ result) & (operandB ^ result)) & SIGN_MASK) !== 0;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = ((result >> 8) & 1) === 1;
+    state.VF = (((operandA ^ result) & (operandB ^ result)) & SIGN_MASK) !== 0;
+  }
+
   state.currentAddress++;
 }
 
@@ -160,9 +170,15 @@ function subtract(state: NoriSimulatorState, operands: Operand[]) {
   const operandB = state.registers[srcBRegister];
   const result = operandA - operandB;
   state.registers[destinationRegister] = result;
-  updateZNF(state, result);
-  state.CF = operandA < operandB;
-  state.VF = (((operandA ^ operandB) & (operandA ^ result)) & SIGN_MASK) !== 0;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = operandA < operandB;
+    state.VF = (((operandA ^ operandB) & (operandA ^ result)) & SIGN_MASK) !== 0;
+  }
+
   state.currentAddress++;
 }
 
@@ -174,9 +190,15 @@ function and(state: NoriSimulatorState, operands: Operand[]) {
   const operandB = state.registers[srcBRegister];
   const result = operandA & operandB;
   state.registers[destinationRegister] = result;
-  updateZNF(state, result);
-  state.CF = false;
-  state.VF = false;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
   state.currentAddress++;
 }
 
@@ -210,9 +232,15 @@ function shiftRight(state: NoriSimulatorState, operands: Operand[]) {
   const operand = state.registers[srcRegister];
   const result = operand >> 1;
   state.registers[destinationRegister] = result;
-  updateZNF(state, result);
-  state.CF = false;
-  state.VF = false;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
   state.currentAddress++;
 }
 

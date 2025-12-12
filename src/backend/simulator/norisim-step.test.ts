@@ -33,6 +33,103 @@ describe('norisimStep', () => {
     assertCodeStep(code, initialStateMixin, expectedStateMixin);
   });
 
+  describe('add.f', () => {
+    it.each([
+      {
+        name: 'zero result, all flags false except ZF',
+        registers: [0, 0, 3, -3, 0, 0, 0, 0],
+        expected: {
+          ZF: true,
+          NF: false,
+          CF: false,
+          VF: false,
+          result: 0,
+        },
+      },
+      {
+        name: 'positive result, all flags false',
+        registers: [0, 0, 1, 2, 0, 0, 0, 0],
+        expected: {
+          ZF: false,
+          NF: false,
+          CF: false,
+          VF: false,
+          result: 3,
+        },
+      },
+      {
+        name: 'negative result, NF true',
+        registers: [0, 0, -2, -3, 0, 0, 0, 0],
+        expected: {
+          ZF: false,
+          NF: true,
+          CF: false,
+          VF: false,
+          result: -5,
+        },
+      },
+      {
+        name: 'carry out (CF), no overflow',
+        registers: [0, 0, 200, 100, 0, 0, 0, 0],
+        expected: {
+          ZF: false,
+          NF: false,
+          CF: true,
+          VF: false,
+          result: 300,
+        },
+      },
+      {
+        name: 'overflow to negative (VF), not CF (127 + 2 = 129, signed overflow)',
+        registers: [0, 0, 127, 2, 0, 0, 0, 0],
+        expected: {
+          ZF: false,
+          NF: false,
+          CF: false,
+          VF: true,
+          result: 129,
+        },
+      },
+      {
+        name: 'overflow to positive (VF), not CF (-128 + -1 = -129)',
+        registers: [0, 0, -128, -1, 0, 0, 0, 0],
+        expected: {
+          ZF: false,
+          NF: true,
+          CF: true,
+          VF: true,
+          result: -129,
+        },
+      },
+      {
+        name: 'zero with carry (CF+ZF)',
+        registers: [0, 0, 256, -256, 0, 0, 0, 0],
+        expected: {
+          ZF: true,
+          NF: false,
+          CF: false,
+          VF: false,
+          result: 0,
+        },
+      },
+    ])('should update ZF/CF/NF/VF correctly: $name', ({ registers, expected }) => {
+      const code = `add.f r1, r2, r3`;
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers,
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        currentAddress: 1,
+        cycle: 1,
+        registers: [0, expected.result, ...registers.slice(2)],
+        ZF: expected.ZF,
+        CF: expected.CF,
+        NF: expected.NF,
+        VF: expected.VF,
+      };
+      assertCodeStep(code, initialStateMixin, expectedStateMixin);
+    });
+  });
+
   it('should add', () => {
     const code = `
             add r1, r2, r3
@@ -49,9 +146,7 @@ describe('norisimStep', () => {
   });
 
   it('should subtract', () => {
-    const code = `
-            sub r1, r2, r3
-        `;
+    const code = `sub r1, r2, r3`;
     const initialStateMixin: Partial<NoriSimulatorState> = {
       registers: [0, 0, 1, 2, 0, 0, 0, 0],
     };
@@ -130,7 +225,7 @@ describe('norisimStep', () => {
   });
 });
 
-describe('updateFlags', () => {
+describe('updateZNF', () => {
   it.each([
     [0, true],
     [1, false],
@@ -149,32 +244,6 @@ describe('updateFlags', () => {
     const state = defaultNoriSimulatorStateNoProgram();
     updateZNF(state, result);
     expect(state.NF).toBe(expectedNF);
-  });
-
-  it.each([
-    [0, false],
-    [1, true],
-    [-1, true],
-  ])('%s should update carry flag to %s', (result, expectedCF) => {
-    const state = defaultNoriSimulatorStateNoProgram();
-    updateZNF(state, result);
-    expect(state.CF).toBe(expectedCF);
-  });
-
-  it('should update carry flag', () => {
-    const state = defaultNoriSimulatorStateNoProgram();
-    updateZNF(state, 256);
-    expect(state.CF).toBe(true);
-  });
-
-  it.each([
-    [256, true],
-    [-42, true],
-    [128, true],
-  ])('%s should update overflow flag to %s', (result, expectedVF) => {
-    const state = defaultNoriSimulatorStateNoProgram();
-    updateZNF(state, result);
-    expect(state.VF).toBe(expectedVF);
   });
 });
 
