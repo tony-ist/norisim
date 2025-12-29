@@ -9,6 +9,8 @@ interface HexViewerPropTypes {
   highlightByte?: number
 }
 
+const MAX_ROWS = 16;
+
 export function HexViewer(props: HexViewerPropTypes) {
   const { title, binaryData, highlightByte } = props;
 
@@ -28,7 +30,7 @@ export function HexViewer(props: HexViewerPropTypes) {
           )
         }
         {
-          groupedHexData.map((group, groupIndex) => (
+          groupedHexData.slice(0, MAX_ROWS).map((group, groupIndex) => (
             <Box key={groupIndex} sx={{ display: 'flex', flexDirection: 'row' }}>
               <Box className={styles.label}>{rowLabels[groupIndex]}</Box>
               <Box sx={{ marginRight: 1 }}>|</Box>
