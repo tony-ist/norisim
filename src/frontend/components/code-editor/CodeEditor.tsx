@@ -26,17 +26,25 @@ export function CodeEditor() {
     return (
       <Box className={styles.compiledCodeContainer}>
         {
-          noriSimulatorState.ir.map((node: IRNode) => (
-            <Box key={node.address.toString()} className={styles.codeLineContainer}>
-              {
-                noriSimulatorState.currentAddress === node.address ? <ArrowForwardIcon /> : <Box width={24} />
-              }
-              {
-                prettyPrintIRNode(node)
-              }
-            </Box>
-          ),
-          )
+          noriSimulatorState.ir.map((node: IRNode) => {
+            const hasLabel = !!node.label;
+            const isCurrentAddress = noriSimulatorState.currentAddress === node.address;
+
+            return (
+              <Box key={node.address.toString()}>
+                {hasLabel && (
+                  <Box className={styles.codeLineContainer}>
+                    <Box width={24} />
+                    {prettyPrintLabel(node.label!)}
+                  </Box>
+                )}
+                <Box className={`${styles.codeLineContainer} ${styles.instructionLine}`}>
+                  {isCurrentAddress ? <ArrowForwardIcon /> : <Box width={24} />}
+                  {prettyPrintIRNode(node)}
+                </Box>
+              </Box>
+            );
+          })
         }
       </Box>
     );
@@ -53,11 +61,14 @@ export function CodeEditor() {
   );
 }
 
+function prettyPrintLabel(label: string) {
+  return `${label}:`;
+}
+
 function prettyPrintIRNode(node: IRNode) {
-  const label = node.label ? `${node.label}: ` : '';
   const hexAddress = toHexWord(node.address);
   const flag = node.forceUpdateFlags ? '.F' : '';
-  return `${hexAddress} ${label}${node.mnemonic}${flag} ${node.operands.map((operand: Operand) => prettyPrintOperand(operand)).join(', ')}`;
+  return `${hexAddress} ${node.mnemonic}${flag} ${node.operands.map((operand: Operand) => prettyPrintOperand(operand)).join(', ')}`;
 }
 
 function prettyPrintOperand(operand: Operand) {
