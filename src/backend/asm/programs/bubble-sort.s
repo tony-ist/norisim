@@ -46,7 +46,7 @@ lim r1, 0 // r1 = i
         mld r1, r4
         mld r3, r5
         sub.f r0, r1, r3
-        jle .inner_loop_end
+        jge .inner_loop_end
 
         // if arr[i] > arr[j]
         // swap arr[i] and arr[j]    
@@ -57,7 +57,7 @@ lim r1, 0 // r1 = i
         .inner_loop_end
         inc r3
         sub.f r0, r3, r2
-        jnz .inner_loop
+        jl .inner_loop
         
     inc r1
     sub.f r0, r1, r2

@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { simulatorSlice } from '../../store/slices/simulatorSlice';
 import { RootState, store } from '../../store';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export function SimulatorControls() {
   const dispatch = useAppDispatch();
@@ -13,6 +13,7 @@ export function SimulatorControls() {
   const ir = useAppSelector((state: RootState) => state.simulator.noriSimulatorState?.ir);
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
   const [isRunning, setIsRunning] = useState(false);
+  const shouldContinueRef = useRef(true);
 
   function compile() {
     dispatch(simulatorSlice.actions.init(sourceCode));
@@ -25,6 +26,11 @@ export function SimulatorControls() {
   function reset() {
     dispatch(simulatorSlice.actions.reset());
     setIsRunning(false);
+    shouldContinueRef.current = true;
+  }
+
+  function stop() {
+    shouldContinueRef.current = false;
   }
 
   async function run() {
@@ -33,8 +39,13 @@ export function SimulatorControls() {
     }
 
     setIsRunning(true);
+    shouldContinueRef.current = true;
 
     while (true) {
+      if (!shouldContinueRef.current) {
+        break;
+      }
+
       const currentState = store.getState();
       const currentIR = currentState.simulator.noriSimulatorState?.ir;
       const currentSimulatorState = currentState.simulator.noriSimulatorState;
@@ -63,6 +74,7 @@ export function SimulatorControls() {
     }
 
     setIsRunning(false);
+    shouldContinueRef.current = true;
   }
 
   return (
@@ -87,14 +99,26 @@ export function SimulatorControls() {
           </Button>
         </Box>
         <Box>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={run}
-            disabled={!isInitialized || isRunning}
-          >
-            Run
-          </Button>
+          {isRunning
+            ? (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={stop}
+                >
+                  Stop
+                </Button>
+              )
+            : (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={run}
+                  disabled={!isInitialized}
+                >
+                  Run
+                </Button>
+              )}
         </Box>
         <Box>
           <Button

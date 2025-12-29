@@ -296,7 +296,12 @@ function jumpNotCarry(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpLess(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  if (state.NF === state.VF) {
+    state.currentAddress++;
+    return;
+  }
+
+  jump(state, operands);
 }
 
 function jumpGreater(state: NoriSimulatorState, operands: Operand[]) {
@@ -313,7 +318,12 @@ function jumpLessEqual(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpGreaterEqual(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  if (state.NF && state.VF) {
+    state.currentAddress++;
+    return;
+  }
+
+  jump(state, operands);
 }
 
 function call(state: NoriSimulatorState, operands: Operand[]) {
