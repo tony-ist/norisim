@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimStep, NoriSimulatorState, updateZNF } from './norisim-step';
+import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimStep, norisimSteps, NoriSimulatorState, updateZNF } from './norisim-step';
 
 describe('norisimStep', () => {
   it('should load immediate', () => {
@@ -214,6 +214,65 @@ describe('norisimStep', () => {
       assertCodeStep(code, initialStateMixin, expectedStateMixin);
     });
   });
+
+  describe('JGE', () => {
+    it('should not jump on 2 - 3', () => {
+      const code = `
+        sub.f r0, r1, r2
+        jge .label1
+        nop
+        .label1 nop
+      `;
+
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers: [0, 2, 3, 0, 0, 0, 0, 0],
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        CF: true,
+        NF: true,
+        currentAddress: 2,
+        cycle: 2,
+      };
+      assertCodeDoubleStep(code, initialStateMixin, expectedStateMixin);
+    });
+
+    it('should jump on 3 - 3', () => {
+      const code = `
+        sub.f r0, r1, r2
+        jge .label1
+        nop
+        .label1 nop
+      `;
+
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers: [0, 3, 3, 0, 0, 0, 0, 0],
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        ZF: true,
+        currentAddress: 3,
+        cycle: 2,
+      };
+      assertCodeDoubleStep(code, initialStateMixin, expectedStateMixin);
+    });
+
+    it('should jump on 4 - 3', () => {
+      const code = `
+        sub.f r0, r1, r2
+        jge .label1
+        nop
+        .label1 nop
+      `;
+
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers: [0, 4, 3, 0, 0, 0, 0, 0],
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        currentAddress: 3,
+        cycle: 2,
+      };
+      assertCodeDoubleStep(code, initialStateMixin, expectedStateMixin);
+    });
+  });
 });
 
 describe('updateZNF', () => {
@@ -241,5 +300,11 @@ describe('updateZNF', () => {
 function assertCodeStep(code: string, initialStateMixin: Partial<NoriSimulatorState>, expectedStateMixin: Partial<NoriSimulatorState>) {
   const state = { ...defaultNoriSimulatorState(code), ...initialStateMixin };
   const newState = norisimStep(state);
+  expect(newState).toEqual({ ...state, ...expectedStateMixin });
+}
+
+function assertCodeDoubleStep(code: string, initialStateMixin: Partial<NoriSimulatorState>, expectedStateMixin: Partial<NoriSimulatorState>) {
+  const state = { ...defaultNoriSimulatorState(code), ...initialStateMixin };
+  const newState = norisimSteps(state, 2);
   expect(newState).toEqual({ ...state, ...expectedStateMixin });
 }

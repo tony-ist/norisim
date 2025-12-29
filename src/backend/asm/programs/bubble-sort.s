@@ -1,5 +1,5 @@
 lim r1, 0
-lim r2, 8 // array length
+lim r2, 187
 mst r1, r2
 
 inc r1
@@ -34,7 +34,7 @@ inc r1
 lim r2, 187
 mst r1, r2
 
-mld r0, r2 // array length
+lim r2, 8 // array length
 dec r2
 lim r1, 0 // r1 = i
 
@@ -45,7 +45,7 @@ lim r1, 0 // r1 = i
     .inner_loop
         mld r1, r4
         mld r3, r5
-        sub.f r0, r1, r3
+        sub.f r0, r4, r5
         jge .inner_loop_end
 
         // if arr[i] > arr[j]

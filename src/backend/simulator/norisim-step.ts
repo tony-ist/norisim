@@ -107,6 +107,14 @@ export function norisimStep(state: NoriSimulatorState) {
   return clonedState;
 }
 
+export function norisimSteps(state: NoriSimulatorState, steps: number) {
+  let currentState = state;
+  for (let i = 0; i < steps; i++) {
+    currentState = norisimStep(currentState);
+  }
+  return currentState;
+}
+
 function cloneDeep(state: NoriSimulatorState) {
   return JSON.parse(JSON.stringify(state));
 }
@@ -318,7 +326,7 @@ function jumpLessEqual(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpGreaterEqual(state: NoriSimulatorState, operands: Operand[]) {
-  if (state.NF && state.VF) {
+  if (state.NF !== state.VF) {
     state.currentAddress++;
     return;
   }
