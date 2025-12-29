@@ -1,7 +1,7 @@
 import { BITNESS, GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
 import { countBits } from '../../util/asm-util';
 import { compileToIR } from '../asm/irgen';
-import { InstructionMnemonic, IR, Label, Operand } from '../types/asm.types';
+import { ASTInstructionMnemonic, IR, Label, Operand, RealInstructionMnemonic } from '../types/asm.types';
 
 export interface NoriSimulatorState {
   ir: IR
@@ -60,7 +60,7 @@ export function defaultNoriSimulatorStateNoProgram(): NoriSimulatorState {
 
 type InstructionHandler = (state: NoriSimulatorState, operands: Operand[]) => void;
 
-const instructionHandlers: Record<InstructionMnemonic, InstructionHandler> = {
+const instructionHandlers: Record<RealInstructionMnemonic, InstructionHandler> = {
   NOP: noOperation,
   LIM: loadImmediate,
   ADDI: addImmediate,

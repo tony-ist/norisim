@@ -83,4 +83,48 @@ describe('generateIR', () => {
     expect(ir[0].mnemonic).toBe('ADD');
     expect(ir[0].forceUpdateFlags).toBe(true);
   });
+
+  it('should replace INC pseudo instructions with real instructions', () => {
+    const ast: AST = [
+      {
+        mnemonic: 'INC',
+        forceUpdateFlags: false,
+        operands: [{ type: 'register', value: 2 }],
+      },
+    ];
+
+    const ir = generateIR(ast);
+
+    expect(ir.length).toBe(1);
+
+    expect(ir[0].mnemonic).toBe('ADDI');
+    expect(ir[0].operands).toStrictEqual([{ type: 'register', value: 2 }, { type: 'immediate', value: 1 }]);
+    expect(ir[0].format).toBe('I');
+    expect(ir[0].address).toBe(0);
+    expect(ir[0].forceUpdateFlags).toBe(false);
+    expect(ir[0].label).toBe(undefined);
+    expect(ir[0].inlineComment).toBe(undefined);
+  });
+
+  it('should replace DEC pseudo instructions with real instructions', () => {
+    const ast: AST = [
+      {
+        mnemonic: 'DEC',
+        forceUpdateFlags: false,
+        operands: [{ type: 'register', value: 2 }],
+      },
+    ];
+
+    const ir = generateIR(ast);
+
+    expect(ir.length).toBe(1);
+
+    expect(ir[0].mnemonic).toBe('ADDI');
+    expect(ir[0].operands).toStrictEqual([{ type: 'register', value: 2 }, { type: 'immediate', value: -1 }]);
+    expect(ir[0].format).toBe('I');
+    expect(ir[0].address).toBe(0);
+    expect(ir[0].forceUpdateFlags).toBe(false);
+    expect(ir[0].label).toBe(undefined);
+    expect(ir[0].inlineComment).toBe(undefined);
+  });
 });

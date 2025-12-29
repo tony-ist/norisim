@@ -1,11 +1,11 @@
 export type Format = 'A' | 'B' | 'C' | 'I' | 'J' | 'Z';
 
-export interface InstructionInfo {
+export interface RealInstructionInfo {
   format: Format
   opcode: number
 }
 
-export const INSTRUCTIONS = {
+export const REAL_INSTRUCTIONS = {
   NOP: { opcode: 0x00, format: 'Z' },
   LIM: { opcode: 0x01, format: 'I' },
   ADDI: { opcode: 0x02, format: 'I' },
@@ -38,74 +38,55 @@ export const INSTRUCTIONS = {
   PST: { opcode: 0x1B, format: 'I' },
   PLD: { opcode: 0x1C, format: 'I' },
   HLT: { opcode: 0x1D, format: 'Z' },
-} satisfies Record<string, InstructionInfo>;
+} satisfies Record<RealInstructionMnemonic, RealInstructionInfo>;
 
-export type InstructionMnemonic = 'NOP' | 'LIM' | 'ADD' | 'ADDI' | 'SUB' | 'AND' | 'NAND' | 'OR' | 'NOR' | 'XOR' | 'XNOR' | 'NOT' | 'SHR' | 'JMP' | 'JZ' | 'JNZ' | 'JC' | 'JNC' | 'JL' | 'JG' | 'JLE' | 'JGE' | 'CAL' | 'RET' | 'PSH' | 'POP' | 'MLD' | 'MST' | 'MOV' | 'PST' | 'PLD' | 'HLT';
-export type DataMnemonic = 'DB';
+export const REAL_INSTRUCTION_MNEMONICS = [
+  'NOP',
+  'LIM',
+  'ADD',
+  'ADDI',
+  'SUB',
+  'AND',
+  'NAND',
+  'OR',
+  'NOR',
+  'XOR',
+  'XNOR',
+  'NOT',
+  'SHR',
+  'JMP',
+  'JZ',
+  'JNZ',
+  'JC',
+  'JNC',
+  'JL',
+  'JG',
+  'JLE',
+  'JGE',
+  'CAL',
+  'RET',
+  'PSH',
+  'POP',
+  'MLD',
+  'MST',
+  'MOV',
+  'PST',
+  'PLD',
+  'HLT',
+] as const;
 
-export interface BaseInstruction {
-  mnemonic: InstructionMnemonic
-  format: Format
-  address: number
-  label?: string
-  inlineComment?: string
-}
+export const PSEUDO_INSTRUCTION_MNEMONICS = [
+  'INC',
+  'DEC',
+] as const;
 
-export interface AFormat extends BaseInstruction {
-  format: 'A'
-  updateFlags: boolean
-  destRegister: number
-  srcRegisterA: number
-  srcRegisterB: number
-}
-
-export interface BFormat extends BaseInstruction {
-  format: 'B'
-  updateFlags: boolean
-  register1: number
-  register2: number
-}
-
-export interface CFormat extends BaseInstruction {
-  format: 'C'
-  register: number
-}
-
-export interface IFormat extends BaseInstruction {
-  format: 'I'
-  register: number
-  immediate: number
-}
-
-export interface JFormat extends BaseInstruction {
-  format: 'J'
-  targetLabel: string
-  targetAddress?: number
-}
-
-export interface ZFormat extends BaseInstruction {
-  format: 'Z'
-}
-
-export interface Data {
-  mnemonic: DataMnemonic
-  address: number
-  label?: string
-  inlineComment?: string
-  value: number
-}
-
-export type Instruction
-  = | AFormat
-    | BFormat
-    | CFormat
-    | IFormat
-    | JFormat
-    | ZFormat
-  ;
+export type PseudoInstructionMnemonic = typeof PSEUDO_INSTRUCTION_MNEMONICS[number];
+export type ASTInstructionMnemonic = typeof REAL_INSTRUCTION_MNEMONICS[number] | PseudoInstructionMnemonic;
+export type RealInstructionMnemonic = typeof REAL_INSTRUCTION_MNEMONICS[number];
+export type IRInstructionMnemonic = RealInstructionMnemonic;
 
 export interface IRNode {
-  mnemonic: InstructionMnemonic
+  mnemonic: IRInstructionMnemonic
   operands: Operand[]
   format: Format
   address: number
@@ -134,7 +115,7 @@ export interface Label {
   targetAddress?: number
 }
 
-export const OPERAND_TYPES = {
+export const REAL_INSTRUCTIONS_OPERAND_TYPES = {
   A: ['register', 'register', 'register'],
   B: ['register', 'register'],
   C: ['register'],
@@ -143,8 +124,13 @@ export const OPERAND_TYPES = {
   Z: [],
 } satisfies Record<Format, Operand['type'][]>;
 
+export const PSEUDO_INSTRUCTION_OPERAND_TYPES = {
+  INC: ['register'],
+  DEC: ['register'],
+} satisfies Record<PseudoInstructionMnemonic, Operand['type'][]>;
+
 export interface ASTNode {
-  mnemonic: InstructionMnemonic
+  mnemonic: ASTInstructionMnemonic
   forceUpdateFlags: boolean
   label?: string
   inlineComment?: string
