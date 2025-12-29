@@ -3,9 +3,7 @@ import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimS
 
 describe('norisimStep', () => {
   it('should load immediate', () => {
-    const code = `
-            lim r1, 5
-        `;
+    const code = `lim r1, 5`;
     const initialStateMixin: Partial<NoriSimulatorState> = {
       registers: [0, 1, 0, 0, 0, 0, 0, 0],
     };
@@ -18,9 +16,7 @@ describe('norisimStep', () => {
   });
 
   it('should add immediate', () => {
-    const code = `
-            addi r1, 5
-        `;
+    const code = `addi r1, 5`;
     const initialStateMixin: Partial<NoriSimulatorState> = {
       registers: [0, 1, 0, 0, 0, 0, 0, 0],
     };
@@ -130,9 +126,7 @@ describe('norisimStep', () => {
   });
 
   it('should add', () => {
-    const code = `
-            add r1, r2, r3
-        `;
+    const code = `add r1, r2, r3`;
     const initialStateMixin: Partial<NoriSimulatorState> = {
       registers: [0, 0, 1, 2, 0, 0, 0, 0],
     };
@@ -158,9 +152,7 @@ describe('norisimStep', () => {
   });
 
   it('should bitwise and', () => {
-    const code = `
-      and r1, r2, r3
-    `;
+    const code = `and r1, r2, r3`;
     const initialStateMixin: Partial<NoriSimulatorState> = {
       registers: [0, 0, 3, 5, 0, 0, 0, 0],
     };
