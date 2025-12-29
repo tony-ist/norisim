@@ -304,7 +304,12 @@ function jumpGreater(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpLessEqual(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  if (!(state.ZF || (state.NF && state.VF))) {
+    state.currentAddress++;
+    return;
+  }
+
+  jump(state, operands);
 }
 
 function jumpGreaterEqual(state: NoriSimulatorState, operands: Operand[]) {
@@ -328,7 +333,12 @@ function pop(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function loadFromRAM(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const addressRegister = operands[0].value as number;
+  const destinationRegister = operands[1].value as number;
+  const address = state.registers[addressRegister];
+  const value = state.RAM[address];
+  state.registers[destinationRegister] = value;
+  state.currentAddress++;
 }
 
 function storeToRAM(state: NoriSimulatorState, operands: Operand[]) {
@@ -337,7 +347,6 @@ function storeToRAM(state: NoriSimulatorState, operands: Operand[]) {
   const sourceRegister = operands[1].value as number;
   const sourceValue = state.registers[sourceRegister];
   state.RAM[destinationAddress] = sourceValue;
-  console.log(`Stored ${sourceValue} to RAM[${destinationAddress}]`);
   state.currentAddress++;
 }
 
