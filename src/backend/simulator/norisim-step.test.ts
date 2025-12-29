@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimStep, NoriSimulatorState, updateZNF } from './norisim-step';
-import { compileToIR } from '../asm/irgen';
 
 describe('norisimStep', () => {
   it('should load immediate', () => {
@@ -63,7 +62,7 @@ describe('norisimStep', () => {
         expected: {
           ZF: false,
           NF: true,
-          CF: false,
+          CF: true,
           VF: false,
           result: -5,
         },

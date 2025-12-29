@@ -155,7 +155,7 @@ function add(state: NoriSimulatorState, operands: Operand[]) {
 
   if (forceUpdateFlags) {
     updateZNF(state, result);
-    state.CF = ((result >> 8) & 1) === 1;
+    state.CF = (result & 0x100) !== 0;
     state.VF = (((operandA ^ result) & (operandB ^ result)) & SIGN_MASK) !== 0;
   }
 
