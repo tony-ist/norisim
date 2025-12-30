@@ -138,17 +138,34 @@ describe('norisimStep', () => {
     assertCodeStep(code, initialStateMixin, expectedStateMixin);
   });
 
-  it('should subtract', () => {
-    const code = `sub r1, r2, r3`;
-    const initialStateMixin: Partial<NoriSimulatorState> = {
-      registers: [0, 0, 1, 2, 0, 0, 0, 0],
-    };
-    const expectedStateMixin: Partial<NoriSimulatorState> = {
-      currentAddress: 1,
-      cycle: 1,
-      registers: [0, -1, 1, 2, 0, 0, 0, 0],
-    };
-    assertCodeStep(code, initialStateMixin, expectedStateMixin);
+  describe('subtraction', () => {
+    it('should subtract', () => {
+      const code = `sub r1, r2, r3`;
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers: [0, 0, 1, 2, 0, 0, 0, 0],
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        currentAddress: 1,
+        cycle: 1,
+        registers: [0, -1, 1, 2, 0, 0, 0, 0],
+      };
+      assertCodeStep(code, initialStateMixin, expectedStateMixin);
+    });
+
+    it('should update flags', () => {
+      const code = `sub r1, r2, r3`;
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers: [0, 0, 0x2A, 0x85, 0, 0, 0, 0],
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        CF: true,
+        NF: true,
+        currentAddress: 1,
+        cycle: 1,
+        registers: [0, -91, 0x2A, 0x85, 0, 0, 0, 0, 0],
+      };
+      assertCodeStep(code, initialStateMixin, expectedStateMixin);
+    });
   });
 
   it('should bitwise and', () => {
