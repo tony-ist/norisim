@@ -29,10 +29,8 @@ npm run test
 
 ## TODO
 - Display 
-- Console
+- Text output device
 - Test overflowing values are masked and correctly stored in registers
-- Labels should be on a separate line in disassembly to clearly separate instructions
-- Stop button to stop running
 
 ### UI Components
 - **Program memory hex view**

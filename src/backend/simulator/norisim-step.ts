@@ -320,7 +320,12 @@ function jumpLess(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpGreater(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  if (state.ZF || (state.NF && state.VF)) {
+    state.currentAddress++;
+    return;
+  }
+
+  jump(state, operands);
 }
 
 function jumpLessEqual(state: NoriSimulatorState, operands: Operand[]) {

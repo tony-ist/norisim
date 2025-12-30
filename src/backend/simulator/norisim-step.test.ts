@@ -314,14 +314,16 @@ describe('updateZNF', () => {
   });
 });
 
-function assertCodeStep(code: string, initialStateMixin: Partial<NoriSimulatorState>, expectedStateMixin: Partial<NoriSimulatorState>) {
+function assertCodeNSteps(code: string, initialStateMixin: Partial<NoriSimulatorState>, expectedStateMixin: Partial<NoriSimulatorState>, n: number) {
   const state = { ...defaultNoriSimulatorState(code), ...initialStateMixin };
-  const newState = norisimStep(state);
+  const newState = norisimSteps(state, n);
   expect(newState).toEqual({ ...state, ...expectedStateMixin });
 }
 
+function assertCodeStep(code: string, initialStateMixin: Partial<NoriSimulatorState>, expectedStateMixin: Partial<NoriSimulatorState>) {
+  assertCodeNSteps(code, initialStateMixin, expectedStateMixin, 1);
+}
+
 function assertCodeDoubleStep(code: string, initialStateMixin: Partial<NoriSimulatorState>, expectedStateMixin: Partial<NoriSimulatorState>) {
-  const state = { ...defaultNoriSimulatorState(code), ...initialStateMixin };
-  const newState = norisimSteps(state, 2);
-  expect(newState).toEqual({ ...state, ...expectedStateMixin });
+  assertCodeNSteps(code, initialStateMixin, expectedStateMixin, 2);
 }
