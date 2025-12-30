@@ -53,3 +53,19 @@ export function padHexWord(word: string) {
 export function toHexWord(number: number) {
   return '0x' + padHexWord(number.toString(16).toUpperCase());
 }
+
+export function isSignedByteInBounds(value: number) {
+  return value >= -128 && value < 128;
+}
+
+export function isUnsignedByteInBounds(value: number) {
+  return value >= 0 && value < 256;
+}
+
+export function asSignedByte(value: number) {
+  if (value < 0 || value > 255 || !Number.isInteger(value)) {
+    throw new Error(`Cannot convert ${value} to signed byte: value must be an integer between 0 and 255`);
+  }
+
+  return value < 128 ? value : value - 256;
+}

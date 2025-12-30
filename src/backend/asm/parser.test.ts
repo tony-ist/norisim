@@ -35,4 +35,25 @@ describe('toAST', () => {
     expect(ast[1].operands[0].value).toBe('.label');
     expect(ast[1].mnemonic).toBe('JMP');
   });
+
+  it.each([
+    ['0', 0],
+    ['1', 1],
+    ['-1', -1],
+    ['127', 127],
+    ['-128', -128],
+  ])('should parse immediate %s as %s', (immediate, expected) => {
+    const code = `addi r1, ${immediate}`;
+    const ast = parseToAST(code);
+    expect(ast[0].operands[1].value).toBe(expected);
+  });
+
+  it.each([
+    '128',
+    '-129',
+    '256',
+  ])('should throw an error for immediate %s', (immediate) => {
+    const code = `addi r1, ${immediate}`;
+    expect(() => parseToAST(code)).toThrow(`Immediate signed value ${immediate} is out of bounds from -128 to 127 inclusive`);
+  });
 });

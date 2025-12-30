@@ -153,16 +153,16 @@ describe('norisimStep', () => {
     });
 
     it('should update flags', () => {
-      const code = `sub r1, r2, r3`;
+      const code = `sub.f r1, r2, r3`;
       const initialStateMixin: Partial<NoriSimulatorState> = {
-        registers: [0, 0, 0x2A, 0x85, 0, 0, 0, 0],
+        registers: [0, 0, 0x2A, 0x30, 0, 0, 0, 0],
       };
       const expectedStateMixin: Partial<NoriSimulatorState> = {
         CF: true,
         NF: true,
         currentAddress: 1,
         cycle: 1,
-        registers: [0, -91, 0x2A, 0x85, 0, 0, 0, 0, 0],
+        registers: [0, -6, 0x2A, 0x30, 0, 0, 0, 0],
       };
       assertCodeStep(code, initialStateMixin, expectedStateMixin);
     });

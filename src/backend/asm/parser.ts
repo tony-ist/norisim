@@ -2,6 +2,7 @@ import * as ohm from 'ohm-js';
 import { preprocess } from './preprocessor';
 import { AST } from '../types/asm.types';
 import grammarContents from './nori-v1.ohm?raw';
+import { isSignedByteInBounds } from '../../util/asm-util';
 
 export function parseToAST(code: string, parserTrace: boolean = false): AST {
   const preprocessedCode = preprocess(code);
@@ -55,10 +56,20 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
       value: parseInt(digit.sourceString),
     }),
 
-    immediate: (minus, immediate) => ({
-      type: 'immediate',
-      value: minus.sourceString === '-' ? -parseInt(immediate.sourceString) : parseInt(immediate.sourceString),
-    }),
+    immediate: (minus, immediate) => {
+      const value = parseInt(immediate.sourceString);
+      const isNegative = minus.sourceString === '-';
+      const fullValue = isNegative ? -value : value;
+
+      if (!isSignedByteInBounds(fullValue)) {
+        throw new Error(`Immediate signed value ${fullValue} is out of bounds from -128 to 127 inclusive`);
+      }
+
+      return {
+        type: 'immediate',
+        value: fullValue,
+      };
+    },
 
     label: (_dot, label) => ({
       type: 'label',

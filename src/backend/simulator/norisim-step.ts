@@ -1,5 +1,5 @@
 import { BITNESS, GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
-import { countBits } from '../../util/asm-util';
+import { countBits, isSignedByteInBounds } from '../../util/asm-util';
 import { compileToIR } from '../asm/irgen';
 import { ASTInstructionMnemonic, IR, Label, Operand, RealInstructionMnemonic } from '../types/asm.types';
 
@@ -98,6 +98,13 @@ const instructionHandlers: Record<RealInstructionMnemonic, InstructionHandler> =
 export function norisimStep(state: NoriSimulatorState) {
   const clonedState = cloneDeep(state) as NoriSimulatorState;
   const instruction = clonedState.ir[clonedState.currentAddress];
+
+  // todo remove this check
+  const outOfBoundsOperands = instruction.operands.filter(operand => operand.type === 'immediate' && !isSignedByteInBounds(operand.value as number));
+
+  if (outOfBoundsOperands.length > 0) {
+    throw new Error(`Mnemonic: ${instruction.mnemonic} operands are out of bounds: ${outOfBoundsOperands.map(operand => operand.value).join(', ')}`);
+  }
 
   const handler = instructionHandlers[instruction.mnemonic];
   handler(clonedState, instruction.operands);

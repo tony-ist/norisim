@@ -1,5 +1,5 @@
 lim r1, 0
-lim r2, 187
+lim r2, 12
 mst r1, r2
 
 inc r1
@@ -7,11 +7,11 @@ lim r2, 42
 mst r1, r2
 
 inc r1
-lim r2, 219
+lim r2, 127
 mst r1, r2
 
 inc r1
-lim r2, 133
+lim r2, 30
 mst r1, r2
 
 inc r1
@@ -19,7 +19,7 @@ lim r2, 76
 mst r1, r2
 
 inc r1
-lim r2, 251
+lim r2, 5
 mst r1, r2
 
 inc r1
@@ -27,7 +27,7 @@ lim r2, 18
 mst r1, r2
 
 inc r1
-lim r2, 164
+lim r2, 3
 mst r1, r2
 
 lim r2, 8 // array length
