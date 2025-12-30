@@ -1,5 +1,5 @@
 import { BITNESS, GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
-import { countBits, isSignedByteInBounds } from '../../util/asm-util';
+import { asSignedByte, countBits, isSignedByteInBounds } from '../../util/asm-util';
 import { compileToIR } from '../asm/irgen';
 import { ASTInstructionMnemonic, IR, Label, Operand, RealInstructionMnemonic } from '../types/asm.types';
 
@@ -163,15 +163,16 @@ function add(state: NoriSimulatorState, operands: Operand[]) {
   const srcBRegister = operands[2].value as number;
   const operandA = state.registers[srcARegister];
   const operandB = state.registers[srcBRegister];
-  const result = operandA + operandB;
-  state.registers[destinationRegister] = result;
+  const fullResult = operandA + operandB;
+  const result8bit = asSignedByte(fullResult & 0xFF);
+  state.registers[destinationRegister] = result8bit;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
-    state.CF = (result & 0x100) !== 0;
-    state.VF = (((operandA ^ result) & (operandB ^ result)) & SIGN_MASK) !== 0;
+    updateZNF(state, result8bit);
+    state.CF = (fullResult & 0x100) !== 0;
+    state.VF = (((operandA ^ fullResult) & (operandB ^ fullResult)) & SIGN_MASK) !== 0;
   }
 
   state.currentAddress++;

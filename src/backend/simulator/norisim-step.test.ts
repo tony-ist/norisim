@@ -69,7 +69,7 @@ describe('norisimStep', () => {
         expected: {
           ZF: false,
           NF: true,
-          CF: true,
+          CF: false,
           VF: true,
           result: -56,
         },
