@@ -181,6 +181,84 @@ describe('norisimStep', () => {
     assertCodeStep(code, initialStateMixin, expectedStateMixin);
   });
 
+  it('should bitwise nand', () => {
+    const code = `nand r1, r2, r3`;
+    const initialStateMixin: Partial<NoriSimulatorState> = {
+      registers: [0, 0, 3, 5, 0, 0, 0, 0],
+    };
+    const expectedStateMixin: Partial<NoriSimulatorState> = {
+      currentAddress: 1,
+      cycle: 1,
+      registers: [0, -2, 3, 5, 0, 0, 0, 0],
+    };
+    assertCodeStep(code, initialStateMixin, expectedStateMixin);
+  });
+
+  it('should bitwise or', () => {
+    const code = `or r1, r2, r3`;
+    const initialStateMixin: Partial<NoriSimulatorState> = {
+      registers: [0, 0, 3, 5, 0, 0, 0, 0],
+    };
+    const expectedStateMixin: Partial<NoriSimulatorState> = {
+      currentAddress: 1,
+      cycle: 1,
+      registers: [0, 7, 3, 5, 0, 0, 0, 0],
+    };
+    assertCodeStep(code, initialStateMixin, expectedStateMixin);
+  });
+
+  it('should bitwise nor', () => {
+    const code = `nor r1, r2, r3`;
+    const initialStateMixin: Partial<NoriSimulatorState> = {
+      registers: [0, 0, 3, 5, 0, 0, 0, 0],
+    };
+    const expectedStateMixin: Partial<NoriSimulatorState> = {
+      currentAddress: 1,
+      cycle: 1,
+      registers: [0, -8, 3, 5, 0, 0, 0, 0],
+    };
+    assertCodeStep(code, initialStateMixin, expectedStateMixin);
+  });
+
+  it('should bitwise xor', () => {
+    const code = `xor r1, r2, r3`;
+    const initialStateMixin: Partial<NoriSimulatorState> = {
+      registers: [0, 0, 3, 5, 0, 0, 0, 0],
+    };
+    const expectedStateMixin: Partial<NoriSimulatorState> = {
+      currentAddress: 1,
+      cycle: 1,
+      registers: [0, 6, 3, 5, 0, 0, 0, 0],
+    };
+    assertCodeStep(code, initialStateMixin, expectedStateMixin);
+  });
+
+  it('should bitwise xnor', () => {
+    const code = `xnor r1, r2, r3`;
+    const initialStateMixin: Partial<NoriSimulatorState> = {
+      registers: [0, 0, 3, 5, 0, 0, 0, 0],
+    };
+    const expectedStateMixin: Partial<NoriSimulatorState> = {
+      currentAddress: 1,
+      cycle: 1,
+      registers: [0, -7, 3, 5, 0, 0, 0, 0],
+    };
+    assertCodeStep(code, initialStateMixin, expectedStateMixin);
+  });
+
+  it('should bitwise not', () => {
+    const code = `not r1, r2`;
+    const initialStateMixin: Partial<NoriSimulatorState> = {
+      registers: [0, 0, 3, 0, 0, 0, 0, 0],
+    };
+    const expectedStateMixin: Partial<NoriSimulatorState> = {
+      currentAddress: 1,
+      cycle: 1,
+      registers: [0, -4, 3, 0, 0, 0, 0, 0],
+    };
+    assertCodeStep(code, initialStateMixin, expectedStateMixin);
+  });
+
   it('should jump', () => {
     const code = `
             jmp .label1
