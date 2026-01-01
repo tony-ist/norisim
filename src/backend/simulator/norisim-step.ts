@@ -219,27 +219,121 @@ function and(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function nand(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const srcBRegister = operands[2].value as number;
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = ~(operandA & operandB);
+  state.registers[destinationRegister] = result;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
+  state.currentAddress++;
 }
 
 function or(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const srcBRegister = operands[2].value as number;
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = operandA | operandB;
+  state.registers[destinationRegister] = result;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
+  state.currentAddress++;
 }
 
 function nor(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const srcBRegister = operands[2].value as number;
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = ~(operandA | operandB);
+  state.registers[destinationRegister] = result;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
+  state.currentAddress++;
 }
 
 function xor(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const srcBRegister = operands[2].value as number;
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = operandA ^ operandB;
+  state.registers[destinationRegister] = result;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
+  state.currentAddress++;
 }
 
 function xnor(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const srcBRegister = operands[2].value as number;
+  const operandA = state.registers[srcARegister];
+  const operandB = state.registers[srcBRegister];
+  const result = ~(operandA ^ operandB);
+  state.registers[destinationRegister] = result;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
+  state.currentAddress++;
 }
 
 function not(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const destinationRegister = operands[0].value as number;
+  const srcARegister = operands[1].value as number;
+  const operandA = state.registers[srcARegister];
+  const result = ~operandA;
+  state.registers[destinationRegister] = result;
+
+  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
+
+  if (forceUpdateFlags) {
+    updateZNF(state, result);
+    state.CF = false;
+    state.VF = false;
+  }
+
+  state.currentAddress++;
 }
 
 function shiftRight(state: NoriSimulatorState, operands: Operand[]) {
@@ -304,11 +398,21 @@ function validateJumpTarget(operand: Operand) {
 }
 
 function jumpCarry(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  if (!state.CF) {
+    state.currentAddress++;
+    return;
+  }
+
+  jump(state, operands);
 }
 
 function jumpNotCarry(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  if (state.CF) {
+    state.currentAddress++;
+    return;
+  }
+
+  jump(state, operands);
 }
 
 function jumpLess(state: NoriSimulatorState, operands: Operand[]) {
@@ -389,12 +493,14 @@ function portStore(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function portLoad(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
+  const register = operands[0].value as number;
+  const port = operands[1].value as number;
+  state.registers[register] = state.inputPorts[port];
+  state.isWaitingPortInput = false;
+  state.currentAddress++;
 }
 
-function halt(state: NoriSimulatorState, operands: Operand[]) {
-  throw new Error('Not implemented');
-}
+function halt(state: NoriSimulatorState, operands: Operand[]) {}
 
 function pcFromAddress(address: number) {
   if (countBits(address) > PC_BITS + SR_BITS) {
