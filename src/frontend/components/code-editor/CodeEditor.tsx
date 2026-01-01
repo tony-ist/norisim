@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import codeSlice, { setSourceCode } from '../../store/slices/codeSlice';
 import { RootState } from '../../store';
 import { IR, IRNode, Operand } from '../../../backend/types/asm.types';
-import sampleCode from '../../../backend/asm/programs/bubble-sort.s?raw';
+import sampleCode from '../../../backend/asm/programs/port-load.s?raw';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import styles from './CodeEditor.module.css';
 import { toHexWord } from '../../../util/asm-util';
