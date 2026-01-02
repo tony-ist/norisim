@@ -27,6 +27,8 @@ export const simulatorSlice = createSlice({
         state.noriSimulatorState = defaultNoriSimulatorState(code);
         state.error = null;
         state.errorStack = null;
+        state.isWaitingPortInput = false;
+        state.isRunning = false;
       }
       catch (error) {
         if (error instanceof Error) {
