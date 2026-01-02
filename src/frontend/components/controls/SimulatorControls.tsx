@@ -41,6 +41,7 @@ export function SimulatorControls() {
 
     const currentInstruction = currentIR[currentSimulatorState.currentAddress];
     if (currentInstruction && currentInstruction.mnemonic === 'HLT') {
+      dispatch(simulatorSlice.actions.stop());
       setScheduled(false);
       return;
     }

@@ -49,6 +49,10 @@ export const simulatorSlice = createSlice({
         return state;
       }
 
+      if (state.isWaitingPortInput) {
+        return state;
+      }
+
       try {
         state.noriSimulatorState = norisimStep(state.noriSimulatorState);
         const instruction = state.noriSimulatorState.ir[state.noriSimulatorState.currentAddress];
@@ -95,10 +99,8 @@ export const simulatorSlice = createSlice({
         }
       }
     },
-    reset: (state) => {
-      state.noriSimulatorState = null;
-      state.error = null;
-      state.errorStack = null;
+    reset: () => {
+      return initialState;
     },
   },
 });

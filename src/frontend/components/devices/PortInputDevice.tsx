@@ -1,13 +1,19 @@
 import { Box, TextField, Button } from '@mui/material';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useState } from 'react';
 import { simulatorSlice } from '../../store/slices/simulatorSlice';
+import { RootState } from '../../store';
 
-export function PortInputDeviceComponent() {
+export function PortInputDevice() {
   const [inputValue, setInputValue] = useState('');
   const [parsedInputValue, setParsedInputValue] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const isWaitingPortInput = useAppSelector((state: RootState) => state.simulator.isWaitingPortInput);
   const dispatch = useAppDispatch();
+
+  if (!isWaitingPortInput) {
+    return null;
+  }
 
   function parsePortInputValue(value: string) {
     const lowerValue = value.toLowerCase();
@@ -57,7 +63,7 @@ export function PortInputDeviceComponent() {
       <Button
         variant="contained"
         onClick={handleOkClick}
-        disabled={error !== null}
+        disabled={error !== null || inputValue === ''}
       >
         Ok
       </Button>
