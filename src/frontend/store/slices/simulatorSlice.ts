@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimStep, NoriSimulatorState } from '../../../backend/simulator/norisim-step';
+import { defaultNoriSimulatorState, norisimStep, NoriSimulatorState } from '../../../backend/simulator/norisim-step';
 
 interface SimulatorState {
   noriSimulatorState: NoriSimulatorState | null

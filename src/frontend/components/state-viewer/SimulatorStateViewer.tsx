@@ -1,15 +1,14 @@
 import Box from '@mui/material/Box';
 import { toHexWord } from '../../../util/asm-util.ts';
-import { RegViewer } from '../reg-viewer/RegViewer.tsx';
-import { FlagsViewer } from '../flags-viewer/FlagsViewer.tsx';
-import { PortsViewer } from '../ports-viewer/PortsViewer.tsx';
 import { useAppSelector } from '../../store/hooks.ts';
 import { RootState } from '../../store/index.ts';
-import styles from './SimulatorStateViewer.module.css';
-import { SimulatorError } from './SimulatorError.tsx';
-import { HexViewer } from '../hex/HexViewer.tsx';
-import { RamViewer } from '../ram-viewer/RamViewer.tsx';
+import { FlagsViewer } from '../flags-viewer/FlagsViewer.tsx';
 import { PMemViewer } from '../pmem-viewer/PMEMViewer.tsx';
+import { PortsViewer } from '../ports-viewer/PortsViewer.tsx';
+import { RamViewer } from '../ram-viewer/RamViewer.tsx';
+import { RegViewer } from '../reg-viewer/RegViewer.tsx';
+import { SimulatorError } from './SimulatorError.tsx';
+import styles from './SimulatorStateViewer.module.css';
 
 export function SimulatorStateViewer() {
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);

@@ -10,7 +10,6 @@ export function SimulatorControls() {
   const dispatch = useAppDispatch();
   const sourceCode = useAppSelector((state: RootState) => state.code.sourceCode);
   const isInitialized = useAppSelector((state: RootState) => state.simulator.noriSimulatorState !== null);
-  const ir = useAppSelector((state: RootState) => state.simulator.noriSimulatorState?.ir);
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
   const [isRunning, setIsRunning] = useState(false);
   const shouldContinueRef = useRef(true);

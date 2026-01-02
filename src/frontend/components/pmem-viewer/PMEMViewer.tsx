@@ -7,7 +7,7 @@ interface PMemViewerPropTypes {
 }
 
 export function PMemViewer(props: PMemViewerPropTypes) {
-  const { machineCode, highlightByte, highlightSize } = props;
+  const { machineCode, highlightByte } = props;
 
   return (
     <HexViewer

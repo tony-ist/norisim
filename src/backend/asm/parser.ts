@@ -15,10 +15,13 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
 
     programLine: content => content.toAST(),
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     emptyLine: (_space, _newline) => null,
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     commentLine: (_space, _comment, _newline) => null,
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     instructionLine: (_inlineSpace, instruction, _inlineSpace2, inlineComment, _newline) => {
       const instr = instruction.toAST();
       const comment = inlineComment.toAST();

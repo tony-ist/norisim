@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import { HexViewer } from '../hex/HexViewer.tsx';
 
 interface RamViewerPropTypes {

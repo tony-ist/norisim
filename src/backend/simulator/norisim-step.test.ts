@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimStep, norisimSteps, NoriSimulatorState, updateZNF } from './norisim-step';
+import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimSteps, NoriSimulatorState, updateZNF } from './norisim-step';
 
 describe('norisimStep', () => {
   it('should load immediate', () => {

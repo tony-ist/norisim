@@ -1,7 +1,7 @@
-import { BITNESS, GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
+import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
 import { asSignedByte, countBits, isSignedByteInBounds } from '../../util/asm-util';
 import { compileToIR } from '../asm/irgen';
-import { ASTInstructionMnemonic, IR, Label, Operand, RealInstructionMnemonic } from '../types/asm.types';
+import { IR, Label, Operand, RealInstructionMnemonic } from '../types/asm.types';
 
 export interface NoriSimulatorState {
   ir: IR

@@ -1,13 +1,13 @@
-import { Box, SvgIcon, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import codeSlice, { setSourceCode } from '../../store/slices/codeSlice';
-import { RootState } from '../../store';
-import { IR, IRNode, Operand } from '../../../backend/types/asm.types';
-import sampleCode from '../../../backend/asm/programs/port-load.s?raw';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import styles from './CodeEditor.module.css';
+import { Box, TextField } from '@mui/material';
+import { useEffect } from 'react';
+import sampleCode from '../../../backend/asm/programs/port-load.s?raw';
+import { IRNode, Operand } from '../../../backend/types/asm.types';
 import { toHexWord } from '../../../util/asm-util';
+import { RootState } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setSourceCode } from '../../store/slices/codeSlice';
+import styles from './CodeEditor.module.css';
 
 export function CodeEditor() {
   const dispatch = useAppDispatch();
