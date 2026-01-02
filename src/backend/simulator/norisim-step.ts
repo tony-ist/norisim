@@ -131,7 +131,7 @@ function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
   const immediate = operands[1].value as number;
   const operand = state.registers[register];
   const fullResult = operand + immediate;
-  const result8bit = (operand + immediate) & 0xFF;
+  const result8bit = asSignedByte(fullResult & 0xFF);
   state.registers[register] = result8bit;
 
   updateZNF(state, result8bit);
@@ -161,7 +161,7 @@ function add(state: NoriSimulatorState, operands: Operand[]) {
   if (forceUpdateFlags) {
     updateZNF(state, result8bit);
     state.CF = (fullResult & 0x100) !== 0;
-    state.VF = (((operandA ^ fullResult) & (operandB ^ fullResult)) & SIGN_MASK) !== 0;
+    state.VF = (((operandA ^ result8bit) & (operandB ^ result8bit)) & SIGN_MASK) !== 0;
   }
 
   state.currentAddress++;
