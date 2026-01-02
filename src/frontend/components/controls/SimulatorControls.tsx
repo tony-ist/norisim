@@ -1,10 +1,9 @@
-import styles from './SimulatorControls.module.css';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { RootState, store } from '../../store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { simulatorSlice } from '../../store/slices/simulatorSlice';
-import { RootState, store } from '../../store';
-import { useState, useRef } from 'react';
+import styles from './SimulatorControls.module.css';
 
 export function SimulatorControls() {
   const dispatch = useAppDispatch();
@@ -12,9 +11,9 @@ export function SimulatorControls() {
   const isInitialized = useAppSelector((state: RootState) => state.simulator.noriSimulatorState !== null);
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
   const isRunning = useAppSelector((state: RootState) => state.simulator.isRunning);
-  const shouldContinueRef = useRef(true);
 
-  function compile() {
+  function init() {
+    dispatch(simulatorSlice.actions.stop());
     dispatch(simulatorSlice.actions.init(sourceCode));
   }
 
@@ -24,11 +23,10 @@ export function SimulatorControls() {
 
   function reset() {
     dispatch(simulatorSlice.actions.reset());
-    shouldContinueRef.current = true;
   }
 
   function stop() {
-    shouldContinueRef.current = false;
+    dispatch(simulatorSlice.actions.stop());
   }
 
   async function run() {
@@ -37,13 +35,8 @@ export function SimulatorControls() {
     }
 
     dispatch(simulatorSlice.actions.run());
-    shouldContinueRef.current = true;
 
-    while (true) {
-      if (!shouldContinueRef.current) {
-        break;
-      }
-
+    while (store.getState().simulator.isRunning) {
       const currentState = store.getState();
       const currentIR = currentState.simulator.noriSimulatorState?.ir;
       const currentSimulatorState = currentState.simulator.noriSimulatorState;
@@ -72,7 +65,6 @@ export function SimulatorControls() {
     }
 
     dispatch(simulatorSlice.actions.stop());
-    shouldContinueRef.current = true;
   }
 
   return (
@@ -81,9 +73,13 @@ export function SimulatorControls() {
         <Box>
           <Button
             variant="contained"
-            onClick={compile}
+            onClick={init}
           >
-            Compile
+            {
+              isInitialized
+                ? 'Reset'
+                : 'Compile'
+            }
           </Button>
         </Box>
         <Box>
@@ -123,9 +119,9 @@ export function SimulatorControls() {
             variant="contained"
             color="error"
             onClick={reset}
-            disabled={isRunning}
+            disabled={isRunning || !isInitialized}
           >
-            Reset
+            Edit
           </Button>
         </Box>
       </Box>
