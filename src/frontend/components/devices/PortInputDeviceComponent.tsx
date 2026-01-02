@@ -45,7 +45,6 @@ export function PortInputDeviceComponent() {
   }
 
   return (
-
     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, pb: 2 }}>
       <TextField
         label="Port Input"

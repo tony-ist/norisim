@@ -67,17 +67,28 @@ export const simulatorSlice = createSlice({
         return;
       }
 
-      const instruction = state.noriSimulatorState.ir[state.noriSimulatorState.currentAddress];
+      try {
+        const instruction = state.noriSimulatorState.ir[state.noriSimulatorState.currentAddress];
 
-      if (instruction.mnemonic !== 'PLD') {
-        return;
+        if (instruction.mnemonic !== 'PLD') {
+          return;
+        }
+
+        const port = instruction.operands[0].value as number;
+        const inputValue = action.payload as number;
+
+        state.noriSimulatorState.inputPorts[port] = inputValue;
+        state.isWaitingPortInput = false;
       }
-
-      const port = instruction.operands[0].value as number;
-      const inputValue = action.payload as number;
-
-      state.noriSimulatorState.inputPorts[port] = inputValue;
-      state.isWaitingPortInput = false;
+      catch (error) {
+        if (error instanceof Error) {
+          state.error = error.message ?? null;
+          state.errorStack = error.stack ?? null;
+        }
+        else {
+          state.error = 'Unknown error';
+        }
+      }
     },
     reset: (state) => {
       state.noriSimulatorState = null;
