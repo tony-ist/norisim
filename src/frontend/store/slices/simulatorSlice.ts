@@ -51,6 +51,11 @@ export const simulatorSlice = createSlice({
 
       try {
         state.noriSimulatorState = norisimStep(state.noriSimulatorState);
+        const instruction = state.noriSimulatorState.ir[state.noriSimulatorState.currentAddress];
+
+        if (instruction.mnemonic === 'PLD') {
+          state.isWaitingPortInput = true;
+        }
       }
       catch (error) {
         if (error instanceof Error) {

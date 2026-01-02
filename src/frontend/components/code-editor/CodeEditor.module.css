@@ -1,14 +1,74 @@
 .compiledCodeContainer {
   display: flex;
   flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 12px;
+  font-family: 'RobotoMono', monospace;
+  font-size: 14px;
+  overflow-y: auto;
+  height: calc(100vh - 220px);
 }
 
 .codeLineContainer {
-  height: 20px;
+  height: 24px;
   display: flex;
   flex-direction: row;
+  align-items: center;
+  line-height: 24px;
 }
 
 .instructionLine {
-  padding-left: 2em;
+  padding-left: 1em;
+}
+
+.editor {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e1e4e8;
+}
+
+.compiledLine {
+  color: #24292e;
+}
+
+.address {
+  color: #6a737d;
+  margin-right: 0.5em;
+}
+
+.mnemonic {
+  color: #d73a49;
+  font-weight: 600;
+}
+
+.register {
+  color: #0086b3;
+}
+
+.label {
+  color: #e36209;
+}
+
+.number {
+  color: #005cc5;
+}
+
+.punctuation {
+  color: #24292e;
+}
+
+.arrow {
+  color: #22863a;
+  font-size: 18px;
+}
+
+.comment {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.editor {
+  height: calc(100vh - 200px);
 }

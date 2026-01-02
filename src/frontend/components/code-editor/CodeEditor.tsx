@@ -1,12 +1,15 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { Box, TextField } from '@mui/material';
-import { useEffect } from 'react';
+import { Box } from '@mui/material';
+import CodeMirror from '@uiw/react-codemirror';
+import { githubLight } from '@uiw/codemirror-theme-github';
+import { useCallback, useEffect } from 'react';
 import sampleCode from '../../../backend/asm/programs/bubble-sort.s?raw';
 import { IRNode, Operand } from '../../../backend/types/asm.types';
 import { toHexWord } from '../../../util/asm-util';
 import { RootState } from '../../store';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setSourceCode } from '../../store/slices/codeSlice';
+import { nori } from './nori-language';
 import styles from './CodeEditor.module.css';
 
 export function CodeEditor() {
@@ -18,9 +21,9 @@ export function CodeEditor() {
     dispatch(setSourceCode(sampleCode));
   }, []);
 
-  function setCode(code: string) {
-    dispatch(setSourceCode(code));
-  }
+  const handleChange = useCallback((value: string) => {
+    dispatch(setSourceCode(value));
+  }, [dispatch]);
 
   if (noriSimulatorState) {
     return (
@@ -35,12 +38,12 @@ export function CodeEditor() {
                 {hasLabel && (
                   <Box className={styles.codeLineContainer}>
                     <Box width={24} />
-                    {prettyPrintLabel(node.label!)}
+                    <span className={styles.label}>{prettyPrintLabel(node.label!)}</span>
                   </Box>
                 )}
                 <Box className={`${styles.codeLineContainer} ${styles.instructionLine}`}>
-                  {isCurrentAddress ? <ArrowForwardIcon /> : <Box width={24} />}
-                  {prettyPrintIRNode(node)}
+                  {isCurrentAddress ? <ArrowForwardIcon className={styles.arrow} /> : <Box width={24} />}
+                  <CompiledInstruction node={node} />
                 </Box>
               </Box>
             );
@@ -51,32 +54,72 @@ export function CodeEditor() {
   }
 
   return (
-    <TextField
-      label="Code Editor"
+    <CodeMirror
       value={sourceCode}
-      onChange={textArea => setCode(textArea.target.value)}
-      multiline
-      fullWidth
-      maxRows={40}
+      height="calc(100vh - 200px)"
+      theme={githubLight}
+      extensions={nori}
+      onChange={handleChange}
+      className={styles.editor}
+      basicSetup={{
+        lineNumbers: true,
+        highlightActiveLineGutter: true,
+        highlightActiveLine: true,
+        foldGutter: false,
+        dropCursor: true,
+        allowMultipleSelections: true,
+        indentOnInput: true,
+        bracketMatching: false,
+        closeBrackets: false,
+        autocompletion: false,
+        rectangularSelection: true,
+        crosshairCursor: false,
+        highlightSelectionMatches: true,
+        searchKeymap: true,
+      }}
     />
   );
 }
 
-function prettyPrintLabel(label: string) {
-  return `${label}:`;
-}
-
-function prettyPrintIRNode(node: IRNode) {
+function CompiledInstruction({ node }: { node: IRNode }) {
   const hexAddress = toHexWord(node.address);
   const flag = node.forceUpdateFlags ? '.F' : '';
-  return `${hexAddress} ${node.mnemonic}${flag} ${node.operands.map((operand: Operand) => prettyPrintOperand(operand)).join(', ')}`;
+
+  return (
+    <span className={styles.compiledLine}>
+      <span className={styles.address}>{hexAddress}</span>
+      {' '}
+      <span className={styles.mnemonic}>
+        {node.mnemonic}
+        {flag}
+      </span>
+      {' '}
+      {node.operands.map((operand: Operand, index: number) => (
+        <span key={index}>
+          {index > 0 && <span className={styles.punctuation}>, </span>}
+          <OperandSpan operand={operand} />
+        </span>
+      ))}
+    </span>
+  );
 }
 
-function prettyPrintOperand(operand: Operand) {
+function OperandSpan({ operand }: { operand: Operand }) {
   switch (operand.type) {
     case 'register':
-      return `R${operand.value}`;
-    default:
-      return operand.value;
+      return (
+        <span className={styles.register}>
+          R
+          {operand.value}
+        </span>
+      );
+    case 'label':
+      return <span className={styles.label}>{operand.value}</span>;
+    case 'immediate':
+      return <span className={styles.number}>{operand.value}</span>;
   }
+}
+
+function prettyPrintLabel(label: string) {
+  return `${label}:`;
 }

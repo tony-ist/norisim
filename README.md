@@ -31,6 +31,7 @@ npm run test
 - Display 
 - Text output device
 - Test overflowing values are masked and correctly stored in registers
+- Halt should stop simulator
 
 ### UI Components
 - **Program memory hex view**
