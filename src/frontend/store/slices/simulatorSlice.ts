@@ -73,7 +73,7 @@ export const simulatorSlice = createSlice({
         return;
       }
 
-      const port = instruction.operands[1].value as number;
+      const port = instruction.operands[0].value as number;
       const inputValue = action.payload as number;
 
       state.noriSimulatorState.inputPorts[port] = inputValue;

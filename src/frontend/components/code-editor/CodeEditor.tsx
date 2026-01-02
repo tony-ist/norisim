@@ -57,6 +57,7 @@ export function CodeEditor() {
       onChange={textArea => setCode(textArea.target.value)}
       multiline
       fullWidth
+      maxRows={40}
     />
   );
 }

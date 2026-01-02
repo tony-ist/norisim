@@ -55,6 +55,10 @@ export function SimulatorControls() {
         break;
       }
 
+      if (currentInstruction && currentInstruction.mnemonic === 'PLD') {
+        break;
+      }
+
       if (currentError) {
         break;
       }

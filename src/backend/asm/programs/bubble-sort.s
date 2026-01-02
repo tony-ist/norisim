@@ -30,6 +30,8 @@ inc r1
 lim r2, 3
 mst r1, r2
 
+pld r2, 0
+
 lim r2, 8 // array length
 dec r2
 
