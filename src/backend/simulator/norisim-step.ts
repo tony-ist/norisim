@@ -173,15 +173,16 @@ function subtract(state: NoriSimulatorState, operands: Operand[]) {
   const srcBRegister = operands[2].value as number;
   const operandA = state.registers[srcARegister];
   const operandB = state.registers[srcBRegister];
-  const result = operandA - operandB;
-  state.registers[destinationRegister] = result;
+  const fullResult = operandA - operandB;
+  const result8bit = asSignedByte(fullResult & 0xFF);
+  state.registers[destinationRegister] = result8bit;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNF(state, result8bit);
     state.CF = operandA < operandB;
-    state.VF = (((operandA ^ operandB) & (operandA ^ result)) & SIGN_MASK) !== 0;
+    state.VF = (((operandA ^ operandB) & (operandA ^ result8bit)) & SIGN_MASK) !== 0;
   }
 
   state.currentAddress++;
@@ -414,7 +415,7 @@ function jumpLess(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpGreater(state: NoriSimulatorState, operands: Operand[]) {
-  if (state.ZF || (state.NF && state.VF)) {
+  if (state.ZF || (state.NF !== state.VF)) {
     state.currentAddress++;
     return;
   }
@@ -423,7 +424,7 @@ function jumpGreater(state: NoriSimulatorState, operands: Operand[]) {
 }
 
 function jumpLessEqual(state: NoriSimulatorState, operands: Operand[]) {
-  if (!(state.ZF || (state.NF && state.VF))) {
+  if (!(state.ZF || (state.NF !== state.VF))) {
     state.currentAddress++;
     return;
   }

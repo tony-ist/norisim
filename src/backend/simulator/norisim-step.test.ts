@@ -310,6 +310,51 @@ describe('norisimStep', () => {
     });
   });
 
+  describe('JG', () => {
+    it('should not jump when result is negative (254 - 0 = -2)', () => {
+      const code = `
+        lim r1, 127
+        add r1, r1, r1
+        sub.f r0, r1, r0
+        jg .label1
+        nop
+        .label1 nop
+      `;
+
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers: [0, 0, 0, 0, 0, 0, 0, 0],
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        currentAddress: 4,
+        cycle: 4,
+        registers: [0, -2, 0, 0, 0, 0, 0, 0],
+        NF: true,
+        ZF: false,
+        CF: true,
+        VF: false,
+      };
+      assertCodeNSteps(code, initialStateMixin, expectedStateMixin, 4);
+    });
+
+    it('should jump when result is positive', () => {
+      const code = `
+        sub.f r0, r1, r2
+        jg .label1
+        nop
+        .label1 nop
+      `;
+
+      const initialStateMixin: Partial<NoriSimulatorState> = {
+        registers: [0, 4, 3, 0, 0, 0, 0, 0],
+      };
+      const expectedStateMixin: Partial<NoriSimulatorState> = {
+        currentAddress: 3,
+        cycle: 2,
+      };
+      assertCodeDoubleStep(code, initialStateMixin, expectedStateMixin);
+    });
+  });
+
   describe('JGE', () => {
     it('should not jump on 2 - 3', () => {
       const code = `
