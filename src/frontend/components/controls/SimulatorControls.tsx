@@ -11,7 +11,7 @@ export function SimulatorControls() {
   const sourceCode = useAppSelector((state: RootState) => state.code.sourceCode);
   const isInitialized = useAppSelector((state: RootState) => state.simulator.noriSimulatorState !== null);
   const simulatorState = useAppSelector((state: RootState) => state.simulator.noriSimulatorState);
-  const [isRunning, setIsRunning] = useState(false);
+  const isRunning = useAppSelector((state: RootState) => state.simulator.isRunning);
   const shouldContinueRef = useRef(true);
 
   function compile() {
@@ -24,7 +24,6 @@ export function SimulatorControls() {
 
   function reset() {
     dispatch(simulatorSlice.actions.reset());
-    setIsRunning(false);
     shouldContinueRef.current = true;
   }
 
@@ -37,7 +36,7 @@ export function SimulatorControls() {
       return;
     }
 
-    setIsRunning(true);
+    dispatch(simulatorSlice.actions.run());
     shouldContinueRef.current = true;
 
     while (true) {
@@ -72,7 +71,7 @@ export function SimulatorControls() {
       await new Promise(resolve => setTimeout(resolve, 0));
     }
 
-    setIsRunning(false);
+    dispatch(simulatorSlice.actions.stop());
     shouldContinueRef.current = true;
   }
 

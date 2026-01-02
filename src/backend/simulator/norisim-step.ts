@@ -16,7 +16,6 @@ export interface NoriSimulatorState {
   stack: number[]
   inputPorts: number[]
   outputPorts: number[]
-  isWaitingPortInput: boolean
   cycle: number
 }
 
@@ -34,7 +33,6 @@ export function defaultNoriSimulatorState(code: string): NoriSimulatorState {
     stack: Array(STACK_SIZE_BYTES).fill(0),
     inputPorts: Array(INPUT_PORTS_COUNT).fill(0),
     outputPorts: Array(OUTPUT_PORTS_COUNT).fill(0),
-    isWaitingPortInput: false,
     cycle: 0,
   };
 }
@@ -53,7 +51,6 @@ export function defaultNoriSimulatorStateNoProgram(): NoriSimulatorState {
     stack: Array(STACK_SIZE_BYTES).fill(0),
     inputPorts: Array(INPUT_PORTS_COUNT).fill(0),
     outputPorts: Array(OUTPUT_PORTS_COUNT).fill(0),
-    isWaitingPortInput: false,
     cycle: 0,
   };
 }
@@ -98,14 +95,6 @@ const instructionHandlers: Record<RealInstructionMnemonic, InstructionHandler> =
 export function norisimStep(state: NoriSimulatorState) {
   const clonedState = cloneDeep(state) as NoriSimulatorState;
   const instruction = clonedState.ir[clonedState.currentAddress];
-
-  // todo remove this check
-  const outOfBoundsOperands = instruction.operands.filter(operand => operand.type === 'immediate' && !isSignedByteInBounds(operand.value as number));
-
-  if (outOfBoundsOperands.length > 0) {
-    throw new Error(`Mnemonic: ${instruction.mnemonic} operands are out of bounds: ${outOfBoundsOperands.map(operand => operand.value).join(', ')}`);
-  }
-
   const handler = instructionHandlers[instruction.mnemonic];
   handler(clonedState, instruction.operands);
   clonedState.registers[0] = 0;
@@ -496,7 +485,6 @@ function portLoad(state: NoriSimulatorState, operands: Operand[]) {
   const register = operands[0].value as number;
   const port = operands[1].value as number;
   state.registers[register] = state.inputPorts[port];
-  state.isWaitingPortInput = false;
   state.currentAddress++;
 }
 

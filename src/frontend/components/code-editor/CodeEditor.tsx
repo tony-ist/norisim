@@ -1,7 +1,7 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Box, TextField } from '@mui/material';
 import { useEffect } from 'react';
-import sampleCode from '../../../backend/asm/programs/port-load.s?raw';
+import sampleCode from '../../../backend/asm/programs/bubble-sort.s?raw';
 import { IRNode, Operand } from '../../../backend/types/asm.types';
 import { toHexWord } from '../../../util/asm-util';
 import { RootState } from '../../store';

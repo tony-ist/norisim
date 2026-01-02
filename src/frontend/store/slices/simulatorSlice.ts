@@ -5,12 +5,16 @@ interface SimulatorState {
   noriSimulatorState: NoriSimulatorState | null
   error: string | null
   errorStack: string | null
+  isWaitingPortInput: boolean
+  isRunning: boolean
 }
 
 const initialState: SimulatorState = {
   noriSimulatorState: null,
   error: null,
   errorStack: null,
+  isWaitingPortInput: false,
+  isRunning: false,
 };
 
 export const simulatorSlice = createSlice({
@@ -34,6 +38,12 @@ export const simulatorSlice = createSlice({
         }
       }
     },
+    run: (state) => {
+      state.isRunning = true;
+    },
+    stop: (state) => {
+      state.isRunning = false;
+    },
     step: (state) => {
       if (!state.noriSimulatorState) {
         return state;
@@ -51,6 +61,23 @@ export const simulatorSlice = createSlice({
           state.error = 'Unknown error';
         }
       }
+    },
+    portInput: (state, action) => {
+      if (!state.noriSimulatorState) {
+        return;
+      }
+
+      const instruction = state.noriSimulatorState.ir[state.noriSimulatorState.currentAddress];
+
+      if (instruction.mnemonic !== 'PLD') {
+        return;
+      }
+
+      const port = instruction.operands[1].value as number;
+      const inputValue = action.payload as number;
+
+      state.noriSimulatorState.inputPorts[port] = inputValue;
+      state.isWaitingPortInput = false;
     },
     reset: (state) => {
       state.noriSimulatorState = null;
