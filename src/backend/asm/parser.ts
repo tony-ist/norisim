@@ -3,6 +3,7 @@ import { preprocess } from './preprocessor';
 import { AST } from '../types/asm.types';
 import grammarContents from './nori-v1.ohm?raw';
 import { isSignedByteInBounds } from '../../util/asm-util';
+import { GPR_COUNT } from '../../const/simulator-constants';
 
 export function parseToAST(code: string, parserTrace: boolean = false): AST {
   const preprocessedCode = preprocess(code);
@@ -54,10 +55,16 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
 
     operand: body => body.toAST(),
 
-    register: (_r, digit) => ({
-      type: 'register',
-      value: parseInt(digit.sourceString),
-    }),
+    register: (_r, digit) => {
+      const registerNumber = parseInt(digit.sourceString);
+      if (registerNumber < 0 || registerNumber >= GPR_COUNT) {
+        throw new Error(`Invalid register number: R${registerNumber}. Valid registers are R0-R${GPR_COUNT - 1}`);
+      }
+      return {
+        type: 'register',
+        value: registerNumber,
+      };
+    },
 
     immediate: (minus, immediate) => {
       const value = parseInt(immediate.sourceString);

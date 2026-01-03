@@ -56,4 +56,21 @@ describe('toAST', () => {
     const code = `addi r1, ${immediate}`;
     expect(() => parseToAST(code)).toThrow(`Immediate signed value ${immediate} is out of bounds from -128 to 127 inclusive`);
   });
+
+  it.each([
+    ['8', 'R8'],
+    ['9', 'R9'],
+  ])('should throw an error for invalid register %s', (registerNum, registerName) => {
+    const code = `add r1, r2, ${registerName.toLowerCase()}`;
+    expect(() => parseToAST(code)).toThrow(`Invalid register number: ${registerName}. Valid registers are R0-R7`);
+  });
+
+  it('should accept valid registers R0-R7', () => {
+    const code = `
+      add r0, r1, r2
+      add r3, r4, r5
+      add r6, r7, r0
+    `;
+    expect(() => parseToAST(code)).not.toThrow();
+  });
 });
