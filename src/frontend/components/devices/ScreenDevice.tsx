@@ -35,33 +35,29 @@ export function ScreenDevice() {
     lastPortValue: null,
   });
 
-  const outputPort0 = useAppSelector((state: RootState) =>
+  const outputPort0Value = useAppSelector((state: RootState) =>
     state.simulator.noriSimulatorState?.outputPorts[SCREEN_PORT] ?? null,
   );
 
   useEffect(() => {
-    if (outputPort0 === null) {
+    if (outputPort0Value === null) {
       return;
     }
 
     const collector = byteCollector.current;
-
-    if (collector.lastPortValue === outputPort0) {
-      return;
-    }
-    collector.lastPortValue = outputPort0;
+    collector.lastPortValue = outputPort0Value;
 
     if (!collector.waitingForSecondByte) {
-      collector.highByte = outputPort0;
+      collector.highByte = outputPort0Value;
       collector.waitingForSecondByte = true;
     }
     else {
-      const lowByte = outputPort0;
+      const lowByte = outputPort0Value;
       const command = (collector.highByte << 8) | lowByte;
       executeCommand(command);
       collector.waitingForSecondByte = false;
     }
-  }, [outputPort0]);
+  }, [outputPort0Value]);
 
   function executeCommand(command: number): void {
     const opcode = (command >> 10) & 0x1F;

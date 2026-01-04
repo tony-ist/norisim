@@ -16,27 +16,26 @@ pst r1, 0            // Send high byte to port 0
 lim r2, 0            // Low byte: 0x00
 pst r2, 0            // Send low byte
 
-
 // Draw pixels
 lim r1, 0
-pst r1, 0
 pst r0, 0
+pst r1, 0
 
 addi r1, 1
-pst r1, 0
 pst r0, 0
+pst r1, 0
 
 addi r1, 1
-pst r1, 0
 pst r0, 0
+pst r1, 0
 
 addi r1, 1
-pst r1, 0
 pst r0, 0
+pst r1, 0
 
 addi r1, 1
-pst r1, 0
 pst r0, 0
+pst r1, 0
 
 // ==========================================
 // Draw buffer to screen (opcode 2)
