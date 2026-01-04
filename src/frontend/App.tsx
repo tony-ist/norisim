@@ -4,6 +4,7 @@ import { SimulatorStateViewer } from './components/state-viewer/SimulatorStateVi
 import styles from './App.module.css';
 import { Box } from '@mui/material';
 import { PortInputDevice } from './components/devices/PortInputDevice';
+import { ScreenDevice } from './components/devices/ScreenDevice';
 
 export function App() {
   return (
@@ -19,6 +20,7 @@ export function App() {
         </Box>
         <Box className={styles.stateViewerContainer}>
           <PortInputDevice />
+          <ScreenDevice />
           <SimulatorStateViewer />
         </Box>
       </Box>

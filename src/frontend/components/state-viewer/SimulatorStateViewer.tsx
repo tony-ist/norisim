@@ -64,13 +64,13 @@ export function SimulatorStateViewer() {
           outputPorts={simulatorState.outputPorts}
         />
 
+        <RamViewer
+          RAM={simulatorState.RAM}
+        />
+
         <PMemViewer
           machineCode={simulatorState.PMEM}
           highlightByte={simulatorState.currentAddress}
-        />
-
-        <RamViewer
-          RAM={simulatorState.RAM}
         />
       </Box>
     </>
