@@ -14,15 +14,15 @@ The Nori CPU communicates with a 32×32 pixel screen via I/O ports.
 Each screen operation is encoded as a 16-bit value:
 
 ```
-┌──────────┬───────────┬───────────┬───────────┐
-│  unused  │  opcode   │     Y     │     X     │
-│  1 bit   │  5 bits   │  5 bits   │  5 bits   │
-└──────────┴───────────┴───────────┴───────────┘
- bit 15     bits 14-10   bits 9-5    bits 4-0
+┌──────────┬───────────┬───────────┐
+│  opcode  │     Y     │     X     │
+│  6 bits  │  5 bits   │  5 bits   │
+└──────────┴───────────┴───────────┘
+ bits 15-10  bits 9-5    bits 4-0
 ```
 
 **Binary layout example**: `0b000000_00011_00101`
-- Opcode: `00000` (0) = write pixel
+- Opcode: `000000` (0) = write pixel
 - Y: `00011` (3)
 - X: `00101` (5)
 - Result: Write pixel at coordinates (5, 3)
@@ -35,7 +35,7 @@ Each screen operation is encoded as a 16-bit value:
 | 1      | Clear Pixel       | Clear pixel at (X, Y) in the buffer      |
 | 2      | Draw Buffer       | Render the buffer to the screen          |
 | 3      | Clear Buffer      | Clear the entire buffer                  |
-| 4-31   | *Reserved*        | TODO                                     |
+| 4-63   | *Reserved*        | TODO                                     |
 
 ## Triggering Operations
 
@@ -55,8 +55,8 @@ Opcode: 0 (write pixel)
 Y: 20 = 0b10100
 X: 10 = 0b01010
 
-Command: 0b000000_10100_01010 = 0x0A8A
-High byte: 0x0A
+Command: 0b000000_10100_01010 = 0x028A
+High byte: 0x02
 Low byte: 0x8A
 ```
 
@@ -67,8 +67,8 @@ Opcode: 3 (clear buffer)
 Y: 0 (ignored)
 X: 0 (ignored)
 
-Command: 0b000011_00000_00000 = 0x1800
-High byte: 0x18
+Command: 0b000011_00000_00000 = 0x0C00
+High byte: 0x0C
 Low byte: 0x00
 ```
 
@@ -79,8 +79,8 @@ Opcode: 2 (draw buffer)
 Y: 0 (ignored)
 X: 0 (ignored)
 
-Command: 0b000010_00000_00000 = 0x1000
-High byte: 0x10
+Command: 0b000010_00000_00000 = 0x0800
+High byte: 0x08
 Low byte: 0x00
 ```
 
