@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { asSignedByte, countBits, isSignedByteInBounds } from './asm-util.ts';
+import { asSignedByte, asUnsignedByte, countBits, isSignedByteInBounds } from './asm-util.ts';
 
 describe('countBits', () => {
   it.each([
@@ -49,5 +49,18 @@ describe('asSignedByte', () => {
     -1,
   ])('for %s should throw an error', (number) => {
     expect(() => asSignedByte(number)).toThrow(`Cannot convert ${number} to signed byte: value must be an integer between 0 and 255`);
+  });
+});
+
+describe('asUnsignedByte', () => {
+  it.each([
+    [-128, 128],
+    [-127, 129],
+    [-1, 255],
+    [0, 0],
+    [1, 1],
+    [127, 127],
+  ])('for %s should return %s', (number, expected) => {
+    expect(asUnsignedByte(number)).toEqual(expected);
   });
 });

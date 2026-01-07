@@ -28,17 +28,20 @@ export const screenSlice = createSlice({
   initialState,
   reducers: {
     execute: (state, action) => {
-      const byteValue = action.payload as number;
+      const byteValue = action.payload as number & 0xFF;
 
       if (state.pendingHighByte === null) {
         state.pendingHighByte = byteValue;
         return state;
       }
 
+      console.log(`state.pendingHighByte: ${state.pendingHighByte}, byteValue: ${byteValue}`);
       const command = (state.pendingHighByte << 8) | byteValue;
-      const opcode = (command >> 10) & 0x1F;
-      const y = (command >> 5) & 0x1F;
-      const x = command & 0x1F;
+      const opcode = command >>> 10;
+      const y = (command >>> 5) & 0b11111;
+      const x = command & 0b11111;
+
+      console.log(`command: ${command} (0b${command.toString(2).padStart(16, '0')}), opcode: ${opcode}, y: ${y}, x: ${x}`);
 
       state.pendingHighByte = null;
 

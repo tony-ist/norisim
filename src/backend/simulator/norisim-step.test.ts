@@ -31,12 +31,12 @@ describe('norisimStep', () => {
   describe('add.f', () => {
     it.each([
       {
-        name: 'zero result, all flags false except ZF',
-        registers: [0, 0, 3, -3, 0, 0, 0, 0],
+        name: 'zero result, ZF and CF true',
+        registers: [0, 0, 3, 253, 0, 0, 0, 0],
         expected: {
           ZF: true,
           NF: false,
-          CF: false,
+          CF: true,
           VF: false,
           result: 0,
         },
@@ -53,14 +53,14 @@ describe('norisimStep', () => {
         },
       },
       {
-        name: 'negative result, NF true',
-        registers: [0, 0, -2, -3, 0, 0, 0, 0],
+        name: 'negative result, NF and CF true',
+        registers: [0, 0, 254, 253, 0, 0, 0, 0],
         expected: {
           ZF: false,
           NF: true,
           CF: true,
           VF: false,
-          result: -5,
+          result: 251,
         },
       },
       {
@@ -71,7 +71,7 @@ describe('norisimStep', () => {
           NF: true,
           CF: false,
           VF: true,
-          result: -56,
+          result: 200,
         },
       },
       {
@@ -82,12 +82,12 @@ describe('norisimStep', () => {
           NF: true,
           CF: false,
           VF: true,
-          result: -127,
+          result: 129,
         },
       },
       {
         name: 'overflow to positive (VF), with carry (-128 + -1 = -129)',
-        registers: [0, 0, -128, -1, 0, 0, 0, 0],
+        registers: [0, 0, 128, 255, 0, 0, 0, 0],
         expected: {
           ZF: false,
           NF: false,
@@ -98,7 +98,7 @@ describe('norisimStep', () => {
       },
       {
         name: 'zero with carry and overflow (CF+VF+ZF)',
-        registers: [0, 0, -128, -128, 0, 0, 0, 0],
+        registers: [0, 0, 128, 128, 0, 0, 0, 0],
         expected: {
           ZF: true,
           NF: false,
@@ -147,7 +147,7 @@ describe('norisimStep', () => {
       const expectedStateMixin: Partial<NoriSimulatorState> = {
         currentAddress: 1,
         cycle: 1,
-        registers: [0, -1, 1, 2, 0, 0, 0, 0],
+        registers: [0, 255, 1, 2, 0, 0, 0, 0],
       };
       assertCodeStep(code, initialStateMixin, expectedStateMixin);
     });
@@ -158,11 +158,11 @@ describe('norisimStep', () => {
         registers: [0, 0, 0x2A, 0x30, 0, 0, 0, 0],
       };
       const expectedStateMixin: Partial<NoriSimulatorState> = {
-        CF: true,
+        CF: false,
         NF: true,
         currentAddress: 1,
         cycle: 1,
-        registers: [0, -6, 0x2A, 0x30, 0, 0, 0, 0],
+        registers: [0, 250, 0x2A, 0x30, 0, 0, 0, 0],
       };
       assertCodeStep(code, initialStateMixin, expectedStateMixin);
     });
@@ -189,7 +189,7 @@ describe('norisimStep', () => {
     const expectedStateMixin: Partial<NoriSimulatorState> = {
       currentAddress: 1,
       cycle: 1,
-      registers: [0, -2, 3, 5, 0, 0, 0, 0],
+      registers: [0, 254, 3, 5, 0, 0, 0, 0],
     };
     assertCodeStep(code, initialStateMixin, expectedStateMixin);
   });
@@ -215,7 +215,7 @@ describe('norisimStep', () => {
     const expectedStateMixin: Partial<NoriSimulatorState> = {
       currentAddress: 1,
       cycle: 1,
-      registers: [0, -8, 3, 5, 0, 0, 0, 0],
+      registers: [0, 248, 3, 5, 0, 0, 0, 0],
     };
     assertCodeStep(code, initialStateMixin, expectedStateMixin);
   });
@@ -241,7 +241,7 @@ describe('norisimStep', () => {
     const expectedStateMixin: Partial<NoriSimulatorState> = {
       currentAddress: 1,
       cycle: 1,
-      registers: [0, -7, 3, 5, 0, 0, 0, 0],
+      registers: [0, 249, 3, 5, 0, 0, 0, 0],
     };
     assertCodeStep(code, initialStateMixin, expectedStateMixin);
   });
@@ -254,7 +254,7 @@ describe('norisimStep', () => {
     const expectedStateMixin: Partial<NoriSimulatorState> = {
       currentAddress: 1,
       cycle: 1,
-      registers: [0, -4, 3, 0, 0, 0, 0, 0],
+      registers: [0, 252, 3, 0, 0, 0, 0, 0],
     };
     assertCodeStep(code, initialStateMixin, expectedStateMixin);
   });
@@ -311,7 +311,7 @@ describe('norisimStep', () => {
   });
 
   describe('JG', () => {
-    it('should not jump when result is negative (254 - 0 = -2)', () => {
+    it('should not jg when result is negative (254 - 0 = 254)', () => {
       const code = `
         lim r1, 127
         add r1, r1, r1
@@ -327,7 +327,7 @@ describe('norisimStep', () => {
       const expectedStateMixin: Partial<NoriSimulatorState> = {
         currentAddress: 4,
         cycle: 4,
-        registers: [0, -2, 0, 0, 0, 0, 0, 0],
+        registers: [0, 254, 0, 0, 0, 0, 0, 0],
         NF: true,
         ZF: false,
         CF: true,
@@ -336,7 +336,7 @@ describe('norisimStep', () => {
       assertCodeNSteps(code, initialStateMixin, expectedStateMixin, 4);
     });
 
-    it('should jump when result is positive', () => {
+    it('should jg when result is positive (4 - 3 = 1)', () => {
       const code = `
         sub.f r0, r1, r2
         jg .label1
@@ -348,6 +348,7 @@ describe('norisimStep', () => {
         registers: [0, 4, 3, 0, 0, 0, 0, 0],
       };
       const expectedStateMixin: Partial<NoriSimulatorState> = {
+        CF: true,
         currentAddress: 3,
         cycle: 2,
       };
@@ -356,7 +357,7 @@ describe('norisimStep', () => {
   });
 
   describe('JGE', () => {
-    it('should not jump on 2 - 3', () => {
+    it('should not jge when result is negative (2 - 3 = 253)', () => {
       const code = `
         sub.f r0, r1, r2
         jge .label1
@@ -368,7 +369,6 @@ describe('norisimStep', () => {
         registers: [0, 2, 3, 0, 0, 0, 0, 0],
       };
       const expectedStateMixin: Partial<NoriSimulatorState> = {
-        CF: true,
         NF: true,
         currentAddress: 2,
         cycle: 2,
@@ -376,7 +376,7 @@ describe('norisimStep', () => {
       assertCodeDoubleStep(code, initialStateMixin, expectedStateMixin);
     });
 
-    it('should jump on 3 - 3', () => {
+    it('should jge when result is zero (3 - 3 = 0)', () => {
       const code = `
         sub.f r0, r1, r2
         jge .label1
@@ -388,6 +388,7 @@ describe('norisimStep', () => {
         registers: [0, 3, 3, 0, 0, 0, 0, 0],
       };
       const expectedStateMixin: Partial<NoriSimulatorState> = {
+        CF: true,
         ZF: true,
         currentAddress: 3,
         cycle: 2,
@@ -395,7 +396,7 @@ describe('norisimStep', () => {
       assertCodeDoubleStep(code, initialStateMixin, expectedStateMixin);
     });
 
-    it('should jump on 4 - 3', () => {
+    it('should jge when result is positive (4 - 3 = 1)', () => {
       const code = `
         sub.f r0, r1, r2
         jge .label1
@@ -407,6 +408,7 @@ describe('norisimStep', () => {
         registers: [0, 4, 3, 0, 0, 0, 0, 0],
       };
       const expectedStateMixin: Partial<NoriSimulatorState> = {
+        CF: true,
         currentAddress: 3,
         cycle: 2,
       };

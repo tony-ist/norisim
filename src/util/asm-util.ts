@@ -69,3 +69,19 @@ export function asSignedByte(value: number) {
 
   return value < 128 ? value : value - 256;
 }
+
+export function asUnsignedByte(value: number) {
+  if (!isSignedByteInBounds(value)) {
+    throw new Error(`Cannot convert ${value} to unsigned byte: value must be an integer between -128 and 127 inclusive`);
+  }
+
+  return value < 0 ? value + 256 : value;
+}
+
+export function truncateTo8BitUnsigned(value: number) {
+  return value & 0xFF;
+}
+
+export function isNegative(value: number) {
+  return (value & 0x80) !== 0;
+}

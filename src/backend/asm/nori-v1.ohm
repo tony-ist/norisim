@@ -21,7 +21,7 @@ ISA {
 
     register = caseInsensitive<"r"> digit
 
-    immediate = "-"? digit+
+    immediate = "-"? ("0b"|"0x")? letterOrDigit+
 
     label = "." letterOrDigit+
 

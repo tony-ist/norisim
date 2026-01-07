@@ -1,5 +1,5 @@
 import { GPR_COUNT, INPUT_PORTS_COUNT, OUTPUT_PORTS_COUNT, PC_BITS, PC_MASK, PMEM_SIZE_BYTES, RAM_SIZE_BYTES, SIGN_MASK, SR_BITS, STACK_SIZE_BYTES } from '../../const/simulator-constants';
-import { asSignedByte, countBits, isSignedByteInBounds } from '../../util/asm-util';
+import { asSignedByte, countBits, isNegative, isSignedByteInBounds, truncateTo8BitUnsigned } from '../../util/asm-util';
 import { compileToIR } from '../asm/irgen';
 import { IR, Label, Operand, RealInstructionMnemonic } from '../types/asm.types';
 
@@ -143,7 +143,7 @@ function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
 
 export function updateZNF(state: NoriSimulatorState, result: number) {
   state.ZF = result === 0;
-  state.NF = result < 0;
+  state.NF = isNegative(result);
 }
 
 function add(state: NoriSimulatorState, operands: Operand[]) {
@@ -153,7 +153,7 @@ function add(state: NoriSimulatorState, operands: Operand[]) {
   const operandA = state.registers[srcARegister];
   const operandB = state.registers[srcBRegister];
   const fullResult = operandA + operandB;
-  const result8bit = asSignedByte(fullResult & 0xFF);
+  const result8bit = truncateTo8BitUnsigned(fullResult);
   state.registers[destinationRegister] = result8bit;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
@@ -173,15 +173,15 @@ function subtract(state: NoriSimulatorState, operands: Operand[]) {
   const srcBRegister = operands[2].value as number;
   const operandA = state.registers[srcARegister];
   const operandB = state.registers[srcBRegister];
-  const fullResult = operandA - operandB;
-  const result8bit = asSignedByte(fullResult & 0xFF);
+  const fullResult = operandA + truncateTo8BitUnsigned(~operandB) + 1;
+  const result8bit = truncateTo8BitUnsigned(fullResult);
   state.registers[destinationRegister] = result8bit;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
     updateZNF(state, result8bit);
-    state.CF = operandA < operandB;
+    state.CF = (fullResult & 0x100) !== 0;
     state.VF = (((operandA ^ operandB) & (operandA ^ result8bit)) & SIGN_MASK) !== 0;
   }
 
@@ -214,7 +214,7 @@ function nand(state: NoriSimulatorState, operands: Operand[]) {
   const srcBRegister = operands[2].value as number;
   const operandA = state.registers[srcARegister];
   const operandB = state.registers[srcBRegister];
-  const result = ~(operandA & operandB);
+  const result = truncateTo8BitUnsigned(~(operandA & operandB));
   state.registers[destinationRegister] = result;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
@@ -254,7 +254,7 @@ function nor(state: NoriSimulatorState, operands: Operand[]) {
   const srcBRegister = operands[2].value as number;
   const operandA = state.registers[srcARegister];
   const operandB = state.registers[srcBRegister];
-  const result = ~(operandA | operandB);
+  const result = truncateTo8BitUnsigned(~(operandA | operandB));
   state.registers[destinationRegister] = result;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
@@ -294,7 +294,7 @@ function xnor(state: NoriSimulatorState, operands: Operand[]) {
   const srcBRegister = operands[2].value as number;
   const operandA = state.registers[srcARegister];
   const operandB = state.registers[srcBRegister];
-  const result = ~(operandA ^ operandB);
+  const result = truncateTo8BitUnsigned(~(operandA ^ operandB));
   state.registers[destinationRegister] = result;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
@@ -312,7 +312,7 @@ function not(state: NoriSimulatorState, operands: Operand[]) {
   const destinationRegister = operands[0].value as number;
   const srcARegister = operands[1].value as number;
   const operandA = state.registers[srcARegister];
-  const result = ~operandA;
+  const result = truncateTo8BitUnsigned(~operandA);
   state.registers[destinationRegister] = result;
 
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;

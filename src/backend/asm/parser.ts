@@ -2,7 +2,7 @@ import * as ohm from 'ohm-js';
 import { preprocess } from './preprocessor';
 import { AST } from '../types/asm.types';
 import grammarContents from './nori-v1.ohm?raw';
-import { isSignedByteInBounds } from '../../util/asm-util';
+import { asSignedByte, asUnsignedByte, isSignedByteInBounds, isUnsignedByteInBounds } from '../../util/asm-util';
 import { GPR_COUNT } from '../../const/simulator-constants';
 
 export function parseToAST(code: string, parserTrace: boolean = false): AST {
@@ -66,18 +66,34 @@ export function parseToAST(code: string, parserTrace: boolean = false): AST {
       };
     },
 
-    immediate: (minus, immediate) => {
-      const value = parseInt(immediate.sourceString);
+    immediate: (minus, prefix, immediate) => {
+      const prefixString = prefix.sourceString;
+      const base = prefixString === '0b' ? 2 : prefixString === '0x' ? 16 : 10;
+      const immediateString = immediate.sourceString.replace(/_/g, '');
+      const value = parseInt(immediateString, base);
       const isNegative = minus.sourceString === '-';
-      const fullValue = isNegative ? -value : value;
 
-      if (!isSignedByteInBounds(fullValue)) {
-        throw new Error(`Immediate signed value ${fullValue} is out of bounds from -128 to 127 inclusive`);
+      if (base === 10) {
+        const fullValue = isNegative ? -value : value;
+        const unsignedValue = asUnsignedByte(fullValue);
+
+        return {
+          type: 'immediate',
+          value: unsignedValue,
+        };
+      }
+
+      if (isNegative) {
+        throw new Error(`Negative values are only allowed for decimal immediates`);
+      }
+
+      if (!isUnsignedByteInBounds(value)) {
+        throw new Error(`Immediate unsigned value ${value} is out of bounds from 0 to 255 inclusive`);
       }
 
       return {
         type: 'immediate',
-        value: fullValue,
+        value,
       };
     },
 

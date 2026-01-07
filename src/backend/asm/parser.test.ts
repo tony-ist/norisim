@@ -39,9 +39,19 @@ describe('toAST', () => {
   it.each([
     ['0', 0],
     ['1', 1],
-    ['-1', -1],
+    ['-1', 255],
     ['127', 127],
-    ['-128', -128],
+    ['-128', 128],
+    ['0b0000_0000', 0],
+    ['0b1010', 10],
+    ['0b1111_1111', 255],
+    ['0b1000_0000', 128],
+    ['0b0111_1111', 127],
+    ['0x00', 0],
+    ['0x10', 16],
+    ['0x7F', 127],
+    ['0x80', 128],
+    ['0xFF', 255],
   ])('should parse immediate %s as %s', (immediate, expected) => {
     const code = `addi r1, ${immediate}`;
     const ast = parseToAST(code);
@@ -54,7 +64,7 @@ describe('toAST', () => {
     '256',
   ])('should throw an error for immediate %s', (immediate) => {
     const code = `addi r1, ${immediate}`;
-    expect(() => parseToAST(code)).toThrow(`Immediate signed value ${immediate} is out of bounds from -128 to 127 inclusive`);
+    expect(() => parseToAST(code)).toThrow(`Cannot convert ${immediate} to unsigned byte: value must be an integer between -128 and 127 inclusive`);
   });
 
   it.each([
