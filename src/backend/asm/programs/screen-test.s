@@ -17,6 +17,8 @@ lim r2, 0            // Low byte: 0x00
 pst r2, 0            // Send low byte
 
 // Draw pixels
+pxl 1, 1
+
 lim r1, 0
 pst r0, 0
 pst r1, 0

@@ -1,11 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-const SCREEN_SIZE = 32;
-
-const OPCODE_WRITE_PIXEL = 0;
-const OPCODE_CLEAR_PIXEL = 1;
-const OPCODE_DRAW_BUFFER = 2;
-const OPCODE_CLEAR_BUFFER = 3;
+import { SCREEN_OPCODES, SCREEN_SIZE } from '../../../const/screen-constants';
 
 function createEmptyPixelGrid(): boolean[][] {
   return Array.from({ length: SCREEN_SIZE }, () => Array(SCREEN_SIZE).fill(false));
@@ -35,18 +29,15 @@ export const screenSlice = createSlice({
         return state;
       }
 
-      console.log(`state.pendingHighByte: ${state.pendingHighByte}, byteValue: ${byteValue}`);
       const command = (state.pendingHighByte << 8) | byteValue;
       const opcode = command >>> 10;
       const y = (command >>> 5) & 0b11111;
       const x = command & 0b11111;
 
-      console.log(`command: ${command} (0b${command.toString(2).padStart(16, '0')}), opcode: ${opcode}, y: ${y}, x: ${x}`);
-
       state.pendingHighByte = null;
 
       switch (opcode) {
-        case OPCODE_WRITE_PIXEL: {
+        case SCREEN_OPCODES.WRITE_PIXEL: {
           // TODO: Implement warnings if conditions are not met
           if (x >= 0 && x < SCREEN_SIZE && y >= 0 && y < SCREEN_SIZE) {
             const newBuffer = state.buffer.map(row => [...row]);
@@ -55,7 +46,7 @@ export const screenSlice = createSlice({
           }
           break;
         }
-        case OPCODE_CLEAR_PIXEL: {
+        case SCREEN_OPCODES.CLEAR_PIXEL: {
           if (x >= 0 && x < SCREEN_SIZE && y >= 0 && y < SCREEN_SIZE) {
             const newBuffer = state.buffer.map(row => [...row]);
             newBuffer[y][x] = false;
@@ -63,10 +54,10 @@ export const screenSlice = createSlice({
           }
           break;
         }
-        case OPCODE_DRAW_BUFFER:
+        case SCREEN_OPCODES.DRAW_BUFFER:
           state.display = state.buffer.map(row => [...row]);
           break;
-        case OPCODE_CLEAR_BUFFER:
+        case SCREEN_OPCODES.CLEAR_BUFFER:
           state.buffer = createEmptyPixelGrid();
           state.display = createEmptyPixelGrid();
           break;

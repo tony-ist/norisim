@@ -1,3 +1,6 @@
+import { SCREEN_OUTPUT_PORT } from '../../const/screen-constants';
+import { extractHighByte, extractLowByte } from '../../util/asm-util';
+import { drawPixelCommand } from '../../util/screen-util';
 import { AST, ASTNode, REAL_INSTRUCTIONS, IR, IRNode, REAL_INSTRUCTIONS_OPERAND_TYPES, PSEUDO_INSTRUCTION_MNEMONICS, PseudoInstructionMnemonic, PSEUDO_INSTRUCTION_OPERAND_TYPES, ASTInstructionMnemonic, RealInstructionMnemonic, REAL_INSTRUCTION_MNEMONICS } from '../types/asm.types';
 import { createLabelMap } from './label-map';
 import { parseToAST } from './parser';
@@ -68,6 +71,49 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         inlineComment: astNode.inlineComment,
         forceUpdateFlags: astNode.forceUpdateFlags,
       }];
+    case 'PXL': {
+      const command = drawPixelCommand(astNode.operands[0].value as number, astNode.operands[1].value as number);
+      const highByte = extractHighByte(command);
+      const lowByte = extractLowByte(command);
+      return [
+        {
+          mnemonic: 'LIM',
+          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: highByte }],
+          format: 'I',
+          address,
+          label: astNode.label,
+          inlineComment: astNode.inlineComment,
+          forceUpdateFlags: astNode.forceUpdateFlags,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 1,
+          label: astNode.label,
+          inlineComment: astNode.inlineComment,
+          forceUpdateFlags: astNode.forceUpdateFlags,
+        },
+        {
+          mnemonic: 'LIM',
+          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: lowByte }],
+          format: 'I',
+          address: address + 2,
+          label: astNode.label,
+          inlineComment: astNode.inlineComment,
+          forceUpdateFlags: astNode.forceUpdateFlags,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 3,
+          label: astNode.label,
+          inlineComment: astNode.inlineComment,
+          forceUpdateFlags: astNode.forceUpdateFlags,
+        },
+      ];
+    }
   }
 
   throw new Error(`Invalid pseudo instruction mnemonic: ${astNode.mnemonic}`);

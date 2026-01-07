@@ -1,7 +1,6 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import { execute } from '../slices/screenSlice';
-
-const SCREEN_PORT = 0;
+import { SCREEN_OUTPUT_PORT } from '../../../const/screen-constants';
 
 export const screenMiddleware: Middleware = store => next => (action) => {
   if (!action || typeof action !== 'object' || !('type' in action) || action.type !== 'simulator/step') {
@@ -23,7 +22,7 @@ export const screenMiddleware: Middleware = store => next => (action) => {
 
   const port = instruction.operands[1].value as number;
 
-  if (port !== SCREEN_PORT) {
+  if (port !== SCREEN_OUTPUT_PORT) {
     return next(action);
   }
 
@@ -33,7 +32,7 @@ export const screenMiddleware: Middleware = store => next => (action) => {
   const noriStateAfter = stateAfter.simulator.noriSimulatorState;
 
   if (noriStateAfter) {
-    const byteValue = noriStateAfter.outputPorts[SCREEN_PORT];
+    const byteValue = noriStateAfter.outputPorts[SCREEN_OUTPUT_PORT];
     store.dispatch(execute(byteValue));
   }
 

@@ -85,3 +85,11 @@ export function truncateTo8BitUnsigned(value: number) {
 export function isNegative(value: number) {
   return (value & 0x80) !== 0;
 }
+
+export function extractHighByte(value: number) {
+  return value >>> 8;
+}
+
+export function extractLowByte(value: number) {
+  return value & 0xFF;
+}

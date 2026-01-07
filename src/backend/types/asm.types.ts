@@ -78,6 +78,7 @@ export const REAL_INSTRUCTION_MNEMONICS = [
 export const PSEUDO_INSTRUCTION_MNEMONICS = [
   'INC',
   'DEC',
+  'PXL',
 ] as const;
 
 export type PseudoInstructionMnemonic = typeof PSEUDO_INSTRUCTION_MNEMONICS[number];
@@ -127,6 +128,7 @@ export const REAL_INSTRUCTIONS_OPERAND_TYPES = {
 export const PSEUDO_INSTRUCTION_OPERAND_TYPES = {
   INC: ['register'],
   DEC: ['register'],
+  PXL: ['immediate', 'immediate'],
 } satisfies Record<PseudoInstructionMnemonic, Operand['type'][]>;
 
 export interface ASTNode {
