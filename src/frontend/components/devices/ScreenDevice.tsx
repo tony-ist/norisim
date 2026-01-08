@@ -30,6 +30,9 @@ export function ScreenDevice() {
               width: PIXEL_SIZE,
               height: PIXEL_SIZE,
               backgroundColor: isOn ? ON_COLOR : OFF_COLOR,
+              borderTop: '1px solid #d3d3d3',
+              borderLeft: '1px solid #d3d3d3',
+              boxSizing: 'border-box',
             }}
           />
         )),
