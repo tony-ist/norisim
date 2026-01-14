@@ -19,6 +19,30 @@ pst r2, 0            // Send low byte
 // Draw pixels
 pxl 1, 1
 
+drawbuf // draw buffer
+clearbuf // clear 
+drawbuf // draw
+
+pxl 0, 0
+pxl 1, 1
+drawbuf
+clearpxl 1, 1
+drawbuf
+pxl 2, 1
+drawbuf
+
+clearpxl 2, 1
+pxl 3, 1
+drawbuf
+
+clearpxl 3, 1
+pxl 4, 1
+drawbuf
+
+clearpxl 4, 1
+pxl 5, 1
+drawbuf
+
 lim r1, 0
 pst r0, 0
 pst r1, 0

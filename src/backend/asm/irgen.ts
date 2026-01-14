@@ -1,9 +1,11 @@
 import { SCREEN_OUTPUT_PORT } from '../../const/screen-constants';
 import { extractHighByte, extractLowByte } from '../../util/asm-util';
-import { drawPixelCommand } from '../../util/screen-util';
+import { clearBufferCommand, clearPixelCommand, drawBufferCommand, drawPixelCommand } from '../../util/screen-util';
 import { AST, ASTNode, REAL_INSTRUCTIONS, IR, IRNode, REAL_INSTRUCTIONS_OPERAND_TYPES, PSEUDO_INSTRUCTION_MNEMONICS, PseudoInstructionMnemonic, PSEUDO_INSTRUCTION_OPERAND_TYPES, ASTInstructionMnemonic, RealInstructionMnemonic, REAL_INSTRUCTION_MNEMONICS } from '../types/asm.types';
 import { createLabelMap } from './label-map';
 import { parseToAST } from './parser';
+
+const SCREEN_TEMPORARY_REGISTER = 7;
 
 export function compileToIR(code: string): IR {
   const ast = parseToAST(code);
@@ -78,39 +80,124 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
       return [
         {
           mnemonic: 'LIM',
-          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: highByte }],
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
           format: 'I',
           address,
           label: astNode.label,
           inlineComment: astNode.inlineComment,
-          forceUpdateFlags: astNode.forceUpdateFlags,
         },
         {
           mnemonic: 'PST',
-          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
           format: 'I',
           address: address + 1,
-          label: astNode.label,
           inlineComment: astNode.inlineComment,
-          forceUpdateFlags: astNode.forceUpdateFlags,
         },
         {
           mnemonic: 'LIM',
-          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: lowByte }],
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: lowByte }],
           format: 'I',
           address: address + 2,
-          label: astNode.label,
           inlineComment: astNode.inlineComment,
-          forceUpdateFlags: astNode.forceUpdateFlags,
         },
         {
           mnemonic: 'PST',
-          operands: [{ type: 'register', value: 7 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
           format: 'I',
           address: address + 3,
+          inlineComment: astNode.inlineComment,
+        },
+      ];
+    }
+    case 'CLEARPXL': {
+      const command = clearPixelCommand(astNode.operands[0].value as number, astNode.operands[1].value as number);
+      const highByte = extractHighByte(command);
+      const lowByte = extractLowByte(command);
+      return [
+        {
+          mnemonic: 'LIM',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
+          format: 'I',
+          address,
           label: astNode.label,
           inlineComment: astNode.inlineComment,
-          forceUpdateFlags: astNode.forceUpdateFlags,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 1,
+          inlineComment: astNode.inlineComment,
+        },
+        {
+          mnemonic: 'LIM',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: lowByte }],
+          format: 'I',
+          address: address + 2,
+          inlineComment: astNode.inlineComment,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 3,
+          inlineComment: astNode.inlineComment,
+        },
+      ];
+    }
+    case 'CLEARBUF': {
+      const command = clearBufferCommand();
+      const highByte = extractHighByte(command);
+      return [
+        {
+          mnemonic: 'LIM',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
+          format: 'I',
+          address,
+          label: astNode.label,
+          inlineComment: astNode.inlineComment,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 1,
+          inlineComment: astNode.inlineComment,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: 0 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 2,
+          inlineComment: astNode.inlineComment,
+        },
+      ];
+    }
+    case 'DRAWBUF': {
+      const command = drawBufferCommand();
+      const highByte = extractHighByte(command);
+      return [
+        {
+          mnemonic: 'LIM',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
+          format: 'I',
+          address,
+          label: astNode.label,
+          inlineComment: astNode.inlineComment,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 1,
+          inlineComment: astNode.inlineComment,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: 0 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 2,
+          inlineComment: astNode.inlineComment,
         },
       ];
     }
