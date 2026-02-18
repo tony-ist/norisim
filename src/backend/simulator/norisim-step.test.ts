@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimSteps, NoriSimulatorState, updateZNF } from './norisim-step';
+import { defaultNoriSimulatorState, defaultNoriSimulatorStateNoProgram, norisimSteps, NoriSimulatorState, updateZNFlags } from './norisim-step';
 
 describe('norisimStep', () => {
   it('should load immediate', () => {
@@ -424,7 +424,7 @@ describe('updateZNF', () => {
     [-1, false],
   ])('%s should update zero flag to %s', (result, expectedZF) => {
     const state = defaultNoriSimulatorStateNoProgram();
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     expect(state.ZF).toBe(expectedZF);
   });
 
@@ -434,7 +434,7 @@ describe('updateZNF', () => {
     [-1, true],
   ])('%s should update negative flag to %s', (result, expectedNF) => {
     const state = defaultNoriSimulatorStateNoProgram();
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     expect(state.NF).toBe(expectedNF);
   });
 });

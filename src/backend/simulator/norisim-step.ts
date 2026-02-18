@@ -61,6 +61,7 @@ const instructionHandlers: Record<RealInstructionMnemonic, InstructionHandler> =
   NOP: noOperation,
   LIM: loadImmediate,
   ADDI: addImmediate,
+  ANDI: andImmediate,
   ADD: add,
   SUB: subtract,
   AND: and,
@@ -134,14 +135,28 @@ function addImmediate(state: NoriSimulatorState, operands: Operand[]) {
   const result8bit = asSignedByte(fullResult & 0xFF);
   state.registers[register] = result8bit;
 
-  updateZNF(state, result8bit);
+  updateZNFlags(state, result8bit);
   state.CF = (fullResult & 0x100) !== 0;
   state.VF = (((operand ^ result8bit) & (immediate ^ result8bit)) & SIGN_MASK) !== 0;
 
   state.currentAddress++;
 }
 
-export function updateZNF(state: NoriSimulatorState, result: number) {
+function andImmediate(state: NoriSimulatorState, operands: Operand[]) {
+  const register = operands[0].value as number;
+  const immediate = operands[1].value as number;
+  const operand = state.registers[register];
+  const result = operand & immediate;
+  state.registers[register] = result;
+
+  updateZNFlags(state, result);
+  state.CF = false;
+  state.VF = false;
+
+  state.currentAddress++;
+}
+
+export function updateZNFlags(state: NoriSimulatorState, result: number) {
   state.ZF = result === 0;
   state.NF = isNegative(result);
 }
@@ -159,7 +174,7 @@ function add(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result8bit);
+    updateZNFlags(state, result8bit);
     state.CF = (fullResult & 0x100) !== 0;
     state.VF = (((operandA ^ result8bit) & (operandB ^ result8bit)) & SIGN_MASK) !== 0;
   }
@@ -180,7 +195,7 @@ function subtract(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result8bit);
+    updateZNFlags(state, result8bit);
     state.CF = (fullResult & 0x100) !== 0;
     state.VF = (((operandA ^ operandB) & (operandA ^ result8bit)) & SIGN_MASK) !== 0;
   }
@@ -200,7 +215,7 @@ function and(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
@@ -220,7 +235,7 @@ function nand(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
@@ -240,7 +255,7 @@ function or(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
@@ -260,7 +275,7 @@ function nor(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
@@ -280,7 +295,7 @@ function xor(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
@@ -300,7 +315,7 @@ function xnor(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
@@ -318,7 +333,7 @@ function not(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
@@ -336,7 +351,7 @@ function shiftRight(state: NoriSimulatorState, operands: Operand[]) {
   const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
 
   if (forceUpdateFlags) {
-    updateZNF(state, result);
+    updateZNFlags(state, result);
     state.CF = false;
     state.VF = false;
   }
