@@ -20,7 +20,7 @@ export function App() {
         </Box>
         <Box className={styles.stateViewerContainer}>
           <PortInputDevice />
-          <ScreenDevice />
+          {/* <ScreenDevice /> */}
           <SimulatorStateViewer />
         </Box>
       </Box>

@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import CodeMirror from '@uiw/react-codemirror';
 import { githubLight } from '@uiw/codemirror-theme-github';
 import { useCallback, useEffect } from 'react';
-import sampleCode from '../../../backend/asm/programs/pong.s?raw';
+import sampleCode from '../../../backend/asm/programs/fib.s?raw';
 import { IRNode, Operand } from '../../../backend/types/asm.types';
 import { toHexWord } from '../../../util/asm-util';
 import { RootState } from '../../store';

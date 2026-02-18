@@ -201,6 +201,27 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         },
       ];
     }
+    case 'PXLR': {
+      const command = drawPixelCommand(astNode.operands[0].value as number, astNode.operands[1].value as number);
+      const highByte = extractHighByte(command);
+      const lowByte = extractLowByte(command);
+      return [
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address,
+          inlineComment: astNode.inlineComment,
+        },
+        {
+          mnemonic: 'PST',
+          operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
+          format: 'I',
+          address: address + 1,
+          inlineComment: astNode.inlineComment,
+        },
+      ];
+    }
   }
 
   throw new Error(`Invalid pseudo instruction mnemonic: ${astNode.mnemonic}`);
