@@ -31,6 +31,7 @@ npm run test
 - Display 
 - Text output device
 - Test overflowing values are masked and correctly stored in registers
+- Page aligning in assembly
 
 ### UI Components
 - Program memory hex view
