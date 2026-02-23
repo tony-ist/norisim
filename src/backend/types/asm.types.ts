@@ -1,44 +1,41 @@
-export type Format = 'A' | 'B' | 'C' | 'I' | 'J' | 'Z';
-
 export interface RealInstructionInfo {
-  format: Format
   opcode: number
 }
 
 export const REAL_INSTRUCTIONS = {
-  NOP: { opcode: 0x00, format: 'Z' },
-  LIM: { opcode: 0x01, format: 'I' },
-  ADDI: { opcode: 0x02, format: 'I' },
-  ANDI: { opcode: 0x03, format: 'I' },
-  ADD: { opcode: 0x04, format: 'A' },
-  SUB: { opcode: 0x05, format: 'A' },
-  AND: { opcode: 0x06, format: 'A' },
-  NAND: { opcode: 0x06, format: 'A' },
-  OR: { opcode: 0x07, format: 'A' },
-  NOR: { opcode: 0x07, format: 'A' },
-  XOR: { opcode: 0x08, format: 'A' },
-  XNOR: { opcode: 0x08, format: 'A' },
-  NOT: { opcode: 0x09, format: 'B' },
-  SHR: { opcode: 0x0A, format: 'B' },
-  MOV: { opcode: 0x0B, format: 'B' },
-  JMP: { opcode: 0x0C, format: 'J' },
-  JZ: { opcode: 0x0D, format: 'J' },
-  JNZ: { opcode: 0x0E, format: 'J' },
-  JC: { opcode: 0x0F, format: 'J' },
-  JNC: { opcode: 0x10, format: 'J' },
-  JL: { opcode: 0x11, format: 'J' },
-  JG: { opcode: 0x12, format: 'J' },
-  JLE: { opcode: 0x13, format: 'J' },
-  JGE: { opcode: 0x14, format: 'J' },
-  CAL: { opcode: 0x15, format: 'J' },
-  RET: { opcode: 0x16, format: 'Z' },
-  PSH: { opcode: 0x17, format: 'C' },
-  POP: { opcode: 0x18, format: 'C' },
-  MLD: { opcode: 0x19, format: 'B' },
-  MST: { opcode: 0x1A, format: 'B' },
-  PST: { opcode: 0x1B, format: 'I' },
-  PLD: { opcode: 0x1C, format: 'I' },
-  HLT: { opcode: 0x1D, format: 'Z' },
+  NOP: { opcode: 0x00 },
+  LIM: { opcode: 0x01 },
+  ADDI: { opcode: 0x02 },
+  ANDI: { opcode: 0x03 },
+  ADD: { opcode: 0x04 },
+  SUB: { opcode: 0x05 },
+  AND: { opcode: 0x06 },
+  NAND: { opcode: 0x06 },
+  OR: { opcode: 0x07 },
+  NOR: { opcode: 0x07 },
+  XOR: { opcode: 0x08 },
+  XNOR: { opcode: 0x08 },
+  NOT: { opcode: 0x09 },
+  SHR: { opcode: 0x0A },
+  MOV: { opcode: 0x0B },
+  JMP: { opcode: 0x0C },
+  JZ: { opcode: 0x0D },
+  JNZ: { opcode: 0x0E },
+  JC: { opcode: 0x0F },
+  JNC: { opcode: 0x10 },
+  JL: { opcode: 0x11 },
+  JG: { opcode: 0x12 },
+  JLE: { opcode: 0x13 },
+  JGE: { opcode: 0x14 },
+  CAL: { opcode: 0x15 },
+  RET: { opcode: 0x16 },
+  PSH: { opcode: 0x17 },
+  POP: { opcode: 0x18 },
+  MLD: { opcode: 0x19 },
+  MST: { opcode: 0x1A },
+  PST: { opcode: 0x1B },
+  PLD: { opcode: 0x1C },
+  HLT: { opcode: 0x1D },
 } satisfies Record<RealInstructionMnemonic, RealInstructionInfo>;
 
 export const REAL_INSTRUCTION_MNEMONICS = [
@@ -95,7 +92,6 @@ export type IRInstructionMnemonic = RealInstructionMnemonic;
 export interface IRNode {
   mnemonic: IRInstructionMnemonic
   operands: Operand[]
-  format: Format
   address: number
   label?: string
   inlineComment?: string
@@ -123,13 +119,40 @@ export interface Label {
 }
 
 export const REAL_INSTRUCTIONS_OPERAND_TYPES = {
-  A: ['register', 'register', 'register'],
-  B: ['register', 'register'],
-  C: ['register'],
-  I: ['register', 'immediate'],
-  J: ['label'],
-  Z: [],
-} satisfies Record<Format, Operand['type'][]>;
+  NOP: [],
+  LIM: ['register', 'immediate'],
+  ADD: ['register', 'register', 'register'],
+  ADDI: ['register', 'immediate'],
+  ANDI: ['register', 'immediate'],
+  SUB: ['register', 'register', 'register'],
+  AND: ['register', 'register', 'register'],
+  NAND: ['register', 'register', 'register'],
+  OR: ['register', 'register', 'register'],
+  NOR: ['register', 'register', 'register'],
+  XOR: ['register', 'register', 'register'],
+  XNOR: ['register', 'register', 'register'],
+  NOT: ['register', 'register'],
+  SHR: ['register', 'register'],
+  JMP: ['label'],
+  JZ: ['label'],
+  JNZ: ['label'],
+  JC: ['label'],
+  JNC: ['label'],
+  JL: ['label'],
+  JG: ['label'],
+  JLE: ['label'],
+  JGE: ['label'],
+  CAL: ['label'],
+  RET: [],
+  PSH: ['register'],
+  POP: ['register'],
+  MLD: ['register'],
+  MST: ['register'],
+  MOV: ['register', 'register'],
+  PST: ['register', 'immediate'],
+  PLD: ['register', 'immediate'],
+  HLT: [],
+} satisfies Record<RealInstructionMnemonic, Operand['type'][]>;
 
 export const PSEUDO_INSTRUCTION_OPERAND_TYPES = {
   INC: ['register'],

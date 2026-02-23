@@ -24,14 +24,12 @@ describe('generateIR', () => {
 
     expect(ir[0].mnemonic).toBe('NOP');
     expect(ir[0].operands).toStrictEqual([]);
-    expect(ir[0].format).toBe('Z');
     expect(ir[0].address).toBe(0);
     expect(ir[0].inlineComment).toBe('nop');
     expect(ir[0].forceUpdateFlags).toBe(false);
 
     expect(ir[1].mnemonic).toBe('ADD');
     expect(ir[1].operands).toStrictEqual([{ type: 'register', value: 0 }, { type: 'register', value: 1 }, { type: 'register', value: 2 }]);
-    expect(ir[1].format).toBe('A');
     expect(ir[1].address).toBe(1);
     expect(ir[1].inlineComment).toBe(undefined);
     expect(ir[1].forceUpdateFlags).toBe(false);
@@ -58,7 +56,6 @@ describe('generateIR', () => {
 
     expect(ir[0].mnemonic).toBe('JMP');
     expect(ir[0].operands).toStrictEqual([{ type: 'label', value: 'label1', targetAddress: 1 }]);
-    expect(ir[0].format).toBe('J');
     expect(ir[0].address).toBe(0);
     expect(ir[0].forceUpdateFlags).toBe(false);
 
@@ -99,7 +96,6 @@ describe('generateIR', () => {
 
     expect(ir[0].mnemonic).toBe('ADDI');
     expect(ir[0].operands).toStrictEqual([{ type: 'register', value: 2 }, { type: 'immediate', value: 1 }]);
-    expect(ir[0].format).toBe('I');
     expect(ir[0].address).toBe(0);
     expect(ir[0].forceUpdateFlags).toBe(false);
     expect(ir[0].label).toBe(undefined);
@@ -121,7 +117,6 @@ describe('generateIR', () => {
 
     expect(ir[0].mnemonic).toBe('ADDI');
     expect(ir[0].operands).toStrictEqual([{ type: 'register', value: 2 }, { type: 'immediate', value: -1 }]);
-    expect(ir[0].format).toBe('I');
     expect(ir[0].address).toBe(0);
     expect(ir[0].forceUpdateFlags).toBe(false);
     expect(ir[0].label).toBe(undefined);

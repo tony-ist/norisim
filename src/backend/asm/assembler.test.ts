@@ -6,7 +6,6 @@ describe('encodeIRNode', () => {
   it('should encode Z format instruction', () => {
     const irNode: IRNode = {
       mnemonic: 'NOP',
-      format: 'Z',
       operands: [],
       address: 0,
     };
@@ -16,7 +15,6 @@ describe('encodeIRNode', () => {
   it('should encode I format instruction', () => {
     const irNode: IRNode = {
       mnemonic: 'ADDI',
-      format: 'I',
       operands: [{ type: 'register', value: 1 }, { type: 'immediate', value: 255 }],
       address: 0,
     };
@@ -26,7 +24,6 @@ describe('encodeIRNode', () => {
   it('should encode A format instruction', () => {
     const irNode: IRNode = {
       mnemonic: 'ADD',
-      format: 'A',
       operands: [{ type: 'register', value: 1 }, { type: 'register', value: 2 }, { type: 'register', value: 3 }],
       address: 0,
       forceUpdateFlags: true,
@@ -37,7 +34,6 @@ describe('encodeIRNode', () => {
   it('should encode NAND', () => {
     const irNode: IRNode = {
       mnemonic: 'NAND',
-      format: 'A',
       operands: [{ type: 'register', value: 1 }, { type: 'register', value: 2 }, { type: 'register', value: 3 }],
       address: 0,
       forceUpdateFlags: true,

@@ -43,7 +43,6 @@ function convertASTNodeToIRNodes(astNode: ASTNode, address: number): IRNode[] {
   return [{
     mnemonic,
     operands: [...astNode.operands],
-    format: info.format,
     address,
     label: astNode.label,
     inlineComment: astNode.inlineComment,
@@ -57,7 +56,6 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
       return [{
         mnemonic: 'ADDI',
         operands: [astNode.operands[0], { type: 'immediate', value: 1 }],
-        format: 'I',
         address,
         label: astNode.label,
         inlineComment: astNode.inlineComment,
@@ -67,7 +65,6 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
       return [{
         mnemonic: 'ADDI',
         operands: [astNode.operands[0], { type: 'immediate', value: -1 }],
-        format: 'I',
         address,
         label: astNode.label,
         inlineComment: astNode.inlineComment,
@@ -81,7 +78,6 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'LIM',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
-          format: 'I',
           address,
           label: astNode.label,
           inlineComment: astNode.inlineComment,
@@ -89,21 +85,18 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 1,
           inlineComment: astNode.inlineComment,
         },
         {
           mnemonic: 'LIM',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: lowByte }],
-          format: 'I',
           address: address + 2,
           inlineComment: astNode.inlineComment,
         },
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 3,
           inlineComment: astNode.inlineComment,
         },
@@ -117,7 +110,6 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'LIM',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
-          format: 'I',
           address,
           label: astNode.label,
           inlineComment: astNode.inlineComment,
@@ -125,21 +117,18 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 1,
           inlineComment: astNode.inlineComment,
         },
         {
           mnemonic: 'LIM',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: lowByte }],
-          format: 'I',
           address: address + 2,
           inlineComment: astNode.inlineComment,
         },
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 3,
           inlineComment: astNode.inlineComment,
         },
@@ -152,7 +141,6 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'LIM',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
-          format: 'I',
           address,
           label: astNode.label,
           inlineComment: astNode.inlineComment,
@@ -160,14 +148,12 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 1,
           inlineComment: astNode.inlineComment,
         },
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: 0 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 2,
           inlineComment: astNode.inlineComment,
         },
@@ -180,7 +166,6 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'LIM',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: highByte }],
-          format: 'I',
           address,
           label: astNode.label,
           inlineComment: astNode.inlineComment,
@@ -188,14 +173,12 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 1,
           inlineComment: astNode.inlineComment,
         },
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: 0 }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 2,
           inlineComment: astNode.inlineComment,
         },
@@ -209,14 +192,12 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address,
           inlineComment: astNode.inlineComment,
         },
         {
           mnemonic: 'PST',
           operands: [{ type: 'register', value: SCREEN_TEMPORARY_REGISTER }, { type: 'immediate', value: SCREEN_OUTPUT_PORT }],
-          format: 'I',
           address: address + 1,
           inlineComment: astNode.inlineComment,
         },
@@ -250,15 +231,15 @@ function validateOperandTypes(astNode: ASTNode) {
       throw new Error(`Invalid instruction mnemonic: ${astNode.mnemonic}`);
     }
 
-    const format = REAL_INSTRUCTIONS[astNode.mnemonic as keyof typeof REAL_INSTRUCTIONS].format;
+    const operandTypes = REAL_INSTRUCTIONS_OPERAND_TYPES[astNode.mnemonic];
 
-    if (astNode.operands.length !== REAL_INSTRUCTIONS_OPERAND_TYPES[format].length) {
+    if (astNode.operands.length !== operandTypes.length) {
       throw new Error(`Invalid number of operands for ${astNode.mnemonic} instruction: ${astNode.operands.length}`);
     }
 
     for (let i = 0; i < astNode.operands.length; i++) {
       const operand = astNode.operands[i];
-      const expectedType = REAL_INSTRUCTIONS_OPERAND_TYPES[format][i];
+      const expectedType = operandTypes[i];
       if (operand.type !== expectedType) {
         throw new Error(`Invalid operand type for ${astNode.mnemonic} instruction: ${operand.type}. Expected ${expectedType}.`);
       }
@@ -271,7 +252,7 @@ function fillIRTargetAddresses(ir: IR): IR {
   const labelMap = createLabelMap(ir);
 
   for (const irNode of ir) {
-    if (irNode.format === 'J') {
+    if (irNode.operands[0]?.type === 'label') {
       const targetLabel = irNode.operands[0].value as string;
       const targetAddress = labelMap.get(targetLabel);
 
