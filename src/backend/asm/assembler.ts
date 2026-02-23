@@ -67,17 +67,23 @@ export function encodeIRNode(irNode: IRNode): number {
 
     case 'PSH':
     case 'POP': {
-      throw new Error('Not implemented');
+      const register = irNode.operands[0].value as number;
+      return register << 5 | opcode;
     }
 
     case 'MLD':
     case 'MST': {
-      throw new Error('Not implemented');
+      const register = irNode.operands[0].value as number;
+      const ptr = irNode.operands[1].value as number;
+      const updateFlagsBit = irNode.forceUpdateFlags ? 1 : 0;
+      return updateFlagsBit << 15 | ptr << 8 | register << 5 | opcode;
     }
 
     case 'PST':
     case 'PLD': {
-      throw new Error('Not implemented');
+      const register = irNode.operands[0].value as number;
+      const port = irNode.operands[1].value as number;
+      return port << 8 | register << 5 | opcode;
     }
 
     default: {
