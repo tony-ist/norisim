@@ -3,7 +3,7 @@ import { AST, IRNode } from '../types/asm.types';
 import { assemble, encodeIRNode } from './assembler';
 
 describe('encodeIRNode', () => {
-  it('should encode Z format instruction', () => {
+  it('should encode NOP', () => {
     const irNode: IRNode = {
       mnemonic: 'NOP',
       operands: [],
@@ -12,7 +12,7 @@ describe('encodeIRNode', () => {
     expect(encodeIRNode(irNode)).toEqual(0);
   });
 
-  it('should encode I format instruction', () => {
+  it('should encode ADDI', () => {
     const irNode: IRNode = {
       mnemonic: 'ADDI',
       operands: [{ type: 'register', value: 1 }, { type: 'immediate', value: 255 }],
@@ -21,7 +21,7 @@ describe('encodeIRNode', () => {
     expect(encodeIRNode(irNode)).toEqual(0b11111111_001_00010);
   });
 
-  it('should encode A format instruction', () => {
+  it('should encode ADD', () => {
     const irNode: IRNode = {
       mnemonic: 'ADD',
       operands: [{ type: 'register', value: 1 }, { type: 'register', value: 2 }, { type: 'register', value: 3 }],
@@ -31,6 +31,16 @@ describe('encodeIRNode', () => {
     expect(encodeIRNode(irNode)).toEqual(0b10_001_010_011_00100);
   });
 
+  it('should encode AND', () => {
+    const irNode: IRNode = {
+      mnemonic: 'AND',
+      operands: [{ type: 'register', value: 1 }, { type: 'register', value: 2 }, { type: 'register', value: 3 }],
+      address: 0,
+      forceUpdateFlags: true,
+    };
+    expect(encodeIRNode(irNode)).toEqual(0b10_001_010_011_00110);
+  });
+
   it('should encode NAND', () => {
     const irNode: IRNode = {
       mnemonic: 'NAND',
@@ -38,6 +48,6 @@ describe('encodeIRNode', () => {
       address: 0,
       forceUpdateFlags: true,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b11_001_010_011_00100);
+    expect(encodeIRNode(irNode)).toEqual(0b11_001_010_011_00110);
   });
 });
