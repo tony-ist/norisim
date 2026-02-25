@@ -64,10 +64,10 @@ def hex_to_nori_schematic(input_file: str) -> None:
     for depth in range(num_depth_rows):
         for col in range(ICACHE_LINE_COLS * 2):
             if col < ICACHE_LINE_COLS:
-                byte_source = high_bytes
+                byte_source = low_bytes
                 col_in_line = col
             else:
-                byte_source = low_bytes
+                byte_source = high_bytes
                 col_in_line = col - ICACHE_LINE_COLS
 
             for barrel_y in range(BARREL_HEIGHT):
