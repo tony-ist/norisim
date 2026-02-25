@@ -20,7 +20,7 @@ export const REAL_INSTRUCTIONS = {
   MOV: { opcode: 0x0B },
   JMP: { opcode: 0x0C },
   JZ: { opcode: 0x0D },
-  JNZ: { opcode: 0x0E },
+  BRC: { opcode: 0x0A },
   JC: { opcode: 0x0F },
   JNC: { opcode: 0x10 },
   JL: { opcode: 0x11 },
@@ -53,9 +53,9 @@ export const REAL_INSTRUCTION_MNEMONICS = [
   'XNOR',
   'NOT',
   'SHR',
+  'BRC',
   'JMP',
   'JZ',
-  'JNZ',
   'JC',
   'JNC',
   'JL',
@@ -75,6 +75,8 @@ export const REAL_INSTRUCTION_MNEMONICS = [
 ] as const;
 
 export const PSEUDO_INSTRUCTION_MNEMONICS = [
+  'MOV',
+  'JNZ',
   'INC',
   'DEC',
   'PXL',
@@ -155,6 +157,8 @@ export const REAL_INSTRUCTIONS_OPERAND_TYPES = {
 } satisfies Record<RealInstructionMnemonic, Operand['type'][]>;
 
 export const PSEUDO_INSTRUCTION_OPERAND_TYPES = {
+  MOV: ['register', 'register'],
+  JNZ: ['label'],
   INC: ['register'],
   DEC: ['register'],
   PXL: ['immediate', 'immediate'],

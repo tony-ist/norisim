@@ -52,6 +52,25 @@ function convertASTNodeToIRNodes(astNode: ASTNode, address: number): IRNode[] {
 
 function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
   switch (astNode.mnemonic) {
+    case 'MOV': {
+      return [{
+        mnemonic: 'AND',
+        operands: [astNode.operands[0], astNode.operands[0], astNode.operands[1]],
+        address,
+        label: astNode.label,
+        inlineComment: astNode.inlineComment,
+        forceUpdateFlags: astNode.forceUpdateFlags,
+      }];
+    }
+    case 'JNZ': {
+      return [{
+        mnemonic: 'BRC',
+        operands: [{ type: 'immediate', value: 1 }, astNode.operands[0]],
+        address,
+        label: astNode.label,
+        inlineComment: astNode.inlineComment,
+      }];
+    }
     case 'INC':
       return [{
         mnemonic: 'ADDI',

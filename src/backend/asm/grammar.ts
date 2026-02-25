@@ -1,3 +1,4 @@
+export default `
 ISA {
     program = programLine*
 
@@ -29,9 +30,10 @@ ISA {
 
     sep = inlineSpace* "," inlineSpace*
 
-    newline = "\n"
+    newline = "\\n"
 
     letterOrDigit = letter | digit | "_"
 
     inlineSpace = ~newline space
 }
+`;

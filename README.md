@@ -27,11 +27,18 @@ npm run assemble path/to/assembly.s path/to/output.hex
 npm run test
 ```
 
+### Generate ROM schematic 
+
+```bash
+uv run scripts/romgen.py src/backend/asm/programs/compiled/fib.txt
+```
+
 ## TODO
 - Display 
 - Text output device
 - Test overflowing values are masked and correctly stored in registers
 - Page aligning in assembly
+- Make AND, OR, NAND, NOR and such pseudoinstructions. Call internal real instruction ADDINT with argument of negate flag (and maybe update flags flag too)
 
 ### UI Components
 - Program memory hex view

@@ -93,3 +93,7 @@ export function extractHighByte(value: number) {
 export function extractLowByte(value: number) {
   return value & 0xFF;
 }
+
+export function split16BitInto8Bit(value: number) {
+  return [value >>> 8, value & 0xFF];
+}

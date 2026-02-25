@@ -1,7 +1,7 @@
 import * as ohm from 'ohm-js';
 import { preprocess } from './preprocessor';
 import { AST } from '../types/asm.types';
-import grammarContents from './nori-v1.ohm?raw';
+import grammarContents from './grammar';
 import { asUnsignedByte, isUnsignedByteInBounds } from '../../util/asm-util';
 import { GPR_COUNT } from '../../const/simulator-constants';
 

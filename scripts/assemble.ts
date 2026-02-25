@@ -17,9 +17,8 @@ function main(): void {
   const asmCode: string = fs.readFileSync(inputFile, 'utf-8');
 
   try {
-    const ast = parseToAST(asmCode, parserTrace);
-    const machineCode = assemble(ast);
-    console.log(machineCode);
+    const machineCode = assemble(asmCode);
+    console.log(machineCode.map(code => code.toString(16).padStart(2, '0')).join(' '));
   }
   catch (error) {
     console.error('Assemble error:', (error as Error).stack);

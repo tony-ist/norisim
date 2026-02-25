@@ -1,3 +1,4 @@
+import { split16BitInto8Bit } from '../../util/asm-util';
 import { AST, IR, IRNode, Label, REAL_INSTRUCTIONS, RealInstructionMnemonic } from '../types/asm.types';
 import { compileToIR, generateIR } from './irgen';
 import { parseToAST } from './parser';
@@ -43,16 +44,23 @@ export function encodeIRNode(irNode: IRNode): number {
     }
 
     case 'NOT':
-    case 'SHR': {
+    case 'SHR':
+    case 'MOV': {
       const dest = irNode.operands[0].value as number;
       const src = irNode.operands[1].value as number;
       const updateFlagsBit = irNode.forceUpdateFlags ? 1 : 0;
       return updateFlagsBit << 15 | dest << 11 | src << 5 | opcode;
     }
 
+    case 'BRC': {
+      const branchType = irNode.operands[0].value as number;
+      const label = irNode.operands[1] as Label;
+      const targetAddress = label.targetAddress as number;
+      return branchType << 8 | targetAddress << 5 | opcode;
+    }
+
     case 'JMP':
     case 'JZ':
-    case 'JNZ':
     case 'JC':
     case 'JNC':
     case 'JL':
@@ -94,5 +102,5 @@ export function encodeIRNode(irNode: IRNode): number {
 
 export function assemble(code: string): number[] {
   const ir = compileToIR(code);
-  return ir.map(encodeIRNode);
+  return ir.map(encodeIRNode).flatMap(split16BitInto8Bit);
 }
