@@ -18,7 +18,7 @@ function main(): void {
 
   try {
     const machineCode = assemble(asmCode);
-    console.log(machineCode.map(code => code.toString(16).padStart(2, '0')).join(' '));
+    console.log(machineCode.map(code => code.toString(16).toUpperCase().padStart(2, '0')).join(' '));
   }
   catch (error) {
     console.error('Assemble error:', (error as Error).stack);
