@@ -1,7 +1,6 @@
 // Simple test program
-
-        jmp .label
-        add r0, r1, r2
-        sub r3, r4, r5
-        .label
-        db 12, 23 ,34
+lim r1, 1
+lim r2, 2
+add r1, r1, r2
+add r1, r1, r2
+add r1, r1, r2

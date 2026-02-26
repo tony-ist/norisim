@@ -39,7 +39,8 @@ def hex_to_nori_schematic(input_file: str) -> None:
     with open(input_file, "r") as f:
         tokens = f.read().split()
 
-    raw_bytes = [int(t, 16) for t in tokens]
+    # XOR the bytes with 0xFF to get the correct values for the barrel SS
+    raw_bytes = [int(t, 16) ^ 0xFF for t in tokens] 
     if len(raw_bytes) % 2 != 0:
         raw_bytes.append(0)
 
