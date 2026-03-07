@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { AST, IRNode } from '../types/asm.types';
-import { assemble, encodeIRNode } from './assembler';
+import { IRNode } from '../types/asm.types';
+import { encodeIRNode } from './assembler';
 
 describe('encodeIRNode', () => {
   it('should encode NOP', () => {
@@ -28,7 +28,7 @@ describe('encodeIRNode', () => {
       address: 0,
       forceUpdateFlags: true,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b10_001_010_011_00100);
+    expect(encodeIRNode(irNode)).toEqual(0b1_0_010_011_001_00100);
   });
 
   it('should encode AND', () => {
@@ -38,7 +38,7 @@ describe('encodeIRNode', () => {
       address: 0,
       forceUpdateFlags: true,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b10_001_010_011_00110);
+    expect(encodeIRNode(irNode)).toEqual(0b1_0_010_011_001_00110);
   });
 
   it('should encode NAND', () => {
@@ -48,7 +48,7 @@ describe('encodeIRNode', () => {
       address: 0,
       forceUpdateFlags: true,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b11_001_010_011_00110);
+    expect(encodeIRNode(irNode)).toEqual(0b1_1_010_011_001_00110);
   });
 
   it('should encode NOT', () => {
@@ -58,7 +58,7 @@ describe('encodeIRNode', () => {
       address: 0,
       forceUpdateFlags: true,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b10_001_000_010_01001);
+    expect(encodeIRNode(irNode)).toEqual(0b1_1_000_010_001_00111);
   });
 
   it('should encode JMP', () => {
@@ -67,7 +67,7 @@ describe('encodeIRNode', () => {
       operands: [{ type: 'label', value: '.loop', targetAddress: 3 }],
       address: 0,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b00000_00011_01100);
+    expect(encodeIRNode(irNode)).toEqual(0b00000000011_01011);
   });
 
   it('should encode PSH', () => {
@@ -76,7 +76,7 @@ describe('encodeIRNode', () => {
       operands: [{ type: 'register', value: 3 }],
       address: 0,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b00000000_011_10111);
+    expect(encodeIRNode(irNode)).toEqual(0b00_011_000000_01110);
   });
 
   it('should encode MLD', () => {
@@ -85,7 +85,7 @@ describe('encodeIRNode', () => {
       operands: [{ type: 'register', value: 1 }, { type: 'register', value: 2 }],
       address: 0,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b00_000_010_001_11001);
+    expect(encodeIRNode(irNode)).toEqual(0b00000_010_001_10000);
   });
 
   it('should encode PST', () => {
@@ -94,6 +94,26 @@ describe('encodeIRNode', () => {
       operands: [{ type: 'register', value: 1 }, { type: 'immediate', value: 3 }],
       address: 0,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b00_000_011_001_11011);
+    expect(encodeIRNode(irNode)).toEqual(0b00_001_011_000_10010);
+  });
+
+  it('should encode BRC with condition/page/address fields', () => {
+    const irNode: IRNode = {
+      mnemonic: 'BRC',
+      operands: [{ type: 'immediate', value: 3 }, { type: 'label', value: '.loop', targetAddress: 0b0_101_111 }],
+      address: 0b0_100_001,
+    };
+
+    expect(encodeIRNode(irNode)).toEqual(0b00_011_101_111_01010);
+  });
+
+  it('should encode JZ as BRC condition 0', () => {
+    const irNode: IRNode = {
+      mnemonic: 'JZ',
+      operands: [{ type: 'label', value: '.loop', targetAddress: 0b0_001_010 }],
+      address: 0b0_001_001,
+    };
+
+    expect(encodeIRNode(irNode)).toEqual(0b00_000_001_010_01010);
   });
 });
