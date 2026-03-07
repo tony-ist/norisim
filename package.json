@@ -9,6 +9,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --fix",
+    "lint:fix:stage": "npm run lint:fix && git add --all",
     "preview": "vite preview",
     "test": "vitest --run",
     "test:watch": "vitest",
@@ -17,7 +18,7 @@
     "rnd": "tsx scripts/rnd.ts"
   },
   "pre-commit": [
-    "lint:fix",
+    "lint:fix:stage",
     "build",
     "test"
   ],
