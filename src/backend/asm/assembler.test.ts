@@ -51,14 +51,14 @@ describe('encodeIRNode', () => {
     expect(encodeIRNode(irNode)).toEqual(0b1_1_010_011_001_00110);
   });
 
-  it('should encode NOT', () => {
+  it('should encode XNOR', () => {
     const irNode: IRNode = {
-      mnemonic: 'NOT',
-      operands: [{ type: 'register', value: 1 }, { type: 'register', value: 2 }],
+      mnemonic: 'XNOR',
+      operands: [{ type: 'register', value: 1 }, { type: 'register', value: 2 }, { type: 'register', value: 3 }],
       address: 0,
       forceUpdateFlags: true,
     };
-    expect(encodeIRNode(irNode)).toEqual(0b1_1_000_010_001_00111);
+    expect(encodeIRNode(irNode)).toEqual(0b1_1_010_011_001_01000);
   });
 
   it('should encode JMP', () => {
@@ -105,15 +105,5 @@ describe('encodeIRNode', () => {
     };
 
     expect(encodeIRNode(irNode)).toEqual(0b00_011_101_111_01010);
-  });
-
-  it('should encode JZ as BRC condition 0', () => {
-    const irNode: IRNode = {
-      mnemonic: 'JZ',
-      operands: [{ type: 'label', value: '.loop', targetAddress: 0b0_001_010 }],
-      address: 0b0_001_001,
-    };
-
-    expect(encodeIRNode(irNode)).toEqual(0b00_000_001_010_01010);
   });
 });

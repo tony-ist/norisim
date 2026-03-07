@@ -1,7 +1,7 @@
 import { SCREEN_OUTPUT_PORT } from '../../const/screen-constants';
 import { extractHighByte, extractLowByte } from '../../util/asm-util';
 import { clearBufferCommand, clearPixelCommand, drawBufferCommand, drawPixelCommand } from '../../util/screen-util';
-import { AST, ASTNode, REAL_INSTRUCTIONS, IR, IRNode, REAL_INSTRUCTIONS_OPERAND_TYPES, PSEUDO_INSTRUCTION_MNEMONICS, PseudoInstructionMnemonic, PSEUDO_INSTRUCTION_OPERAND_TYPES, ASTInstructionMnemonic, RealInstructionMnemonic, REAL_INSTRUCTION_MNEMONICS } from '../types/asm.types';
+import { AST, ASTNode, REAL_INSTRUCTIONS, IR, IRNode, REAL_INSTRUCTIONS_OPERAND_TYPES, PSEUDO_INSTRUCTION_MNEMONICS, PseudoInstructionMnemonic, PSEUDO_INSTRUCTION_OPERAND_TYPES, ASTInstructionMnemonic, RealInstructionMnemonic, REAL_INSTRUCTION_MNEMONICS, BRANCH_CONDITIONS } from '../types/asm.types';
 import { createLabelMap } from './label-map';
 import { parseToAST } from './parser';
 
@@ -62,15 +62,32 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
         forceUpdateFlags: astNode.forceUpdateFlags,
       }];
     }
-    case 'JNZ': {
+    case 'JZ':
+    case 'JNZ':
+    case 'JC':
+    case 'JNC':
+    case 'JL':
+    case 'JG':
+    case 'JLE':
+    case 'JGE': {
+      const condition = BRANCH_CONDITIONS[astNode.mnemonic as keyof typeof BRANCH_CONDITIONS];
       return [{
         mnemonic: 'BRC',
-        operands: [{ type: 'immediate', value: 1 }, astNode.operands[0]],
+        operands: [{ type: 'immediate', value: condition }, astNode.operands[0]],
         address,
         label: astNode.label,
         inlineComment: astNode.inlineComment,
       }];
     }
+    case 'NOT':
+      return [{
+        mnemonic: 'XNOR',
+        operands: [astNode.operands[0], astNode.operands[1], { type: 'register', value: 0 }],
+        address,
+        label: astNode.label,
+        inlineComment: astNode.inlineComment,
+        forceUpdateFlags: astNode.forceUpdateFlags,
+      }];
     case 'INC':
       return [{
         mnemonic: 'ADDI',
@@ -271,29 +288,27 @@ function fillIRTargetAddresses(ir: IR): IR {
   const labelMap = createLabelMap(ir);
 
   for (const irNode of ir) {
-    if (irNode.operands[0]?.type === 'label') {
-      const targetLabel = irNode.operands[0].value as string;
-      const targetAddress = labelMap.get(targetLabel);
-
-      if (targetAddress === undefined) {
-        throw new Error(`Target label for J instruction ${irNode.mnemonic} not found: ${targetLabel}`);
+    const resolvedOperands = irNode.operands.map((operand) => {
+      if (operand.type !== 'label') {
+        return operand;
       }
 
-      result.push({
-        ...irNode,
-        operands: [
-          {
-            type: 'label',
-            value: targetLabel,
-            targetAddress,
-          },
-        ],
-      });
+      const targetAddress = labelMap.get(operand.value);
+      if (targetAddress === undefined) {
+        throw new Error(`Target label for instruction ${irNode.mnemonic} not found: ${operand.value}`);
+      }
 
-      continue;
-    }
+      return {
+        type: 'label' as const,
+        value: operand.value,
+        targetAddress,
+      };
+    });
 
-    result.push(irNode);
+    result.push({
+      ...irNode,
+      operands: resolvedOperands,
+    });
   }
 
   return result;

@@ -1,6 +1,6 @@
 import { PC_BITS, SR_BITS } from '../../const/simulator-constants';
 import { split16BitInto8Bit } from '../../util/asm-util';
-import { BRANCH_CONDITIONS, IRNode, Label, REAL_INSTRUCTIONS } from '../types/asm.types';
+import { IRNode, Label, REAL_INSTRUCTIONS } from '../types/asm.types';
 import { compileToIR } from './irgen';
 
 export function encodeIRNode(irNode: IRNode): number {
@@ -42,20 +42,6 @@ export function encodeIRNode(irNode: IRNode): number {
       return encodeAlu3RegisterFormat(opcode, dest, srcA, srcB, updateFlagsBit, 1);
     }
 
-    case 'NOT': {
-      const dest = toField(irNode.operands[0].value as number, 3, 'dest');
-      const src = toField(irNode.operands[1].value as number, 3, 'src');
-      const updateFlagsBit = irNode.forceUpdateFlags ? 1 : 0;
-      return encodeAlu3RegisterFormat(REAL_INSTRUCTIONS.NOR.opcode, dest, 0, src, updateFlagsBit, 1);
-    }
-
-    case 'MOV': {
-      const dest = toField(irNode.operands[0].value as number, 3, 'dest');
-      const src = toField(irNode.operands[1].value as number, 3, 'src');
-      const updateFlagsBit = irNode.forceUpdateFlags ? 1 : 0;
-      return encodeAlu3RegisterFormat(REAL_INSTRUCTIONS.AND.opcode, dest, src, src, updateFlagsBit, 0);
-    }
-
     case 'SHR': {
       const dest = toField(irNode.operands[0].value as number, 3, 'dest');
       const src = toField(irNode.operands[1].value as number, 3, 'src');
@@ -67,21 +53,6 @@ export function encodeIRNode(irNode: IRNode): number {
       const condition = toField(irNode.operands[0].value as number, 3, 'branch condition');
       return encodeBranchFormat(irNode, condition, 1);
     }
-
-    case 'JZ':
-      return encodeBranchFormat(irNode, BRANCH_CONDITIONS.JZ, 0);
-    case 'JNC':
-      return encodeBranchFormat(irNode, BRANCH_CONDITIONS.JNC, 0);
-    case 'JC':
-      return encodeBranchFormat(irNode, BRANCH_CONDITIONS.JC, 0);
-    case 'JL':
-      return encodeBranchFormat(irNode, BRANCH_CONDITIONS.JL, 0);
-    case 'JG':
-      return encodeBranchFormat(irNode, BRANCH_CONDITIONS.JG, 0);
-    case 'JLE':
-      return encodeBranchFormat(irNode, BRANCH_CONDITIONS.JLE, 0);
-    case 'JGE':
-      return encodeBranchFormat(irNode, BRANCH_CONDITIONS.JGE, 0);
 
     case 'JMP':
     case 'CAL': {

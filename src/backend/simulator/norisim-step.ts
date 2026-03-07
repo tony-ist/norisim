@@ -70,18 +70,9 @@ const instructionHandlers: Record<RealInstructionMnemonic, InstructionHandler> =
   NOR: nor,
   XOR: xor,
   XNOR: xnor,
-  NOT: not,
   SHR: shiftRight,
-  MOV: move,
   BRC: branch,
   JMP: jump,
-  JZ: jumpZero,
-  JC: jumpCarry,
-  JNC: jumpNotCarry,
-  JL: jumpLess,
-  JG: jumpGreater,
-  JLE: jumpLessEqual,
-  JGE: jumpGreaterEqual,
   CAL: call,
   RET: returnInstruction,
   PSH: push,
@@ -323,24 +314,6 @@ function xnor(state: NoriSimulatorState, operands: Operand[]) {
   state.currentAddress++;
 }
 
-function not(state: NoriSimulatorState, operands: Operand[]) {
-  const destinationRegister = operands[0].value as number;
-  const srcARegister = operands[1].value as number;
-  const operandA = state.registers[srcARegister];
-  const result = truncateTo8BitUnsigned(~operandA);
-  state.registers[destinationRegister] = result;
-
-  const forceUpdateFlags = state.ir[state.currentAddress].forceUpdateFlags;
-
-  if (forceUpdateFlags) {
-    updateZNFlags(state, result);
-    state.CF = false;
-    state.VF = false;
-  }
-
-  state.currentAddress++;
-}
-
 function shiftRight(state: NoriSimulatorState, operands: Operand[]) {
   const destinationRegister = operands[0].value as number;
   const srcRegister = operands[1].value as number;
@@ -356,13 +329,6 @@ function shiftRight(state: NoriSimulatorState, operands: Operand[]) {
     state.VF = false;
   }
 
-  state.currentAddress++;
-}
-
-function move(state: NoriSimulatorState, operands: Operand[]) {
-  const destinationRegister = operands[0].value as number;
-  const srcRegister = operands[1].value as number;
-  state.registers[destinationRegister] = state.registers[srcRegister];
   state.currentAddress++;
 }
 
