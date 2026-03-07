@@ -134,6 +134,22 @@ bits 15..11 10..8 7..5 4..0
 | 19 | `13` | `10011` | `PLD` | Input byte from port to `DEST`, halt CPU until input, update flags | `pld r2, 1` |
 | 20 | `14` | `10100` | `HLT` | Halt the CPU | `hlt` |
 
+## Pseudo Instructions (Assembler Lowering)
+
+The assembler accepts the following pseudo mnemonics and lowers each to one real instruction in IR:
+
+| Pseudo | Expansion |
+|---|---|
+| `mov dest, src` | `and dest, dest, src` |
+| `jnz .label` | `brc 1, .label` |
+| `inc reg` | `addi reg, 1` |
+| `dec reg` | `addi reg, -1` |
+| `not dest, src` | `xnor dest, src, r0` |
+
+Notes from lowering logic:
+- `mov`, `inc`, and `dec` preserve `.f` (`forceUpdateFlags`) on the lowered instruction.
+- `jnz` lowers to `brc` with condition immediate `1` (`Not zero` from the `COND` table above).
+
 ## Notes
 
 - Logic-family rows use `N` to select normal/inverted behavior (for example AND vs NAND).
