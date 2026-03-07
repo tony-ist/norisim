@@ -44,6 +44,19 @@ bits 15 14 13..11 10..8 7..5 4..0
       0  0  COND   PAGE  ADDR OPCODE
 ```
 
+`COND[2:0]` encoding:
+
+| `COND` | Meaning |
+|---|---|
+| `000` | Zero |
+| `001` | Not zero |
+| `010` | Carry |
+| `011` | Not carry |
+| `100` | Less |
+| `101` | Greater |
+| `110` | Less or equal |
+| `111` | Greater or equal |
+
 ### Absolute Jump/Call Format (JMP / CAL)
 
 ```

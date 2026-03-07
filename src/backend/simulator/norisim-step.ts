@@ -73,9 +73,9 @@ const instructionHandlers: Record<RealInstructionMnemonic, InstructionHandler> =
   NOT: not,
   SHR: shiftRight,
   MOV: move,
+  BRC: branch,
   JMP: jump,
   JZ: jumpZero,
-  JNZ: jumpNotZero,
   JC: jumpCarry,
   JNC: jumpNotCarry,
   JL: jumpLess,
@@ -372,6 +372,47 @@ function jump(state: NoriSimulatorState, operands: Operand[]) {
   const label = operands[0] as Label;
   const targetAddress = label.targetAddress as number;
   state.currentAddress = targetAddress;
+}
+
+function branch(state: NoriSimulatorState, operands: Operand[]) {
+  if (operands[0]?.type !== 'immediate') {
+    throw new Error('BRC condition must be an immediate');
+  }
+
+  const condition = operands[0].value as number;
+  const targetOperand = operands[1];
+  if (!targetOperand || targetOperand.type !== 'label') {
+    throw new Error('BRC target must be a label');
+  }
+
+  switch (condition) {
+    case 0:
+      jumpZero(state, [targetOperand]);
+      return;
+    case 1:
+      jumpNotZero(state, [targetOperand]);
+      return;
+    case 2:
+      jumpCarry(state, [targetOperand]);
+      return;
+    case 3:
+      jumpNotCarry(state, [targetOperand]);
+      return;
+    case 4:
+      jumpLess(state, [targetOperand]);
+      return;
+    case 5:
+      jumpGreater(state, [targetOperand]);
+      return;
+    case 6:
+      jumpLessEqual(state, [targetOperand]);
+      return;
+    case 7:
+      jumpGreaterEqual(state, [targetOperand]);
+      return;
+    default:
+      throw new Error(`Unknown BRC condition: ${condition}`);
+  }
 }
 
 function jumpZero(state: NoriSimulatorState, operands: Operand[]) {
