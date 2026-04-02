@@ -54,8 +54,8 @@ function lowerPseudoInstruction(astNode: ASTNode, address: number): IRNode[] {
   switch (astNode.mnemonic) {
     case 'MOV': {
       return [{
-        mnemonic: 'AND',
-        operands: [astNode.operands[0], astNode.operands[0], astNode.operands[1]],
+        mnemonic: 'XOR',
+        operands: [astNode.operands[0], astNode.operands[1], { type: 'register', value: 0 }],
         address,
         label: astNode.label,
         inlineComment: astNode.inlineComment,

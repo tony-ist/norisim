@@ -102,6 +102,33 @@ describe('generateIR', () => {
     expect(ir[0].inlineComment).toBe(undefined);
   });
 
+  it('should replace MOV pseudo instructions with real instructions', () => {
+    const ast: AST = [
+      {
+        mnemonic: 'MOV',
+        forceUpdateFlags: true,
+        operands: [{ type: 'register', value: 3 }, { type: 'register', value: 5 }],
+        label: 'copy',
+        inlineComment: 'copy register',
+      },
+    ];
+
+    const ir = generateIR(ast);
+
+    expect(ir.length).toBe(1);
+
+    expect(ir[0].mnemonic).toBe('XOR');
+    expect(ir[0].operands).toStrictEqual([
+      { type: 'register', value: 3 },
+      { type: 'register', value: 5 },
+      { type: 'register', value: 0 },
+    ]);
+    expect(ir[0].address).toBe(0);
+    expect(ir[0].forceUpdateFlags).toBe(true);
+    expect(ir[0].label).toBe('copy');
+    expect(ir[0].inlineComment).toBe('copy register');
+  });
+
   it('should replace DEC pseudo instructions with real instructions', () => {
     const ast: AST = [
       {

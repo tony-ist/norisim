@@ -140,7 +140,7 @@ The assembler accepts the following pseudo mnemonics and lowers each to one real
 
 | Pseudo | Expansion |
 |---|---|
-| `mov dest, src` | `and dest, dest, src` |
+| `mov dest, src` | `xor dest, src, r0` |
 | `jnz .label` | `brc 1, .label` |
 | `inc reg` | `addi reg, 1` |
 | `dec reg` | `addi reg, -1` |
