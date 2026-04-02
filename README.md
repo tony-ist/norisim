@@ -19,8 +19,10 @@ npm run dev
 
 ### Assemble from command line
 ```bash
-npm run assemble path/to/assembly.s path/to/output.hex
+npm run assemble path/to/assembly.s
 ```
+
+This will create assembly.hex file in the same directory as input file.
 
 ### Test
 ```bash
