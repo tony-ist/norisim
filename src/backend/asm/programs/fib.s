@@ -1,17 +1,31 @@
 // Calculates fibonacci, does r1 iterations
 
-lim r1, 5 // iterations
-lim r2, 1
-lim r3, 1
+lim 5 // iterations
+str r1
+lim 1
+str r2
+lim 1
+str r3
 
 .loop
-    add r2, r2, r3
-    mov r4, r2
-    mov r2, r3
-    mov r3, r4
+    // r2 += r3
+    ldr r2
+    add r3
+    str r2
 
-    addi r1, -1
+    // swap(r2, r3)
+    ldr r2
+    str r4
+    ldr r3
+    str r2
+    ldr r4
+    str r3
+
+    // r1 -= 1
+    ldr r1
+    dec
+    str r1
+
     jnz .loop
 
-pst  r2, 1
 hlt
